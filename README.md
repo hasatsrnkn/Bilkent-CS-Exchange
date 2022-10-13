@@ -5,9 +5,10 @@ CS319 term project (an administration system for CS Exchange-Erasmus programs)
 - Mehmet Eren Balasar 22001954
 - Yüksel Berkay Erdem 21801863
 - Tuna Okçu 22002940
+- Aftab Fakir 22201062
 
 # Raw ideas from brainstorming (Pre-Requirement Page)
-**Different functionalities and screens for different stakeholders:** 
+**Different functionalities and screens for different stakeholders:** <br/>
 1-Students: Applied, Nominated, Alumni, Already Gone, Outgoing, Incoming ...<br/>
 2-Erasmus-Exchange Coordinators<br/>
 3-Department Secretaries<br/>
