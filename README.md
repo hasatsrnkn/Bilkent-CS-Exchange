@@ -7,7 +7,10 @@ CS319 term project (an administration system for CS Exchange-Erasmus programs)
 - Tuna Okçu 22002940
 - Aftab Fakir 22201062
 
-# Raw ideas from brainstorming (Pre-Requirement Page)
+# Basic Description
+An app to minimize email correspondence between students and the relevant staff handling the ERASMUS application process and the paperwork required throughout said process via interactive forms.
+
+# Features
 **Different functionalities and screens for different stakeholders:** <br/>
 1-Students: Applied, Nominated, Alumni, Already Gone, Outgoing, Incoming ...<br/>
 2-Erasmus-Exchange Coordinators<br/>
@@ -17,17 +20,17 @@ CS319 term project (an administration system for CS Exchange-Erasmus programs)
 6-Dean<br/>
 7-Department Chair<br/>
 8-Students Office<br/>
-**User Profile:** Contains all files related to that specific user, important information and current status (for students) in the application process. 
+**User Profile:** Contains all files related to that specific user, important information, and current status (for students) in the application process. 
 
-**Automated Placement System for applicants:** Reading data from excel and placing the applicants by a particular algorithm.<br/>
-**University Information:** General information about the universities and estimated (calculated by former approved students' points) required points for approval<br/>
-**Review System:** Students who had gone and returned from an ERASMUS program will be able to evaluate their universities and share their experience.<br/>
+**Automated Placement of applicants:** Reads data from excel and places the applicants.<br/>
+**University Information:** General information about the universities and the mean score of previously nominated students.<br/>
+**Review System:** Students who have already studied under ERASMUS can evaluate their universities and share their experiences.<br/>
 **Courses:** Students will be able to see the courses taken before by former ERASMUS students. <br/>
-**Automated Workload Distributor:** Workloads will be distributed between coordinators<br/>
-**Announcements Page:** Important news from Faculty Administration Board  <br/>
-**PDF Reader:** To get the data for the purposes of the App.<br/>
-**Forum:** Q/A system that will help everyone find answers from previous posts. <br/>
-**DM system:** To reduce e-mail traffic.<br/>
+**Automated Workload Distribution:** Workload is distributed between coordinators. <br/>
+**Announcements Page:** Relevant news is shared on this page. <br/>
+**PDF Reader:** Parses the uploaded pdf into a format usable in the application(for example a text file). <br/>
+**Forum:** A forum wherein students can ask questions and former ERASMUS students and coordinators can answer them. <br/>
+**DM system:** To reduce email correspondence.<br/>
 **Login through SRS**<br/>
 **Contact with former Erasmus Students**<br/>
-**TODO List:** A list containing different undone tasks for every users.<br/>
+**TODO List:** A list displaying the incomplete tasks of a particular user. Visible only to the user it belongs to. <br/>
