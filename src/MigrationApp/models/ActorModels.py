@@ -6,8 +6,8 @@ class User(models.Model):
     surname = models.CharField(max_length=100, default='')
     email = models.EmailField(max_length=100, default='')
 
-    #class Meta:
-     #   abstract = True
+    class Meta:
+        verbose_name = "User"
 
 
 class Student(User):
@@ -20,15 +20,16 @@ class ExchangeOffice(User):
 
 
 class Management(User):
-    check_list = models.ForeignKey('MigrationApp.ToDoList', on_delete=models.CASCADE)
+    check_list = models.ForeignKey('MigrationApp.ToDoList', blank=True,
+                                   on_delete=models.CASCADE)
 
 
 class ApplyingStudent(Student):
-    check_list = models.OneToOneField('MigrationApp.ToDoList', on_delete=models.CASCADE)
+    check_list = models.OneToOneField('MigrationApp.ToDoList', blank=True,
+                                      on_delete=models.CASCADE)
 
 
 class FormerStudent(Student):
-    checkList = models.ForeignKey('MigrationApp.ToDoList', on_delete=models.CASCADE)
     uni_visited = models.ForeignKey('MigrationApp.University', on_delete=models.CASCADE)
     begin_date = models.DateField(max_length='20', default='')
     end_date = models.DateField(max_length='20', default='')
