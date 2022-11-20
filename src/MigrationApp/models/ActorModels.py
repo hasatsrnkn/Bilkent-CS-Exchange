@@ -1,4 +1,12 @@
 from django.db import models
+from django.conf import settings
+
+# if you change something, you should use makemigrations and migrate
+# if you add a model, import it in __init__.py
+# to see a model in admin interface, register it in admin.py
+
+# delete options should be reviewed
+# relations - nullable problem ?
 
 
 class User(models.Model):
@@ -13,6 +21,7 @@ class User(models.Model):
 class Student(User):
     bilkent_id = models.CharField(max_length=10, unique=True, default='')  #int or string????
     department = models.CharField(max_length=10, default='')
+    image = models.ImageField(upload_to='profile_pictures', blank=True, default=None)
 
 
 class ExchangeOffice(User):
@@ -22,10 +31,12 @@ class ExchangeOffice(User):
 class Management(User):
     check_list = models.ForeignKey('MigrationApp.ToDoList', blank=True,
                                    on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='profile_pictures', blank=True, default=None)
 
 
 class ApplyingStudent(Student):
-    check_list = models.OneToOneField('MigrationApp.ToDoList', blank=True,
+    check_list = models.OneToOneField('MigrationApp.ToDoList', blank=True, null=True,
+                                      default=None,
                                       on_delete=models.CASCADE)
 
 

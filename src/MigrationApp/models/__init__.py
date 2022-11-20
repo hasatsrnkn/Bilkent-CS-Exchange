@@ -12,5 +12,15 @@ from .ActorModels import DepartmentCoordinator
 from .SystemModels import ToDoList
 from .SystemModels import Notification
 from .SystemModels import University
+from .SystemModels import Chat
+from .SystemModels import Message
+from .SystemModels import Announcement
+from .SystemModels import Forum
+from .SystemModels import Thread
+
+
+
+
+
 
 
