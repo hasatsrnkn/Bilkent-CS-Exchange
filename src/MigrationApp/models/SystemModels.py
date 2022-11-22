@@ -61,3 +61,10 @@ class University(models.Model):
 
     class Meta:
         verbose_name_plural = 'Universities'
+
+
+# not finished
+class Course(models.Model):
+    name = models.CharField(max_length=100, default='')
+    code = models.CharField(max_length=10, default='', blank=True)
+    credits = models.FloatField(default=0)

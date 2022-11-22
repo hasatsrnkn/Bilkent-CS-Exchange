@@ -18,6 +18,8 @@ from .SystemModels import Announcement
 from .SystemModels import Forum
 from .SystemModels import Thread
 
+from .SystemModels import Course
+
 
 
 
