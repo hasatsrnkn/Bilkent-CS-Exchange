@@ -41,6 +41,7 @@ class Forum(models.Model):
 
 
 class Thread(models.Model):
+    question = models.TextField(max_length=1500, default='')
     forum = models.ForeignKey('MigrationApp.Forum', on_delete=models.CASCADE)
     user = models.ForeignKey('MigrationApp.User', on_delete=models.CASCADE)
     reply_count = models.IntegerField(default=0, blank=True)
