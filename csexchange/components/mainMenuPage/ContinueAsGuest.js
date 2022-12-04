@@ -1,10 +1,10 @@
 import { Button } from "react-bootstrap";
-import Link from 'next/link';
+import Link from "next/link";
 const ContinueAsGuest = () => {
   return (
-    <Button className="mt-5 w-55" variant="danger">
-      <Link className="" href='/universities'>Continue As Guest</Link>
-    </Button> 
+    <Link className="" href="/universities" passHref legacyBehavior>
+      <Button className="mt-5" size="lg" variant="danger">Continue As Guest</Button>
+    </Link>
   );
 };
 
