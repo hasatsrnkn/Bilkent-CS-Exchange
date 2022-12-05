@@ -1,0 +1,41 @@
+<!DOCTYPE html> <html>
+<head>
+    <!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+      rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+      crossorigin="anonymous">
+<title>Test App Django</title>
+</head>
+<body>
+    <div class="container">
+    <h1>Welcome to Home Page</h1>
+    <h2>This is the full home page</h2>
+    </div>
+    <form action=""> <div class="mb-3">
+    <label class="form-label">Search student:</label> <input type="text" name="searchTerm_studentName"
+    class="form-control" /> </div>
+    <button type="submit" class="btn btn-primary"> Search
+    </button>
+    </form>
+        <p>Searching for: {{ searchTerm }}</p>
+                <h2>{{ stu.name }}</h2>
+                <h3>{{ stu.student_id }}</h3>
+                <img src="{{ stu.image.url }}" width="180px">
+                {% if stu.url %}
+                <a href="{{ stu.url }}">Student Link</a>
+                {% endif %}
+
+<br />
+<br />
+<h2>Join our mailing list:</h2>
+<form action="{% url 'signup' %}">
+    <div class="mb-3">
+        <label for="email" class="form-label">
+            Enter your email:
+        </label>
+        <input type="email" class="form-control" name="email" />
+    </div>
+    <button type="submit" class="btn btn-primary">
+        Sign Up </button>
+    </form>
+</body> </html>
