@@ -70,9 +70,9 @@ const UniversitiesPage = (props) => {
 };
 
 export async function getStaticProps() {
-  const res = await fetch("http://172.20.10.8:1000/api/all-unis/");
+  const res = await fetch("http://127.0.0.1:8000/api/all-unis/");
   const data = await res.json();
-
+/* python manage.py runserver */
   return {
     props: {
       universities: data.map( (uni) => ({
