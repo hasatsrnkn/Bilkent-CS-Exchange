@@ -13,13 +13,15 @@ class Chat(models.Model):
                                related_name='sender', default=None)
     receiver = models.ForeignKey('MigrationApp.User', on_delete=models.CASCADE,
                                  related_name='receiver', default=None)
+    #TODO: Use user1 and user2 because sender and receiver is not constant on chat (Just change names).
 
 
 class Message(models.Model):
     text = models.CharField(max_length=500, default='')
     send_date = models.DateTimeField(max_length=40, auto_now_add=True)
     chat = models.ForeignKey('MigrationApp.Chat', on_delete=models.CASCADE)
-
+    #TODO: add sender and receiver because it is important to show who is who on chat.
+    #TODO: Is 500 length okay for message context? If so, leave it.
 
 class Notification(models.Model):
     text = models.CharField(max_length=100, default='', blank=True)
@@ -28,11 +30,16 @@ class Notification(models.Model):
     seen = models.BooleanField(default=False)
     banner = models.ImageField(verbose_name='a small image about the notification', blank=True,
                                default=None, upload_to='noti_banners')
-
+    # TODO: Is 100 length okay for notification context? If so, leave it.
+    # TODO: If user is blank or user id = 0, the notification can be sended to all students or all users. (Something like that)
+    # TODO: Maybe specify the notification (Message notification or todo list notification etc.) (area = models.IntegerField())
+    #       For example the area of the notification is 0, it means the notification is a message notification.
+    #       For example the area of the notification is 6, it means the notification is a todolist notification...
 
 class Announcement(models.Model):
     date = models.DateTimeField(max_length=40, auto_now_add=True)
     context = models.CharField(max_length=30, default='', blank=True)
+    text = models.TextField(max_length=1000, default='')
     announcer = models.ForeignKey('MigrationApp.Management', on_delete=models.CASCADE)
 
 
@@ -49,6 +56,13 @@ class Thread(models.Model):
     context = models.CharField(max_length=30, default='', blank=True)
     start_date = models.DateTimeField(max_length=40, auto_now_add=True)
 
+class Reply(models.Model):
+    thread = models.ForeignKey('MigrationApp.Thread', on_delete=models.CASCADE, default='')
+    user = models.ForeignKey('MigrationApp.User', on_delete=models.CASCADE)
+    text = models.CharField(max_length=500, default='')
+    date = models.DateTimeField(max_length=40, auto_now_add=True)
+    #TODO: Is 500 length okay for text? If so, leave it.
+
 
 # not finished
 class ToDoList(models.Model):
@@ -59,9 +73,28 @@ class ToDoList(models.Model):
 # not finished
 class University(models.Model):
     name = models.CharField(max_length=100, default='')
+    deadline = models.DateTimeField(max_length=40)
+    location = models.CharField(max_length=100, default='city, country')
+    contact = models.EmailField(max_length=100, default='')
+    rating = models.DoubleField(max_length=4, default=0.0)
+    reviewCount = models.IntegerField(max_length=100, default=0)
+    #TODO: Check deadline line. This line cannot be added automatically.
 
     class Meta:
         verbose_name_plural = 'Universities'
+
+# Department Specialized University ( NEW ) not finished
+class UniversityDepartment(models.Model):
+    university = models.ForeignKey('MigrationApp.University', on_delete=models.CASCADE, blank=False)
+    taughtInEnglishInfo = models.TextField(max_length=150, blank=True)
+    quota = models.IntegerField(max_length=10, default=0)
+
+# University review ( NEW )
+class Review(models.Model):
+    university = models.ForeignKey('MigrationApp.University', on_delete=models.CASCADE, blank=False)
+    writer = models.ForeignKey('MigrationApp.User', on_delete=models.CASCADE)
+    text = models.TextField(max_length=500, default='')
+    rating = models.IntegerField(max_length=2, default=0)
 
 
 # not finished
