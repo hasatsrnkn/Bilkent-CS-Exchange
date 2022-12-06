@@ -10,6 +10,8 @@ const Universities = (props) => {
           description={university.description}
           rating={university.rating}
           department={university.department}
+          studentPoint={props.theStudentPoint}
+          averagePoint={university.averagePoint}
         ></University>
       ))}
     </ListGroup>

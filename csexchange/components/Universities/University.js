@@ -1,6 +1,20 @@
-import { Card, Col, ListGroup, Row } from "react-bootstrap";
+import { Card, Col, ListGroup, Row, Alert } from "react-bootstrap";
+
 import Rating from "@mui/material/Rating";
+import { useState, useEffect } from "react";
 const University = (props) => {
+  const [entered, setEntered] = useState("danger");
+
+  useEffect(() => {
+    if (props.studentPoint - props.averagePoint > 7) {
+      setEntered("success");
+    } else if (Math.abs(props.studentPoint - props.averagePoint) <= 7) {
+      setEntered("warning");
+    } else if (props.averagePoint - props.studentPoint > 7) {
+      setEntered("danger");
+    }
+  }, [props.studentPoint]);
+
   return (
     <ListGroup.Item key={props.name}>
       <Card>
@@ -20,7 +34,15 @@ const University = (props) => {
               <h5>University Rating</h5>
             </Row>
             <Row>
-              <p>girdi girmedi</p>
+              <Alert
+                className="ms-5"
+                variant={entered}
+                style={{
+                  borderRadius: "50%",
+                  width: 50,
+                  height: 50,
+                }}
+              ></Alert>
             </Row>
           </Col>
           <Col>

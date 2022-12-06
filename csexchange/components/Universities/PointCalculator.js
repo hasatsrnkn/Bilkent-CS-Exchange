@@ -26,6 +26,7 @@ const PointCalculator = (props) => {
   useEffect(() => {
     const thePoint = (eng101No + eng102No + (100 / 3) * (cgpaNo - 2.5));
     setNumber(thePoint.toFixed(2));
+    props.onChangePoint(thePoint.toFixed(2));
   }, [eng101No, eng102No, cgpaNo]);
 
   return (
