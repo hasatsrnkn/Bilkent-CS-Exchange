@@ -16,7 +16,7 @@ const NavbarMenu = (props) => {
         <Link href="/forum" passHref legacyBehavior>
           <Nav.Link className="ms-5">Forum</Nav.Link>
         </Link>
-        <Link href="/" passHref legacyBehavior>
+        <Link href="/announcements" passHref legacyBehavior>
           <Nav.Link className="ms-5">Announcements</Nav.Link>
         </Link>
         <Link href="/" passHref legacyBehavior>
