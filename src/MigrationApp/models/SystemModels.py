@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # if you change something, you should use makemigrations and migrate
 # if you add a model, import it in __init__.py
@@ -23,6 +24,7 @@ class Message(models.Model):
     #TODO: add sender and receiver because it is important to show who is who on chat.
     #TODO: Is 500 length okay for message context? If so, leave it.
 
+
 class Notification(models.Model):
     text = models.CharField(max_length=100, default='', blank=True)
     user = models.ForeignKey('MigrationApp.User', on_delete=models.CASCADE)
@@ -36,6 +38,7 @@ class Notification(models.Model):
     #       For example the area of the notification is 0, it means the notification is a message notification.
     #       For example the area of the notification is 6, it means the notification is a todolist notification...
 
+
 class Announcement(models.Model):
     date = models.DateTimeField(max_length=40, auto_now_add=True)
     context = models.CharField(max_length=30, default='', blank=True)
@@ -43,25 +46,36 @@ class Announcement(models.Model):
     announcer = models.ForeignKey('MigrationApp.Management', on_delete=models.CASCADE)
 
 
-class Forum(models.Model):
-    department = models.CharField(max_length=10, default='')
-
-
 class Thread(models.Model):
+    header = models.CharField(max_length=50, default='')
     question = models.TextField(max_length=1500, default='')
-    forum = models.ForeignKey('MigrationApp.Forum', on_delete=models.CASCADE)
+    department = models.CharField(max_length=10, default='')
     user = models.ForeignKey('MigrationApp.User', on_delete=models.CASCADE)
     reply_count = models.IntegerField(default=0, blank=True)
     solved = models.BooleanField(default=False)
     context = models.CharField(max_length=30, default='', blank=True)
     start_date = models.DateTimeField(max_length=40, auto_now_add=True)
+    view_count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.id.__str__() + " - Thread: " + self.header
+
+    class Meta:
+        ordering = ['start_date']
+
 
 class Reply(models.Model):
-    thread = models.ForeignKey('MigrationApp.Thread', on_delete=models.CASCADE, default='')
+    thread = models.ForeignKey('MigrationApp.Thread', related_name='replies', on_delete=models.CASCADE, default='')
     user = models.ForeignKey('MigrationApp.User', on_delete=models.CASCADE)
-    text = models.CharField(max_length=500, default='')
+    text = models.TextField(max_length=500, default='')
     date = models.DateTimeField(max_length=40, auto_now_add=True)
     #TODO: Is 500 length okay for text? If so, leave it.
+
+    def __str__(self):
+        return self.id.__str__() + " - Reply: " + self.text[:10] + "..."
+
+    class Meta:
+        ordering = ['date']
 
 
 # not finished
@@ -73,28 +87,32 @@ class ToDoList(models.Model):
 # not finished
 class University(models.Model):
     name = models.CharField(max_length=100, default='')
-    deadline = models.DateTimeField(max_length=40)
+    deadline = models.DateTimeField(max_length=40, default=timezone.now)
     location = models.CharField(max_length=100, default='city, country')
     contact = models.EmailField(max_length=100, default='')
-    rating = models.DoubleField(max_length=4, default=0.0)
-    reviewCount = models.IntegerField(max_length=100, default=0)
+    rating = models.FloatField(default=0.0)
+    reviewCount = models.IntegerField(default=0)
     #TODO: Check deadline line. This line cannot be added automatically.
 
     class Meta:
         verbose_name_plural = 'Universities'
 
+
 # Department Specialized University ( NEW ) not finished
 class UniversityDepartment(models.Model):
-    university = models.ForeignKey('MigrationApp.University', on_delete=models.CASCADE, blank=False)
-    taughtInEnglishInfo = models.TextField(max_length=150, blank=True)
-    quota = models.IntegerField(max_length=10, default=0)
+    university = models.OneToOneField('MigrationApp.University', blank=False, null=False,
+                                      default=None,
+                                      on_delete=models.CASCADE)
+    taughtInEnglishInfo = models.CharField(max_length=150, blank=True)
+    quota = models.IntegerField(default=0)
+
 
 # University review ( NEW )
 class Review(models.Model):
     university = models.ForeignKey('MigrationApp.University', on_delete=models.CASCADE, blank=False)
-    writer = models.ForeignKey('MigrationApp.User', on_delete=models.CASCADE)
+    reviewer = models.ForeignKey('MigrationApp.User', on_delete=models.CASCADE)
     text = models.TextField(max_length=500, default='')
-    rating = models.IntegerField(max_length=2, default=0)
+    rating = models.FloatField(default=0)
 
 
 # not finished

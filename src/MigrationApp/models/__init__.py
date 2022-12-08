@@ -15,8 +15,10 @@ from .SystemModels import University
 from .SystemModels import Chat
 from .SystemModels import Message
 from .SystemModels import Announcement
-from .SystemModels import Forum
 from .SystemModels import Thread
+from .SystemModels import Reply
+from .SystemModels import UniversityDepartment
+from .SystemModels import Review
 
 from .SystemModels import Course
 
