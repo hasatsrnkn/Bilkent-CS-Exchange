@@ -6,12 +6,17 @@ const ForumList = (props) => {
     <ListGroup>
       {props.forums.map((forum) => (
         <Forum
-          name={forum.name}
-          description={forum.description}
-          solved={forum.solved}
-          department={forum.department}
-          replies={forum.replies}
-          statedBy={forum.statedBy}
+        key={forum.id}
+        id={forum.id}
+        users = {forum.users}
+        question= {forum.question}
+        date= {forum.date}
+        department= {forum.department}
+        replies= {forum.replies}
+        solved = {forum.solved}
+        header = {forum.header}
+        replyCount = {forum.replyCount}
+        allReplies = {forum.allReplies}
         ></Forum>
       ))}
     </ListGroup>

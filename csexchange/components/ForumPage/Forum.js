@@ -1,6 +1,11 @@
 import { Alert, Card, Col, ListGroup, Row } from "react-bootstrap";
 import { useState, useEffect } from "react";
+import Replies from "./Replies";
+
 const Forum = (props) => {
+  
+
+
   const [solvedClass, setSolvedClass] = useState();
   useEffect(() => {
     if (props.solved) {
@@ -9,16 +14,22 @@ const Forum = (props) => {
       setSolvedClass("danger");
     }
   }, [props.solved]);
+  const nameSurname = props.users.name + " " + props.users.surname;
   return (
-    <ListGroup.Item>
+    <ListGroup.Item key={props.key}>
       <Card>
-        <Row>
-          <h2>{props.name}</h2>
+        <Row className="ps-2">
+          <h2>{props.header}</h2>
         </Row>
-        <Row>
-          <p>{props.description}</p>
+        <Row className="ps-2">
+          <p>{props.question}</p>
         </Row>
-        <Row>
+        <Row className="pe-2 d-flex justify-content-end">
+          <Col className="d-flex justify-content-end">
+            <b>{nameSurname}</b>
+          </Col>
+        </Row>
+        <Row className="mt-4">
           <Col className="col-2 d-flex justify-content-center align-items-center">
             <Alert
               className="d-flex justify-content-center align-items-center"
@@ -32,23 +43,12 @@ const Forum = (props) => {
               {!props.solved && <b>UNSOLVED</b>}
             </Alert>
           </Col>
-          <Col >
-            <Row>
-              <Col className="col-3">
-                <h4>{props.replies[0].statedBy}</h4>
-              </Col>
-              <Col >
-                <p>{props.replies[0].context}</p>
-              </Col> 
-            </Row>
-            <Row>
-              <Col className="col-3">
-                <h4>{props.replies[1].statedBy}</h4>
-              </Col>
-              <Col>
-                <p>{props.replies[1].context}</p>
-              </Col>
-            </Row>
+          <Col>
+            <Replies
+              replies={props.replies}
+              replyCount={props.replyCount}
+              allReplies={props.allReplies}
+            ></Replies>
           </Col>
         </Row>
       </Card>
