@@ -1,5 +1,5 @@
 # Bilkent-CS-Exchange
-CS319 term project (an administration system for CS Exchange-Erasmus programs)
+CS319 term project (an administration system for Bilkent Exchange-Erasmus programs)
 # Members 
 - Mehmet Hasat Serinkan 21901649
 - Mehmet Eren Balasar 22001954
