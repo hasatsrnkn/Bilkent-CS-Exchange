@@ -1,11 +1,8 @@
-import { Alert, Card, Col, ListGroup, Row } from "react-bootstrap";
+import { Alert, Card, Col, ListGroup, Row} from "react-bootstrap";
 import { useState, useEffect } from "react";
 import Replies from "./Replies";
 
 const Forum = (props) => {
-  
-
-
   const [solvedClass, setSolvedClass] = useState();
   useEffect(() => {
     if (props.solved) {
