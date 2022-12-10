@@ -41,11 +41,14 @@ const StudentInfo = (props) => {
           </Col>
         </Row>
         <Row className="mt-5">
-          <Col className="col-6 d-flex justify-content-center align-items-center">
+          <Col className="col-4 d-flex justify-content-center align-items-center">
             <Button variant="success" size="lg">Fill Pre-Approval</Button>
           </Col>
-          <Col className="col-6 d-flex justify-content-center align-items-center">
+          <Col className="col-4 d-flex justify-content-center align-items-center">
             <Button variant="success" size="lg">Fill Learning Agreement</Button>
+          </Col>
+          <Col className="col-4 d-flex justify-content-center align-items-center">
+            <Button variant="success" size="lg">Go To Files</Button>
           </Col>
         </Row>
       </Col>

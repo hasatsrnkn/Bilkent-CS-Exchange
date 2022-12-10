@@ -7,6 +7,7 @@ import { authActions } from "../../store/auth";
 const NavbarMenu = (props) => {
   const dispatch = useDispatch();
   const isAuth = useSelector((state) => state.auth.isAuthenticated);
+  const user = useSelector((state) => state.auth.user);
 
   const logoutHandler = () => {
     dispatch(authActions.logout());
@@ -29,6 +30,13 @@ const NavbarMenu = (props) => {
           <Link href="/" passHref legacyBehavior>
             <Nav.Link className="ms-5">Login</Nav.Link>
           </Link>
+        )}
+        {isAuth && (
+          <Link href={`/student/profile/${user}`} passHref legacyBehavior>
+          <Nav.Link className="ms-5">
+            Profile
+          </Nav.Link>
+        </Link>
         )}
         {isAuth && (
           <Link href="/" passHref legacyBehavior>

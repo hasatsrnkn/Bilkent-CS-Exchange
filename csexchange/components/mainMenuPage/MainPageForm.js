@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Button, Form, Row } from "react-bootstrap";
 import { authActions } from "../../store/auth";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 
 const MainPageForm = (props) => {
   const [bilkentId, setBilkentId] = useState("");
@@ -13,20 +13,23 @@ const MainPageForm = (props) => {
   const bilkentIdHandler = (event) => {
     event.preventDefault();
     setBilkentId(event.target.value);
-  }
+  };
 
   const passwordHandler = (event) => {
     event.preventDefault();
     setPassword(event.target.value);
-  }
+  };
 
   const loginHandler = (event) => {
     event.preventDefault();
 
-    dispatch(authActions.login());
+    dispatch(
+      authActions.login({
+        user: bilkentId,
+      })
+    );
 
-    router.push('/student/profile/' + bilkentId );
-
+    router.push("/departmentcoordinator/profile/" + bilkentId);
   };
 
   return (
@@ -45,7 +48,7 @@ const MainPageForm = (props) => {
         className="mt-3"
         type="submit"
         onClick={loginHandler}
-      > 
+      >
         Log in
       </Button>
     </Form>
