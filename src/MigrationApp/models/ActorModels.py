@@ -72,7 +72,7 @@ class ApplyingStudent(Student):
 
 
 class FormerStudent(Student):
-    uni_visited = models.ForeignKey('MigrationApp.University', on_delete=models.CASCADE)
+    uni_visited = models.ForeignKey('MigrationApp.UniversityDepartment', related_name='former_students', on_delete=models.CASCADE)
     begin_date = models.DateField(max_length='20', default='')
     end_date = models.DateField(max_length='20', default='')
 

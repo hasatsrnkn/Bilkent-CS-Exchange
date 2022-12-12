@@ -16,7 +16,7 @@ class Login(APIView):
         if not user:
             return Response({'error': 'Credentials are incorrect or user does not exist'}, status=HTTP_404_NOT_FOUND)
         token, _ = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key}, status=HTTP_200_OK)
+        return Response({'token': token.key, 'type': 'DepartmentCoordinator'}, status=HTTP_200_OK)
 
 #authentication_classes = [TokenAuthentication]
 #permission_classes = [IsAuthenticated]

@@ -79,6 +79,16 @@ class NoReplies(ReplyStrategy):
             None
 
 
+class aaa():
+
+    def get_replies(self, user):
+        user_serializer = user.get_serializer()
+        if user_serializer:
+            return user_serializer().data
+        else:
+            None
+
+
 # TODO: may need a look
 class ThreadSerializer(serializers.ModelSerializer):
 
@@ -118,10 +128,14 @@ class UniversitySerializer(serializers.ModelSerializer):
 class UniversityDepartmentSerializer(serializers.ModelSerializer):
     university = UniversitySerializer(read_only=True)
 
+    #user_serializer_class = Us.get_serializer()
+    #former_students = user_serializer_class(read_only=True)
+
     user_serializer_class = Us.get_serializer()
     coordinator = user_serializer_class(read_only=True)
 
     class Meta:
         model = UniversityDepartment
-        fields = ['university', 'department', 'taughtInEnglishInfo', 'quota', 'languageRequirements', 'coordinator']
+        fields = ['university', 'department', 'taught_in_english_info', 'quota', 'language_requirements', 'coordinator',
+                  'threshold']
 

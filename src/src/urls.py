@@ -23,7 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('ForumApp.urls')),
     path('api/', include('AnnouncementApp.urls')),
-    path('api/', include('UniInfoApp.urls'))
+    path('api/', include('UniInfoApp.urls')),
+    path('api/', include('LoginApp.urls'))
 
 ]
 

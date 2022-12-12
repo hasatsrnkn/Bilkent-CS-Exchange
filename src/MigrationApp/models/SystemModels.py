@@ -105,8 +105,9 @@ class ToDoList(models.Model):
 # not finished
 class University(models.Model):
     name = models.CharField(max_length=100, default='')
-    deadline = models.DateTimeField(max_length=40, default=timezone.now)
+    description = models.TextField(max_length=500, default='', blank=True)
     location = models.CharField(max_length=100, default='city, country')
+    website_link = models.CharField(max_length=100, default='')
     contact = models.EmailField(max_length=100, default='')
     rating = models.FloatField(default=0.0)
     reviewCount = models.IntegerField(default=0)
@@ -124,17 +125,21 @@ class University(models.Model):
 # Department Specialized University ( NEW ) not finished
 class UniversityDepartment(models.Model):
     university = models.OneToOneField('MigrationApp.University', blank=False, null=False,
-                                      default=None,
+                                      default=None, related_name='university',
                                       on_delete=models.CASCADE)
-    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=1, )
-    taughtInEnglishInfo = models.CharField(max_length=150, blank=True, default='')
+    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default='CS', )
+    taught_in_english_info = models.CharField(max_length=150, blank=True, default='')
     quota = models.IntegerField(default=0)
-    languageRequirements = models.CharField(max_length=40, blank=True, default='')
+    language_requirements = models.CharField(max_length=40, blank=True, default='')
     coordinator = models.ForeignKey('MigrationApp.DepartmentCoordinator',
                                     related_name='coordinator', on_delete=models.CASCADE, blank=False, default=None)
+    threshold = models.IntegerField(default=0)
+
+    # class Meta:
+        # ordering = ['university.rating']
 
     def __str__(self):
-        return self.id.__str__() + " - " + self.university.name + " : " #+ self.department.
+        return self.id.__str__() + " - " + self.university.name + " : " + self.get_department_display()
 
 
 # University review ( NEW )
