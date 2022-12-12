@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-2jzea+9jz5kt*501u6q$o5dz_2%^92e#0bq&@8-=%r1u3howz@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.40']
+ALLOWED_HOSTS = ['192.168.1.40', '127.0.0.1', '172.20.10.8']
 
 
 # Application definition
@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'MigrationApp',
     'ForumApp',
+    'AnnouncementApp',
+    'LoginApp',
+    'UniInfoApp'
 ]
 
 MIDDLEWARE = [

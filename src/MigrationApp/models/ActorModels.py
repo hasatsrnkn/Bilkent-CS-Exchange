@@ -7,12 +7,22 @@ from django.conf import settings
 
 # delete options should be reviewed
 # relations - nullable problem ?
+from rest_framework import serializers
 
 
 class User(models.Model):
     name = models.CharField(max_length=100, default='')
     surname = models.CharField(max_length=100, default='')
     email = models.EmailField(max_length=100, default='')
+
+    @classmethod
+    def get_serializer(cls):
+        class UserSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = cls
+                fields = '__all__'
+
+        return UserSerializer  # return the class object so we can use this serializer
 
     def __str__(self):
         return '(' + self.id.__str__() + ')' +\
@@ -24,6 +34,17 @@ class Student(User):
     department = models.CharField(max_length=10, default='')
     image = models.ImageField(upload_to='profile_pictures', blank=True, default=None)
     points = models.FloatField(verbose_name="Erasmus grade points out of 100", default=0)
+
+    @classmethod
+    def get_serializer(cls):
+        super_serializer = User.get_serializer()  # this important to not to break the serializing hierarchy
+
+        class StudentSerializer(super_serializer):
+            class Meta:
+                model = cls  # this is the main trick here, this is how I tell the serializer about the model class
+                fields = '__all__'
+
+        return StudentSerializer
 
     def __str__(self):
         return '(' + self.id.__str__() + ')' +\

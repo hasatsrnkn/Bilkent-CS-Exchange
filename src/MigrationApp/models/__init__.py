@@ -25,6 +25,3 @@ from .SystemModels import Course
 
 
 
-
-
-
