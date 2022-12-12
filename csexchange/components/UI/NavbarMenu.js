@@ -7,7 +7,7 @@ import { authActions } from "../../store/auth";
 const NavbarMenu = (props) => {
   const dispatch = useDispatch();
   const isAuth = useSelector((state) => state.auth.isAuthenticated);
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector((state) => state.auth.token) ; /*değişcek*/
 
   const logoutHandler = () => {
     dispatch(authActions.logout());

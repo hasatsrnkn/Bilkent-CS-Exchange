@@ -6,12 +6,19 @@ const Universities = (props) => {
     <ListGroup>
       {props.universities.map((university) => (
         <University
-          name={university.name}
-          description={university.description}
-          rating={university.rating}
-          department={university.department}
-          studentPoint={props.theStudentPoint}
-          averagePoint={university.averagePoint}
+          id= {university.id}
+          name= {university.name}
+          location= {university.location}
+          taughtInEnglishInfo = {university.taughtInEnglishInfo}
+          webSiteLink = {university.webSiteLink}
+          languageRequirements= {university.languageRequirements}
+          description= {university.description}
+          rating = {university.rating}
+          studentPoint = {props.theStudentPoint}
+          threshold = {university.threshold}
+          department = {university.department}
+          quota = {university.quota}
+          coordinator = {university.coordinator}
         ></University>
       ))}
     </ListGroup>
