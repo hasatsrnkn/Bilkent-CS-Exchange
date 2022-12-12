@@ -1,8 +1,11 @@
-import { Alert, Card, Col, ListGroup, Row} from "react-bootstrap";
+import { Alert, Card, Col, ListGroup, Row, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import Replies from "./Replies";
+import Link from "next/link";
 
 const Forum = (props) => {
+  const linkToQuestion = "/forum/" + props.id;
+
   const [solvedClass, setSolvedClass] = useState();
   useEffect(() => {
     if (props.solved) {
@@ -32,8 +35,8 @@ const Forum = (props) => {
               className="d-flex justify-content-center align-items-center"
               variant={solvedClass}
               style={{
-                width: 100,
-                height: 100,
+                width: 150,
+                height: 150,
               }}
             >
               {props.solved && <b>SOLVED</b>}
@@ -47,6 +50,15 @@ const Forum = (props) => {
               allReplies={props.allReplies}
             ></Replies>
           </Col>
+        </Row>
+        <Row>
+          {!props.allReplies && (
+            <Col className="d-flex justify-content-end m-4">
+              <Link href={linkToQuestion} legacyBehavior passHref>
+                <Button>Go to Thread</Button>
+              </Link>
+            </Col>
+          )}
         </Row>
       </Card>
     </ListGroup.Item>

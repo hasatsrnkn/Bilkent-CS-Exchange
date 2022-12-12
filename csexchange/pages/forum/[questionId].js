@@ -1,8 +1,7 @@
 import NavbarMenu from "../../components/UI/NavbarMenu";
 import { Col, Row } from "react-bootstrap";
-import MostViewedList from "../../components/ForumPage/MostViewedList";
 import Forum from "../../components/ForumPage/Forum";
-
+import  { API_FORUM_ENDPOINT } from "../api/api";
 const questionPage = (props) => {
   return (
     <div>
@@ -29,7 +28,7 @@ const questionPage = (props) => {
 };
 
 export async function getStaticPaths() {
-  const res = await fetch("http://192.168.1.40:1000/api/forum/home/");
+  const res = await fetch(API_FORUM_ENDPOINT+"all-threads/");
   const data = await res.json();
 
   return {
@@ -41,12 +40,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-  const link =
-    "http://192.168.1.40:1000/api/forum/home/" +
-    context.params.questionId +
-    "/";
-
-  const res = await fetch(link);
+  const res = await fetch(API_FORUM_ENDPOINT + "thread/" + context.params.questionId + "/");
   const data = await res.json();
   return {
     props: {
@@ -64,7 +58,7 @@ export async function getStaticProps(context) {
         solved: data.solved,
         allReplies: true,
         replies: data.replies.map((reply) => ({
-          users: {
+          user: {
             name: reply.user.name,
             surname: reply.user.surname,
           },

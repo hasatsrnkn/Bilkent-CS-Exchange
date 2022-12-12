@@ -4,82 +4,7 @@ import UniversitiesFilter from "../../components/Universities/UniversitiesFilter
 import { useState } from "react";
 import ForumList from "../../components/ForumPage/ForumList";
 import MostViewedList from "../../components/ForumPage/MostViewedList";
-const fors = [
-  {
-    name: "Question 1",
-    description:
-      "Bilkent Üniversitesi ya da resmî adıyla İhsan Doğramacı Bilkent Üniversitesi, Türkiye'nin başkenti Ankara'da yer alan vakıf üniversitesi. İhsan Doğramacı tarafından, İhsan Doğramacı Eğitim Vakfı, İhsan Doğramacı Sağlık Vakfı ve İhsan Doğramacı Bilim ve Araştırma Vakfı kararlarıyla 20 Ekim 1984'te, Türkiye'nin ilk vakıf üniversitesi olarak kurulmuştur.[11] Bilkent Üniversitesi, kuruluş amacını eğitim kalitesi, bilimsel araştırma ve yayınları ile kültür ve sanat faaliyetleri açısından dünyanın önde gelen üniversiteleri arasında yer almak olarak açıklamıştır.[1] Bu amaç doğrultusunda üniversiteye Bilim Kentinin kısaltılmışı olan Bilkent adı verilmiştir",
-    solved: true,
-    department: "cs",
-    replies: [
-      {
-        statedBy: "ali",
-        context: "bu nası soru tarraaaam",
-      },
-      {
-        statedBy: "veli",
-        context: "bu nası soru tarraaaam",
-      },
-    ],
-    statedBy: "ali bey",
-  },
-  {
-    name: "Question 2",
-    description:
-      "Bilkent Üniversitesi ya da resmî adıyla İhsan Doğramacı Bilkent Üniversitesi, Türkiye'nin başkenti Ankara'da yer alan vakıf üniversitesi. İhsan Doğramacı tarafından, İhsan Doğramacı Eğitim Vakfı, İhsan Doğramacı Sağlık Vakfı ve İhsan Doğramacı Bilim ve Araştırma Vakfı kararlarıyla 20 Ekim 1984'te, Türkiye'nin ilk vakıf üniversitesi olarak kurulmuştur.[11] Bilkent Üniversitesi, kuruluş amacını eğitim kalitesi, bilimsel araştırma ve yayınları ile kültür ve sanat faaliyetleri açısından dünyanın önde gelen üniversiteleri arasında yer almak olarak açıklamıştır.[1] Bu amaç doğrultusunda üniversiteye Bilim Kentinin kısaltılmışı olan Bilkent adı verilmiştir",
-    solved: true,
-    department: "cs",
-    replies: [
-      {
-        statedBy: "mehmet",
-        context:
-          "Bilkent Üniversitesi ya da resmî adıyla İhsan Doğramacı Bilkent Üniversitesi, Türkiye'nin başkenti Ankara'da yer alan vakıf üniversitesi. İhsan Doğramacı tarafından, İhsan Doğramacı Eğitim Vakfı, İhsan Doğramacı Sağlık Vakfı ve İhsan Doğramacı Bilim ve Araştırma Vakfı kararlarıyla 20 Ekim 1984'te, Türkiye'nin ilk vakıf üniversitesi olarak kurulmuştur.[11] Bilkent Üniversitesi, kuruluş amacını eğitim kalitesi, bilimsel araştırma ve yayınları ile kültür ve sanat faaliyetleri açısından dünyanın önde gelen üniversiteleri arasında yer almak olarak açıklamıştır.[1] Bu amaç doğrultusunda üniversiteye Bilim Kentinin kısaltılmışı olan Bilkent adı verilmiştir",
-      },
-      {
-        statedBy: "musa",
-        context: "bu nası soru tarraaaam",
-      },
-    ],
-    statedBy: "ali bey",
-  },
-  {
-    name: "Question 3",
-    description:
-      "Bilkent Üniversitesi ya da resmî adıyla İhsan Doğramacı Bilkent Üniversitesi, Türkiye'nin başkenti Ankara'da yer alan vakıf üniversitesi. İhsan Doğramacı tarafından, İhsan Doğramacı Eğitim Vakfı, İhsan Doğramacı Sağlık Vakfı ve İhsan Doğramacı Bilim ve Araştırma Vakfı kararlarıyla 20 Ekim 1984'te, Türkiye'nin ilk vakıf üniversitesi olarak kurulmuştur.[11] Bilkent Üniversitesi, kuruluş amacını eğitim kalitesi, bilimsel araştırma ve yayınları ile kültür ve sanat faaliyetleri açısından dünyanın önde gelen üniversiteleri arasında yer almak olarak açıklamıştır.[1] Bu amaç doğrultusunda üniversiteye Bilim Kentinin kısaltılmışı olan Bilkent adı verilmiştir",
-    solved: true,
-    department: "cs",
-    replies: [
-      {
-        statedBy: "reis",
-        context: "bu nası soru tarraaaam",
-      },
-      {
-        statedBy: "ali",
-        context: "bu nası soru tarraaaam",
-      },
-    ],
-
-    statedBy: "ali bey",
-  },
-  {
-    name: "Question 4",
-    description:
-      "Bilkent Üniversitesi ya da resmî adıyla İhsan Doğramacı Bilkent Üniversitesi, Türkiye'nin başkenti Ankara'da yer alan vakıf üniversitesi. İhsan Doğramacı tarafından, İhsan Doğramacı Eğitim Vakfı, İhsan Doğramacı Sağlık Vakfı ve İhsan Doğramacı Bilim ve Araştırma Vakfı kararlarıyla 20 Ekim 1984'te, Türkiye'nin ilk vakıf üniversitesi olarak kurulmuştur.[11] Bilkent Üniversitesi, kuruluş amacını eğitim kalitesi, bilimsel araştırma ve yayınları ile kültür ve sanat faaliyetleri açısından dünyanın önde gelen üniversiteleri arasında yer almak olarak açıklamıştır.[1] Bu amaç doğrultusunda üniversiteye Bilim Kentinin kısaltılmışı olan Bilkent adı verilmiştir",
-    solved: false,
-    department: "ee",
-    replies: [
-      {
-        statedBy: "reis",
-        context: "bu nası soru tarraaaam",
-      },
-      {
-        statedBy: "ali",
-        context: "bu nası soru tarraaaam",
-      },
-    ],
-    statedBy: "ali bey",
-  },
-];
+import { API_FORUM_ENDPOINT } from "../api/api";
 
 const forumPage = (props) => {
   const [filteredUniDepartment, setFilteredUniDepartment] = useState("cs");
@@ -108,7 +33,7 @@ const forumPage = (props) => {
           <ForumList forums={filteredQuestions}></ForumList>
         </Col>
         <Col className="col-3">
-          <MostViewedList questions={filteredQuestions}></MostViewedList>
+          <MostViewedList questions={props.mostViewedQuestions}></MostViewedList>
         </Col>
       </Row>
     </div>
@@ -116,11 +41,14 @@ const forumPage = (props) => {
 };
 
 export async function getStaticProps() {
-  const res = await fetch("http://192.168.1.40:1000/api/forum/home/");
-  const data = await res.json();
+  const res1 = await fetch(API_FORUM_ENDPOINT + "home/");
+  const homeThreads = await res1.json();
+
+  const res2 = await fetch(API_FORUM_ENDPOINT + "home/most-viewed/");
+  const mostViewedThreads = await res2.json();
   return {
     props: {
-      threads: data.map((thread) => ({
+      threads: homeThreads.map((thread) => ({
         users: {
           name: thread.user.name,
           surname: thread.user.surname,
@@ -134,13 +62,18 @@ export async function getStaticProps() {
         solved: thread.solved,
         allReplies: false,
         replies: thread.replies.map((reply) => ({
-          users: {
+          user: {
             name: reply.user.name,
             surname: reply.user.surname,
           },
           text: reply.text,
           date: reply.date,
         })),
+      })),
+      mostViewedQuestions: mostViewedThreads.map((thread) => ({
+        id: thread.id,
+        header: thread.header,
+        replyCount: thread.reply_count,
       })),
     },
     revalidate: 1,

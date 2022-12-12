@@ -29,7 +29,7 @@ const MainPageForm = (props) => {
       })
     );
 
-    router.push("/departmentcoordinator/profile/" + bilkentId);
+    router.push("/student/profile/" + bilkentId);
   };
 
   return (

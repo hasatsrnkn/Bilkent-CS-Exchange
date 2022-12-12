@@ -4,7 +4,7 @@ import { Col, Row } from "react-bootstrap";
 import UniversitiesFilter from "../../components/Universities/UniversitiesFilter";
 import { useState } from "react";
 import PointCalculator from "../../components/Universities/PointCalculator";
-
+import { API_UNIS_INFO_ENDPOINT } from "../api/api";
 const uni = [
   {
     name: "Bilkent Uni",
@@ -78,11 +78,11 @@ const UniversitiesPage = (props) => {
     </div>
   );
 };
-/*
+
 export async function getStaticProps() {
-  const res = await fetch("http://127.0.0.1:8000/api/all-unis/");
+  const res = await fetch( API_UNIS_INFO_ENDPOINT );
   const data = await res.json();
-  /* python manage.py runserver 
+  /* python manage.py runserver */
   return {
     props: {
       universities: data.map((uni) => ({
@@ -95,5 +95,5 @@ export async function getStaticProps() {
     revalidate: 1,
   };
 }
-*/
+
 export default UniversitiesPage;
