@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Button, Form, Row,Col, Spinner } from "react-bootstrap";
+import { Button, Form, Row, Col, Spinner } from "react-bootstrap";
 import { authActions } from "../../store/auth";
+import { loadingActions } from "../../store/loading";
 import { useRouter } from "next/router";
 import { API_LOGIN_ENDPOINT } from "../../pages/api/api";
 
 const MainPageForm = (props) => {
   const [bilkentId, setBilkentId] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -25,7 +25,7 @@ const MainPageForm = (props) => {
   const loginHandler = (event) => {
     event.preventDefault();
 
-    setIsLoading(true);
+    dispatch(loadingActions.setIsLoading());
     fetch(API_LOGIN_ENDPOINT, {
       method: "POST",
       body: JSON.stringify({
@@ -37,7 +37,7 @@ const MainPageForm = (props) => {
       },
     })
       .then((res) => {
-        setIsLoading(false);
+        dispatch(loadingActions.setIsNotLoading());
         if (res.ok) {
           return res.json();
         } else {
@@ -100,16 +100,6 @@ const MainPageForm = (props) => {
               >
                 Log in
               </Button>
-            </Col>
-            <Col className="d-flex justify-content-md-center col-5">
-              {isLoading && (
-                <Spinner
-                  animation="border"
-                  variant="primary"
-                  className="m-5"
-                  size="lg"
-                />
-              )}
             </Col>
           </Row>
         </Form>
