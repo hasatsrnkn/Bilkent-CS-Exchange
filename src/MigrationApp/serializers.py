@@ -18,7 +18,7 @@ class ReplySerializer(serializers.ModelSerializer):
     class Meta:
         model = Reply
         fields = ['user', 'text', 'date']
-
+class UserSerializer(serializers.ModelSerializer):
     '''
     def create(self, validated_data):
         request = self.context['request']
@@ -52,6 +52,7 @@ class ReplyStrategy(ABC):
 class TwoMostRecent(ReplyStrategy):
 
     def get_replies(self, thread):
+
         replies = thread.replies.all()[:2]
         if replies:
             return ReplySerializer(replies, many=True).data

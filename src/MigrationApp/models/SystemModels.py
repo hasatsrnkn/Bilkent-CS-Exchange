@@ -144,6 +144,24 @@ class Review(models.Model):
     text = models.TextField(max_length=500, default='')
     rating = models.FloatField(default=0)
 
+class Document(models.Model):
+    documentName = models.CharField(max_length=100, default='')
+    type = models.CharField(max_length=10, default='pdf')
+    documentOwner = models.OneToOneField('MigrationApp.User', blank=False, null=False,
+                                      default=None,
+                                      on_delete=models.CASCADE)
+    date = models.DateTimeField(max_length=40, default=timezone.now)
+
+class PreApprovalFormContent(Document):
+    Name = models.CharField(max_length=100, default='')
+    Surname = models.CharField(max_length=100, default='')
+    IDNumber = models.IntegerField(max_length=15, default=0, blank=False)
+    Department = models.CharField(max_length=100, default='')
+    hostInst = models.CharField(max_length=100, default='')
+    academicYear = models.CharField(max_length=100, default='')
+    semester = models.CharField(max_length=100, default='')
+    #courses = models.ManyToManyField('MigrationApp.Course', related_name='courses', blank=True)
+    coordinatorName = models.CharField(max_length=100, default='')
 
 # not finished
 class Course(models.Model):

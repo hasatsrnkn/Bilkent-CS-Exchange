@@ -18,13 +18,14 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('ForumApp.urls')),
     path('api/', include('AnnouncementApp.urls')),
-    path('api/', include('UniInfoApp.urls'))
-
+    path('api/', include('UniInfoApp.urls')),
+    #TODO: Will be deleted this line (Move to fileanalyzer app)
+    path('', include('FileAnalyzeApp.urls'))
+    #TODO: Will be deleted this line (Move to fileanalyzer app)
 ]
 
 if settings.DEBUG:
