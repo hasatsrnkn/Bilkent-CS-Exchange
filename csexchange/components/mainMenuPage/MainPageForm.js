@@ -56,6 +56,7 @@ const MainPageForm = (props) => {
           authActions.login({
             token: data.token,
             type: data.type,
+            bilkentId: bilkentId,
           })
         );
         const profileType = data.type.toLowerCase();
