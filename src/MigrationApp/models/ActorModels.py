@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 
@@ -10,7 +11,7 @@ from django.conf import settings
 from rest_framework import serializers
 
 
-class User(models.Model):
+class User(AbstractUser):
     name = models.CharField(max_length=100, default='')
     surname = models.CharField(max_length=100, default='')
     email = models.EmailField(max_length=100, default='')
@@ -34,6 +35,8 @@ class Student(User):
     department = models.CharField(max_length=10, default='')
     image = models.ImageField(upload_to='profile_pictures', blank=True, default=None)
     points = models.FloatField(verbose_name="Erasmus grade points out of 100", default=0)
+
+    USERNAME_FIELD = 'bilkent_id'
 
     @classmethod
     def get_serializer(cls):
