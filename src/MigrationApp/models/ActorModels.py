@@ -1,4 +1,9 @@
-from django.contrib.auth.models import AbstractUser
+from random import randint
+
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import UserManager
+from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.conf import settings
 
@@ -10,11 +15,43 @@ from django.conf import settings
 # relations - nullable problem ?
 from rest_framework import serializers
 
+def random():
+    return randint(1, 1000)
 
-class User(AbstractUser):
-    name = models.CharField(max_length=100, default='')
+class User(AbstractBaseUser):
+    username_validator = UnicodeUsernameValidator()
+
+    bilkent_id = models.CharField(max_length=10, help_text=_(
+            "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+        ),
+        validators=[username_validator], unique=True, default=random(), error_messages={
+            "unique": _("A user with that username already exists."),
+        },)  #int or string????
+
+    name = models.CharField(max_length=100, default='', unique=True)
     surname = models.CharField(max_length=100, default='')
     email = models.EmailField(max_length=100, default='')
+
+    is_staff = models.BooleanField(
+        _("staff status"),
+        default=False,
+        help_text=_("Designates whether the user can log into this admin site."),
+    )
+    is_active = models.BooleanField(
+        _("active"),
+        default=True,
+        help_text=_(
+            "Designates whether this user should be treated as active. "
+            "Unselect this instead of deleting accounts."
+        ),
+    )
+    date_joined = models.DateTimeField(_("date joined"), auto_now_add=True)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'bilkent_id'
+    EMAIL_FIELD = 'email'
+    REQUIRED_FIELDS = ['name', 'surname', 'email']
 
     @classmethod
     def get_serializer(cls):
@@ -31,12 +68,10 @@ class User(AbstractUser):
 
 
 class Student(User):
-    bilkent_id = models.CharField(max_length=10, unique=True, default='')  #int or string????
     department = models.CharField(max_length=10, default='')
     image = models.ImageField(upload_to='profile_pictures', blank=True, default=None)
     points = models.FloatField(verbose_name="Erasmus grade points out of 100", default=0)
 
-    USERNAME_FIELD = 'bilkent_id'
 
     @classmethod
     def get_serializer(cls):
