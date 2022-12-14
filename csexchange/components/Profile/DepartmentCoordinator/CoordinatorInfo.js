@@ -30,7 +30,7 @@ const CoordinatorInfo = (props) => {
       <Row className="mt-5">
         <Col className="col-12 d-flex justify-content-center align-items-center">
           <Alert variant="danger">
-            There are some students added files
+            Some students added files!
             <Badge className="ms-5" bg="dark">
               +5
             </Badge>

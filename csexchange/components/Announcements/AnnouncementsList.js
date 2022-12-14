@@ -16,11 +16,13 @@ const AnnouncementsList = (props) => {
           <h2>Date</h2>
         </Col>
       </Row>
-      <ListGroup >
-        {props.announcements.map((announ) => (
+      <ListGroup>
+        {props.announcements.map( (announ) => (
           <Announcement
-            statedBy={announ.statedBy}
-            description={announ.description}
+            announcer_name={announ.announcer_name}
+            announcer_surname={announ.announcer_surname}
+            context={announ.context}
+            text={announ.text}
             date={announ.date}
           ></Announcement>
         ))}

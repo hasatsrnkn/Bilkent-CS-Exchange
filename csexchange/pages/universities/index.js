@@ -5,44 +5,13 @@ import UniversitiesFilter from "../../components/Universities/UniversitiesFilter
 import { useState } from "react";
 import PointCalculator from "../../components/Universities/PointCalculator";
 import { API_UNIS_INFO_ENDPOINT } from "../api/api";
-const uni = [
-  {
-    name: "Bilkent Uni",
-    description:
-      "Bilkent Üniversitesi ya da resmî adıyla İhsan Doğramacı Bilkent Üniversitesi, Türkiye'nin başkenti Ankara'da yer alan vakıf üniversitesi. İhsan Doğramacı tarafından, İhsan Doğramacı Eğitim Vakfı, İhsan Doğramacı Sağlık Vakfı ve İhsan Doğramacı Bilim ve Araştırma Vakfı kararlarıyla 20 Ekim 1984'te, Türkiye'nin ilk vakıf üniversitesi olarak kurulmuştur.[11] Bilkent Üniversitesi, kuruluş amacını eğitim kalitesi, bilimsel araştırma ve yayınları ile kültür ve sanat faaliyetleri açısından dünyanın önde gelen üniversiteleri arasında yer almak olarak açıklamıştır.[1] Bu amaç doğrultusunda üniversiteye Bilim Kentinin kısaltılmışı olan Bilkent adı verilmiştir",
-    rating: 2.4,
-    department: "cs",
-    averagePoint: 80
-  },
-  {
-    name: "Anan Uni",
-    description:
-      "Bilkent Üniversitesi ya da resmî adıyla İhsan Doğramacı Bilkent Üniversitesi, Türkiye'nin başkenti Ankara'da yer alan vakıf üniversitesi. İhsan Doğramacı tarafından, İhsan Doğramacı Eğitim Vakfı, İhsan Doğramacı Sağlık Vakfı ve İhsan Doğramacı Bilim ve Araştırma Vakfı kararlarıyla 20 Ekim 1984'te, Türkiye'nin ilk vakıf üniversitesi olarak kurulmuştur.[11] Bilkent Üniversitesi, kuruluş amacını eğitim kalitesi, bilimsel araştırma ve yayınları ile kültür ve sanat faaliyetleri açısından dünyanın önde gelen üniversiteleri arasında yer almak olarak açıklamıştır.[1] Bu amaç doğrultusunda üniversiteye Bilim Kentinin kısaltılmışı olan Bilkent adı verilmiştir",
-    rating: 5,
-    department: "cs",
-    averagePoint: 50
-  },
-  {
-    name: "baba Uni",
-    description:
-      "Bilkent Üniversitesi ya da resmî adıyla İhsan Doğramacı Bilkent Üniversitesi, Türkiye'nin başkenti Ankara'da yer alan vakıf üniversitesi. İhsan Doğramacı tarafından, İhsan Doğramacı Eğitim Vakfı, İhsan Doğramacı Sağlık Vakfı ve İhsan Doğramacı Bilim ve Araştırma Vakfı kararlarıyla 20 Ekim 1984'te, Türkiye'nin ilk vakıf üniversitesi olarak kurulmuştur.[11] Bilkent Üniversitesi, kuruluş amacını eğitim kalitesi, bilimsel araştırma ve yayınları ile kültür ve sanat faaliyetleri açısından dünyanın önde gelen üniversiteleri arasında yer almak olarak açıklamıştır.[1] Bu amaç doğrultusunda üniversiteye Bilim Kentinin kısaltılmışı olan Bilkent adı verilmiştir",
-    rating: 5,
-    department: "ee",
-    averagePoint: 60
-  },
-  {
-    name: "cartcurt Uni",
-    description:
-      "Bilkent Üniversitesi ya da resmî adıyla İhsan Doğramacı Bilkent Üniversitesi, Türkiye'nin başkenti Ankara'da yer alan vakıf üniversitesi. İhsan Doğramacı tarafından, İhsan Doğramacı Eğitim Vakfı, İhsan Doğramacı Sağlık Vakfı ve İhsan Doğramacı Bilim ve Araştırma Vakfı kararlarıyla 20 Ekim 1984'te, Türkiye'nin ilk vakıf üniversitesi olarak kurulmuştur.[11] Bilkent Üniversitesi, kuruluş amacını eğitim kalitesi, bilimsel araştırma ve yayınları ile kültür ve sanat faaliyetleri açısından dünyanın önde gelen üniversiteleri arasında yer almak olarak açıklamıştır.[1] Bu amaç doğrultusunda üniversiteye Bilim Kentinin kısaltılmışı olan Bilkent adı verilmiştir",
-    rating: 5,
-    department: "me",
-    averagePoint: 50
-  },
-];
+import { loadingActions } from "../../store/loading";
+import { useDispatch } from "react-redux";
 
 const UniversitiesPage = (props) => {
   const [filteredUniDepartment, setFilteredUniDepartment] = useState("cs");
   const [studentPoint, setStudentPoint] = useState(0);
+  
 
   const filterChangeHandler = (selectedUnis) => {
     setFilteredUniDepartment(selectedUnis);
@@ -52,8 +21,8 @@ const UniversitiesPage = (props) => {
     setStudentPoint(thePoint);
   };
 
-  const filteredUnis = uni.filter((anUni) => {
-    return anUni.department == filteredUniDepartment;
+  const filteredUnis = props.universities.filter((anUni) => {
+    return anUni.department.toLowerCase() == filteredUniDepartment;
   });
 
   return (
@@ -80,16 +49,31 @@ const UniversitiesPage = (props) => {
 };
 
 export async function getStaticProps() {
-  const res = await fetch( API_UNIS_INFO_ENDPOINT );
+  const res = await fetch(API_UNIS_INFO_ENDPOINT);
   const data = await res.json();
+  const dispatch = useDispatch();
+  dispatch(loadingActions.setIsNotLoading());
+
   /* python manage.py runserver */
   return {
     props: {
       universities: data.map((uni) => ({
-        name: uni.name,
-        description: uni.description,
-        rating: uni.rating,
+        id: uni.university.id,
+        name: uni.university.name,
+        location: uni.university.location,
+        webSiteLink: uni.university.website_link,
+        taughtInEnglishInfo: uni.taught_in_english_info,
+        languageRequirements: uni.language_requirements,
+        description: uni.university.description,
+        rating: uni.university.rating,
         department: uni.department,
+        threshold: uni.threshold,
+        quota: uni.quota,
+        coordinator: {
+          id: uni.coordinator.id,
+          name: uni.coordinator.name,
+          surname: uni.coordinator.surname,
+        },
       })),
     },
     revalidate: 1,

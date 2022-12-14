@@ -29,7 +29,7 @@ const student = {
 };
 const studentProfilePage = (props) => {
   return (
-    <div>
+    <Row>
       <NavbarMenu></NavbarMenu>
       <Row>
         <Col className="col-2">
@@ -61,7 +61,7 @@ const studentProfilePage = (props) => {
           </Row>
         </Col>
       </Row>
-    </div>
+    </Row>
   );
 };
 

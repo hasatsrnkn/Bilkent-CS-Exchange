@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Nav, Form, Button } from "react-bootstrap";
+import { Nav, Form, Button, Row } from "react-bootstrap";
 import Navbar from "react-bootstrap/Navbar";
 import { useSelector, useDispatch } from "react-redux";
 import { authActions } from "../../store/auth";
@@ -7,14 +7,14 @@ import { authActions } from "../../store/auth";
 const NavbarMenu = (props) => {
   const dispatch = useDispatch();
   const isAuth = useSelector((state) => state.auth.isAuthenticated);
-  const user = useSelector((state) => state.auth.user);
+  const bilkentId = useSelector((state) => state.auth.bilkentId); /*değişcek*/
 
   const logoutHandler = () => {
     dispatch(authActions.logout());
   };
 
   return (
-    <Navbar bg="primary" variant="dark">
+    <Navbar bg="primary" className="ps-2" variant="dark">
       <Navbar.Brand className="ms-2">Erasmus Bilkent</Navbar.Brand>
       <Nav className="me-auto">
         <Link href="/universities" passHref legacyBehavior>
@@ -32,11 +32,9 @@ const NavbarMenu = (props) => {
           </Link>
         )}
         {isAuth && (
-          <Link href={`/student/profile/${user}`} passHref legacyBehavior>
-          <Nav.Link className="ms-5">
-            Profile
-          </Nav.Link>
-        </Link>
+          <Link href={`/student/profile/${bilkentId}`} passHref legacyBehavior>
+            <Nav.Link className="ms-5">Profile</Nav.Link>
+          </Link>
         )}
         {isAuth && (
           <Link href="/" passHref legacyBehavior>
@@ -46,7 +44,7 @@ const NavbarMenu = (props) => {
           </Link>
         )}
       </Nav>
-      <Form className="d-flex">
+      <Form className="d-flex me-5">
         <Form.Control
           type="search"
           placeholder="Search"

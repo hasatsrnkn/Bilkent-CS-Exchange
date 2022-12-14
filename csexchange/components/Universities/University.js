@@ -1,30 +1,40 @@
-import { Card, Col, ListGroup, Row, Alert } from "react-bootstrap";
+import { Card, Col, ListGroup, Row, Alert, Button } from "react-bootstrap";
 
 import Rating from "@mui/material/Rating";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 const University = (props) => {
   const [entered, setEntered] = useState("danger");
 
   useEffect(() => {
-    if (props.studentPoint - props.averagePoint > 7) {
+    if (props.studentPoint - props.threshold > 7) {
       setEntered("success");
-    } else if (Math.abs(props.studentPoint - props.averagePoint) <= 7) {
+    } else if (Math.abs(props.studentPoint - props.threshold) <= 7) {
       setEntered("warning");
-    } else if (props.averagePoint - props.studentPoint > 7) {
+    } else if (props.threshold - props.studentPoint > 7) {
       setEntered("danger");
     }
   }, [props.studentPoint]);
 
+  const nameSurname = props.coordinator.name + " " + props.coordinator.surname;
   return (
-    <ListGroup.Item key={props.name}>
+    <ListGroup.Item key={props.id}>
       <Card>
         <h1 className="text-danger">{props.name}</h1>
         <Row>
-          <p>{props.description}</p>
+          <big>{props.description}</big>
         </Row>
         <Row className="mt-3">
           <Col>
-            <h1>*MAP*</h1>
+            <Row>
+              <h4>Location: {props.location}</h4>
+            </Row>
+            <Row>
+              <h4>Quota: {props.quota}</h4>
+            </Row>
+            <Row>
+              <h4>Coordinator: {nameSurname}</h4>
+            </Row>
           </Col>
           <Col>
             <Row>
@@ -46,12 +56,27 @@ const University = (props) => {
             </Row>
           </Col>
           <Col>
-            <h1>Chart</h1>
+            <Row>
+              <h4>Taught In English: {props.taughtInEnglishInfo}</h4>
+            </Row>
+            <Row>
+              <h4>Languages: {props.languageRequirements}</h4>
+            </Row>
           </Col>
           <Col>
             <h1>reviews</h1>
           </Col>
-          <Col>go to uni page</Col>
+          <Col>
+            <Link href={props.webSiteLink} passHref legacyBehavior>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-item"
+              >
+                <Button>Go to University Page</Button>
+              </a>
+            </Link>
+          </Col>
         </Row>
       </Card>
     </ListGroup.Item>
