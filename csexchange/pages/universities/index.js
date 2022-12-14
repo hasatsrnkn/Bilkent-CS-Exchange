@@ -5,10 +5,13 @@ import UniversitiesFilter from "../../components/Universities/UniversitiesFilter
 import { useState } from "react";
 import PointCalculator from "../../components/Universities/PointCalculator";
 import { API_UNIS_INFO_ENDPOINT } from "../api/api";
+import { loadingActions } from "../../store/loading";
+import { useDispatch } from "react-redux";
 
 const UniversitiesPage = (props) => {
   const [filteredUniDepartment, setFilteredUniDepartment] = useState("cs");
   const [studentPoint, setStudentPoint] = useState(0);
+  
 
   const filterChangeHandler = (selectedUnis) => {
     setFilteredUniDepartment(selectedUnis);
@@ -48,6 +51,9 @@ const UniversitiesPage = (props) => {
 export async function getStaticProps() {
   const res = await fetch(API_UNIS_INFO_ENDPOINT);
   const data = await res.json();
+  const dispatch = useDispatch();
+  dispatch(loadingActions.setIsNotLoading());
+
   /* python manage.py runserver */
   return {
     props: {

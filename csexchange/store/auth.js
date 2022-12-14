@@ -4,6 +4,7 @@ const initialAuthState = {
   isAuthenticated: false,
   token: null,
   type: null,
+  bilkentId: null,
 };
 
 const authSlice = createSlice({
@@ -14,11 +15,13 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.token = action.payload.token;
       state.type = action.payload.type;
+      state.bilkentId = action.payload.bilkentId;
     },
     logout(state) {
       state.isAuthenticated = false;
       state.token = null;
       state.type = null;
+      state.bilkentId = null;
     },
   },
 });
