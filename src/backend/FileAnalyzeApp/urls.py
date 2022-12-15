@@ -16,7 +16,7 @@ Including another URLconf
 
 from django.urls import path
 from . import views
-from src import settings
+from backend import settings
 from django.conf.urls.static import static
 urlpatterns =[
 path("",views.Import_Excel_pandas,name="Import_Excel_pandas"),

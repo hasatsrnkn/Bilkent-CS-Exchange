@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from FileAnalyzeApp.models import ExcelStudents
-from MigrationApp.models.SystemModels import UniversityDepartment
-from MigrationApp.models.ActorModels import ApplyingStudent
-from MigrationApp.models.SystemModels import University
-from MigrationApp.constants import *
+from dbint.models.SystemModels import UniversityDepartment
+from dbint.models.ActorModels import ApplyingStudent
+from dbint.models.SystemModels import University
+from dbint.constants import *
 
 # Create your views here.
 def GetStudents(request):

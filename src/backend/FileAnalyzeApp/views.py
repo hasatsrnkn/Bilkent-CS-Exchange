@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from FileAnalyzeApp import *
-from MigrationApp import *
+from dbint import *
 from tablib import Dataset
 import openpyxl
 from http.client import HTTPResponse
