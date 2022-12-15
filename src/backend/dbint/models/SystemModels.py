@@ -132,12 +132,20 @@ class UniversityDepartment(models.Model):
     quota = models.IntegerField(default=0)
     language_requirements = models.CharField(max_length=40, blank=True, default='')
     coordinator = models.ForeignKey('dbint.DepartmentCoordinator',
+    # ADDED FOR PLACEMENT ALGORITHM
+    quotaPlacement = models.IntegerField(default=0)
+    # TODO: Departmant choices değil period choices olcak (fall - spring gibi)
+    availablePeriod = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=1, )
+    # ADDED FOR PLACEMENT ALGORITHM
                                     related_name='coordinator', on_delete=models.CASCADE, blank=False, default=None)
     threshold = models.IntegerField(default=0)
 
     # class Meta:
     # ordering = ['university.rating']
 
+    # TODO: MUST REMOVE !!!!!!!!! I CANNOT REACH API SO I USE IT. DEFINITELY BE DELETED
+    objects = models.Manager()
+    # TODO: MUST REMOVE !!!!!!!!! I CANNOT REACH API SO I USE IT. DEFINITELY BE DELETED
     def __str__(self):
         return self.id.__str__() + " - " + self.university.name + " : " + self.get_department_display()
 
@@ -149,6 +157,24 @@ class Review(models.Model):
     text = models.TextField(max_length=500, default='')
     rating = models.FloatField(default=0)
 
+class Document(models.Model):
+    documentName = models.CharField(max_length=100, default='')
+    type = models.CharField(max_length=10, default='pdf')
+    documentOwner = models.OneToOneField('MigrationApp.User', blank=False, null=False,
+                                      default=None,
+                                      on_delete=models.CASCADE)
+    date = models.DateTimeField(max_length=40, default=timezone.now)
+
+class PreApprovalFormContent(Document):
+    Name = models.CharField(max_length=100, default='')
+    Surname = models.CharField(max_length=100, default='')
+    IDNumber = models.IntegerField(max_length=15, default=0, blank=False)
+    Department = models.CharField(max_length=100, default='')
+    hostInst = models.CharField(max_length=100, default='')
+    academicYear = models.CharField(max_length=100, default='')
+    semester = models.CharField(max_length=100, default='')
+    #courses = models.ManyToManyField('MigrationApp.Course', related_name='courses', blank=True)
+    coordinatorName = models.CharField(max_length=100, default='')
 
 # not finished
 class Course(models.Model):

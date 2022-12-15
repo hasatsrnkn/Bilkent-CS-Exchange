@@ -86,6 +86,7 @@ class Management(User):
 
 class ApplyingStudent(Student):
     check_list = models.OneToOneField('dbint.ToDoList', blank=True, null=True,
+    universityPlaced = models.OneToOneField('MigrationApp.University', blank=True, null=True,
                                       default=None,
                                       on_delete=models.CASCADE)
     stu_depc = models.ForeignKey('dbint.DepartmentCoordinator', related_name='stu_depc', null=True, default=None,

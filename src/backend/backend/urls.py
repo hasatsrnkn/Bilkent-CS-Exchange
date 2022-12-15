@@ -18,7 +18,6 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('ForumApp.urls')),
@@ -26,6 +25,10 @@ urlpatterns = [
     path('api/', include('dbint.urls')),
     path('api/', include('LoginApp.urls')),
     path('api/', include('ProfileApp.urls'))
+    #TODO: Will be deleted this line (Move to fileanalyzer app)
+    path('', include('FileAnalyzeApp.urls')),
+    path('', include('PlacementApp.urls'))
+    #TODO: Will be deleted this line (Move to fileanalyzer app)
 ]
 
 if settings.DEBUG:

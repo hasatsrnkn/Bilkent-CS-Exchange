@@ -3,6 +3,7 @@ CS = 'CS' or 'cs'
 EE = 'EE' or 'ee'
 ME = 'ME' or 'me'
 DEPARTMENT_CHOICES = [(CS, 'CS'), (EE, 'EE'), (ME, 'ME')]
+TURKISH_DEPARTMENT = {'Bilgisayar Mühendisliği': CS,}
 DEPARTMENTS = [CS, EE, ME]
 
 ASTU = 'ApplyingStudent'
