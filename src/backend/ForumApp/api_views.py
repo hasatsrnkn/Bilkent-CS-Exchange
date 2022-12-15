@@ -45,14 +45,6 @@ class ForumMostViewedAPI(APIView):
         return Response(serializer.data)
 
 
-class ForumAllThreadsAPI(APIView):
-
-    def get(self, request, format=None):
-        threads = Thread.objects.all()
-        serializer = ThreadSerializer(threads, context={'reply_strategy': AllReplies()}, many=True)
-        return Response(serializer.data)
-
-
 # TODO: Looks fine but may change
 class ForumThreadAPI(APIView):
     """

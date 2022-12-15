@@ -7,7 +7,7 @@ from .models import *
 
 admin.site.register(User, UserAdmin)
 
-admin.site.register(ApplyingStudent, UserAdmin)
+admin.site.register(ApplyingStudent)
 admin.site.register(FormerStudent, UserAdmin)
 admin.site.register(DepartmentCoordinator, UserAdmin)
 admin.site.register(Instructor, UserAdmin)

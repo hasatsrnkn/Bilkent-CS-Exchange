@@ -124,9 +124,9 @@ class University(models.Model):
 
 # Department Specialized University ( NEW ) not finished
 class UniversityDepartment(models.Model):
-    university = models.OneToOneField('dbint.University', blank=False, null=False,
-                                      default=None, related_name='university',
-                                      on_delete=models.CASCADE)
+    university = models.ForeignKey('dbint.University', blank=False, null=False,
+                                   default=None, related_name='university',
+                                   on_delete=models.CASCADE)
     department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default='CS', )
     taught_in_english_info = models.CharField(max_length=150, blank=True, default='')
     quota = models.IntegerField(default=0)
@@ -136,7 +136,7 @@ class UniversityDepartment(models.Model):
     threshold = models.IntegerField(default=0)
 
     # class Meta:
-        # ordering = ['university.rating']
+    # ordering = ['university.rating']
 
     def __str__(self):
         return self.id.__str__() + " - " + self.university.name + " : " + self.get_department_display()

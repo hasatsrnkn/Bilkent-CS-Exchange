@@ -31,6 +31,9 @@ AUTH_USER_MODEL = 'dbint.User'
 ALLOWED_HOSTS = ['192.168.1.40', '127.0.0.1', '172.20.10.8']
 CORS_ORIGIN_ALLOW_ALL = True                    #?
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 60 * 60
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,7 +50,7 @@ INSTALLED_APPS = [
     'ForumApp',
     'AnnouncementApp',
     'LoginApp',
-    'UniInfoApp'
+    'ProfileApp'
 ]
 
 MIDDLEWARE = [

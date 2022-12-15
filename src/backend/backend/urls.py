@@ -23,9 +23,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('ForumApp.urls')),
     path('api/', include('AnnouncementApp.urls')),
-    path('api/', include('UniInfoApp.urls')),
-    path('api/', include('LoginApp.urls'))
-
+    path('api/', include('dbint.urls')),
+    path('api/', include('LoginApp.urls')),
+    path('api/', include('ProfileApp.urls'))
 ]
 
 if settings.DEBUG:
