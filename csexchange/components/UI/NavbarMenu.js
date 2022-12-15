@@ -32,7 +32,7 @@ const NavbarMenu = (props) => {
           </Link>
         )}
         {isAuth && (
-          <Link href={`/student/profile/${bilkentId}`} passHref legacyBehavior>
+          <Link href={`/student/myprofile/${bilkentId}`} passHref legacyBehavior>
             <Nav.Link className="ms-5">Profile</Nav.Link>
           </Link>
         )}
