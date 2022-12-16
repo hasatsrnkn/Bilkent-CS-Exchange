@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 import os
 
@@ -36,6 +36,17 @@ SESSION_COOKIE_AGE = 60 * 60
 
 # Application definition
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'knox.auth.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
+
+REST_KNOX = {
+    'TOKEN_TTL': timedelta(hours=1),
+}
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,13 +55,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework.authtoken',
+    'knox',
     'corsheaders',
     'dbint',
     'ForumApp',
     'AnnouncementApp',
     'LoginApp',
-    'ProfileApp'
+    'ProfileApp',
     'FileAnalyzeApp',
     'PlacementApp'
 ]
@@ -71,7 +82,6 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
         'DIRS': [BASE_DIR / 'templates', BASE_DIR]
         ,
         'APP_DIRS': True,

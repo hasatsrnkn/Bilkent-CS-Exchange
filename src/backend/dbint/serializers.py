@@ -1,6 +1,4 @@
 from abc import abstractmethod, ABC
-
-from django.contrib.auth.models import User
 from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
@@ -8,11 +6,12 @@ from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 import dbint
 from dbint.constants import *
 from dbint.models.SystemModels import *
-from dbint.models.ActorModels import User as Us, Instructor, DepartmentCoordinator, ApplyingStudent, \
+from dbint.models.ActorModels import User, Instructor, DepartmentCoordinator, ApplyingStudent, \
     ExchangeCoordinator, ExchangeOffice
 
 from rest_framework.fields import empty
 # commented out codes are copy-paste codes for testing purposes
+
 
 def get_serializer(user):
     ut = user.user_type
@@ -27,12 +26,12 @@ def get_serializer(user):
         return EXCCSerializer
     elif ut == EXCO:
         return EXCOSerializer
-    return UserSerializer  # return the current serializer if the model is not a student or teacher
+    return UserSerializer  # return the current serializer if the model is not a student or management
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Us
+        model = User
         fields = '__all__'
 
 
@@ -73,8 +72,9 @@ class ReplySerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField('get_user')
 
     def get_user(self, reply):
+        custom_user = reply.user.get_manager().get(id=reply.user.id)
         user_serializer_class = get_serializer(reply.user)
-        serializer = user_serializer_class(reply.user)
+        serializer = user_serializer_class(custom_user)
         return serializer.data
 
     class Meta:
@@ -148,8 +148,9 @@ class ThreadSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField('get_user')
 
     def get_user(self, thread):
+        custom_user = thread.user.get_manager().get(id=thread.user.id)
         user_serializer_class = get_serializer(thread.user)
-        serializer = user_serializer_class(thread.user)
+        serializer = user_serializer_class(custom_user)
         return serializer.data
 
     def reply_strategy(self, thread):
@@ -171,10 +172,9 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     announcer = serializers.SerializerMethodField('get_user')
 
     def get_user(self, announcement):
-        if (announcement.announcer.user_type == DEPC):
-            DepartmentCoordinator.objects.get(id=announcement.announcer.id)
+        custom_user = announcement.announcer.get_manager().get(id=announcement.announcer.id)
         user_serializer_class = get_serializer(announcement.announcer)
-        serializer = user_serializer_class(announcement.announcer)
+        serializer = user_serializer_class(custom_user)
         return serializer.data
 
     class Meta:
@@ -190,16 +190,7 @@ class UniversitySerializer(serializers.ModelSerializer):
 
 class UniversityDepartmentSerializer(serializers.ModelSerializer):
     university = UniversitySerializer(read_only=True)
-
-    #user_serializer_class = Us.get_serializer()
-    #former_students = user_serializer_class(read_only=True)
-
-    coordinator = serializers.SerializerMethodField('get_user')
-
-    def get_user(self, universitydepartment):
-        user_serializer_class = get_serializer(universitydepartment.coordinator)
-        serializer = user_serializer_class(universitydepartment.coordinator)
-        return serializer.data
+    coordinator = DEPCSerializer(read_only=True)
 
     class Meta:
         model = UniversityDepartment

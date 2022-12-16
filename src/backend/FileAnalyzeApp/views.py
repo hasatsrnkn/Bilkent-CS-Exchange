@@ -1,3 +1,5 @@
+import sys
+
 from django.shortcuts import render
 from FileAnalyzeApp import *
 from dbint import *
@@ -13,10 +15,12 @@ from PyPDF2 import PdfFileWriter, PdfFileReader
 import io
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-from docx import *
 from io import StringIO
 from docx.shared import Inches, Cm, Pt
 from django.http import HttpResponse
+
+from .resources import ExcelStudentsResource
+
 
 def index(request):
     if "GET" == request.method:
@@ -30,7 +34,7 @@ def index(request):
 
         # getting a particular sheet by name out of many sheets
         worksheet = wb["Placed"]
-        print >>sys.stderr, (worksheet)
+        print >> sys.stderr, (worksheet)
 
         excel_data = list()
         # iterating over the rows and
