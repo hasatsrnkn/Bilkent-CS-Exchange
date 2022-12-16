@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+from datetime import timedelta
 from pathlib import Path
 import os
 
@@ -31,7 +31,21 @@ AUTH_USER_MODEL = 'dbint.User'
 ALLOWED_HOSTS = ['192.168.1.40', '127.0.0.1', '172.20.10.8']
 CORS_ORIGIN_ALLOW_ALL = True                    #?
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_AGE = 60 * 60
+
 # Application definition
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'knox.auth.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
+
+REST_KNOX = {
+    'TOKEN_TTL': timedelta(hours=1),
+}
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -41,13 +55,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework.authtoken',
+    'knox',
     'corsheaders',
     'dbint',
     'ForumApp',
     'AnnouncementApp',
     'LoginApp',
-    'UniInfoApp'
+    'ProfileApp',
+    'FileAnalyzeApp',
+    'PlacementApp'
 ]
 
 MIDDLEWARE = [
@@ -66,7 +82,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
+        'DIRS': [BASE_DIR / 'templates', BASE_DIR]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -129,6 +145,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT =  os.path.join(BASE_DIR, "assets")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

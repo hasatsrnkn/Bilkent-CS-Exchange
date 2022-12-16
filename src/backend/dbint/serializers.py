@@ -1,19 +1,81 @@
 from abc import abstractmethod, ABC
-
-from django.contrib.auth.models import User
 from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
+
+import dbint
+from dbint.constants import *
 from dbint.models.SystemModels import *
-from dbint.models.ActorModels import User as Us
+from dbint.models.ActorModels import User, Instructor, DepartmentCoordinator, ApplyingStudent, \
+    ExchangeCoordinator, ExchangeOffice
 
 from rest_framework.fields import empty
 # commented out codes are copy-paste codes for testing purposes
 
 
+def get_serializer(user):
+    ut = user.user_type
+
+    if ut == DEPC:
+        return DEPCSerializer
+    elif ut == INST:
+        return INSTSerializer
+    elif ut == ASTU:
+        return ASTUSerializer
+    elif ut == EXCC:
+        return EXCCSerializer
+    elif ut == EXCO:
+        return EXCOSerializer
+    return UserSerializer  # return the current serializer if the model is not a student or management
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+
+class INSTSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Instructor
+        fields = ['first_name', 'last_name', 'email', 'department', 'user_type']
+
+
+class DEPCSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DepartmentCoordinator
+        fields = ['first_name', 'last_name', 'email', 'user_type', 'department']
+
+
+class EXCCSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExchangeCoordinator
+        fields = ['first_name', 'last_name', 'email', 'user_type']
+
+
+class EXCOSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExchangeOffice
+        fields = ['first_name', 'last_name', 'email', 'user_type']
+
+
+class ASTUSerializer(serializers.ModelSerializer):
+    stu_depc = DEPCSerializer(read_only=True)
+    stu_excc = EXCCSerializer(read_only=True)
+
+    class Meta:
+        model = ApplyingStudent
+        fields = ['username', 'first_name', 'last_name', 'email', 'department', 'user_type', 'stu_depc', 'points', 'stu_excc']
+
+
 class ReplySerializer(serializers.ModelSerializer):
-    user_serializer_class = Us.get_serializer()
-    user = user_serializer_class(read_only=True)
+    user = serializers.SerializerMethodField('get_user')
+
+    def get_user(self, reply):
+        custom_user = reply.user.get_manager().get(id=reply.user.id)
+        user_serializer_class = get_serializer(reply.user)
+        serializer = user_serializer_class(custom_user)
+        return serializer.data
 
     class Meta:
         model = Reply
@@ -79,22 +141,17 @@ class NoReplies(ReplyStrategy):
             None
 
 
-class aaa():
-
-    def get_replies(self, user):
-        user_serializer = user.get_serializer()
-        if user_serializer:
-            return user_serializer().data
-        else:
-            None
-
-
 # TODO: may need a look
 class ThreadSerializer(serializers.ModelSerializer):
 
     replies = serializers.SerializerMethodField('reply_strategy')
-    user_serializer_class = Us.get_serializer()
-    user = user_serializer_class(read_only=True)
+    user = serializers.SerializerMethodField('get_user')
+
+    def get_user(self, thread):
+        custom_user = thread.user.get_manager().get(id=thread.user.id)
+        user_serializer_class = get_serializer(thread.user)
+        serializer = user_serializer_class(custom_user)
+        return serializer.data
 
     def reply_strategy(self, thread):
         return self.context.get('reply_strategy').get_replies(thread)
@@ -111,8 +168,14 @@ class ThreadSerializer(serializers.ModelSerializer):
 
 
 class AnnouncementSerializer(serializers.ModelSerializer):
-    user_serializer_class = Us.get_serializer()
-    announcer = user_serializer_class(read_only=True)
+
+    announcer = serializers.SerializerMethodField('get_user')
+
+    def get_user(self, announcement):
+        custom_user = announcement.announcer.get_manager().get(id=announcement.announcer.id)
+        user_serializer_class = get_serializer(announcement.announcer)
+        serializer = user_serializer_class(custom_user)
+        return serializer.data
 
     class Meta:
         model = Announcement
@@ -127,12 +190,7 @@ class UniversitySerializer(serializers.ModelSerializer):
 
 class UniversityDepartmentSerializer(serializers.ModelSerializer):
     university = UniversitySerializer(read_only=True)
-
-    #user_serializer_class = Us.get_serializer()
-    #former_students = user_serializer_class(read_only=True)
-
-    user_serializer_class = Us.get_serializer()
-    coordinator = user_serializer_class(read_only=True)
+    coordinator = DEPCSerializer(read_only=True)
 
     class Meta:
         model = UniversityDepartment

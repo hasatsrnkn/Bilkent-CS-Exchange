@@ -124,20 +124,29 @@ class University(models.Model):
 
 # Department Specialized University ( NEW ) not finished
 class UniversityDepartment(models.Model):
-    university = models.OneToOneField('dbint.University', blank=False, null=False,
-                                      default=None, related_name='university',
-                                      on_delete=models.CASCADE)
+    university = models.ForeignKey('dbint.University', blank=False, null=False,
+                                   default=None, related_name='university',
+                                   on_delete=models.CASCADE)
     department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default='CS', )
     taught_in_english_info = models.CharField(max_length=150, blank=True, default='')
     quota = models.IntegerField(default=0)
     language_requirements = models.CharField(max_length=40, blank=True, default='')
-    coordinator = models.ForeignKey('dbint.DepartmentCoordinator',
-                                    related_name='coordinator', on_delete=models.CASCADE, blank=False, default=None)
+    coordinator = models.ForeignKey('dbint.DepartmentCoordinator', related_name='coordinator',
+                                    on_delete=models.CASCADE, blank=False, default=None)
+    # ADDED FOR PLACEMENT ALGORITHM
+    quotaPlacement = models.IntegerField(default=0)
+    # TODO: Departmant choices değil period choices olcak (fall - spring gibi)
+    availablePeriod = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=1, )
+    # ADDED FOR PLACEMENT ALGORITHM
+
     threshold = models.IntegerField(default=0)
 
     # class Meta:
-        # ordering = ['university.rating']
+    # ordering = ['university.rating']
 
+    # TODO: MUST REMOVE !!!!!!!!! I CANNOT REACH API SO I USE IT. DEFINITELY BE DELETED
+    objects = models.Manager()
+    # TODO: MUST REMOVE !!!!!!!!! I CANNOT REACH API SO I USE IT. DEFINITELY BE DELETED
     def __str__(self):
         return self.id.__str__() + " - " + self.university.name + " : " + self.get_department_display()
 
@@ -148,6 +157,27 @@ class Review(models.Model):
     reviewer = models.ForeignKey('dbint.User', on_delete=models.CASCADE)
     text = models.TextField(max_length=500, default='')
     rating = models.FloatField(default=0)
+
+
+class Document(models.Model):
+    documentName = models.CharField(max_length=100, default='')
+    type = models.CharField(max_length=10, default='pdf')
+    documentOwner = models.OneToOneField('dbint.User', blank=False, null=False,
+                                      default=None,
+                                      on_delete=models.CASCADE)
+    date = models.DateTimeField(max_length=40, default=timezone.now)
+
+
+class PreApprovalFormContent(Document):
+    Name = models.CharField(max_length=100, default='')
+    Surname = models.CharField(max_length=100, default='')
+    IDNumber = models.IntegerField(default=0, blank=False)
+    Department = models.CharField(max_length=100, default='')
+    hostInst = models.CharField(max_length=100, default='')
+    academicYear = models.CharField(max_length=100, default='')
+    semester = models.CharField(max_length=100, default='')
+    #courses = models.ManyToManyField('dbint.Course', related_name='courses', blank=True)
+    coordinatorName = models.CharField(max_length=100, default='')
 
 
 # not finished
