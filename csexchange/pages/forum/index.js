@@ -50,8 +50,8 @@ export async function getStaticProps() {
     props: {
       threads: homeThreads.map((thread) => ({
         users: {
-          name: thread.user.name,
-          surname: thread.user.surname,
+          name: thread.user.first_name,
+          surname: thread.user.last_name,
         },
         header: thread.header,
         id: thread.id,
@@ -63,8 +63,8 @@ export async function getStaticProps() {
         allReplies: false,
         replies: thread.replies.map((reply) => ({
           user: {
-            name: reply.user.name,
-            surname: reply.user.surname,
+            name: reply.user.first_name,
+            surname: reply.user.last_name,
           },
           text: reply.text,
           date: reply.date,

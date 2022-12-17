@@ -5,7 +5,7 @@ import store from "../store/index";
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistStore } from "redux-persist";
 
-let persistor = persistStore(store,  {blacklist: ['loading']} );
+let persistor = persistStore(store );
 
 function MyApp({ Component, pageProps }) {
   return (

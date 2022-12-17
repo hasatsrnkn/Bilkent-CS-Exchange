@@ -23,8 +23,8 @@ export async function getStaticProps() {
   return {
     props: {
       announcements: data.map((announcement) => ({
-        announcer_name: announcement.announcer.name,
-        announcer_surname: announcement.announcer.surname,
+        announcer_name: announcement.announcer.first_name,
+        announcer_surname: announcement.announcer.last_name,
         context: announcement.context,
         text: announcement.text,
         date: announcement.date,

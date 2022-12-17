@@ -1,10 +1,11 @@
 import NavbarMenu from "../../components/UI/NavbarMenu";
 import { Col, Row } from "react-bootstrap";
 import Forum from "../../components/ForumPage/Forum";
-import  { API_FORUM_ENDPOINT } from "../api/api";
+import  { API_FORUM_ENDPOINT,API_BASE_URL } from "../api/api";
+import { Fragment } from "react";
 const questionPage = (props) => {
   return (
-    <div>
+    <Fragment>
       <NavbarMenu></NavbarMenu>
       <Col className="col-9">
         <Forum
@@ -23,12 +24,12 @@ const questionPage = (props) => {
       </Col>
       <Col className="col-3">
       </Col>
-    </div>
+    </Fragment>
   );
 };
 
 export async function getStaticPaths() {
-  const res = await fetch(API_FORUM_ENDPOINT+"all-threads/");
+  const res = await fetch(API_BASE_URL+"all-threads/");
   const data = await res.json();
 
   return {
@@ -46,8 +47,8 @@ export async function getStaticProps(context) {
     props: {
       threads: {
         users: {
-          name: data.user.name,
-          surname: data.user.surname,
+          name: data.user.first_name,
+          surname: data.user.last_name,
         },
         header: data.header,
         id: data.id,
@@ -59,8 +60,8 @@ export async function getStaticProps(context) {
         allReplies: true,
         replies: data.replies.map((reply) => ({
           user: {
-            name: reply.user.name,
-            surname: reply.user.surname,
+            name: reply.user.first_name,
+            surname: reply.user.last_name,
           },
           text: reply.text,
           date: reply.date,

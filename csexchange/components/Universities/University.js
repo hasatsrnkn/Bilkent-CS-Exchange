@@ -7,11 +7,11 @@ const University = (props) => {
   const [entered, setEntered] = useState("danger");
 
   useEffect(() => {
-    if (props.studentPoint - props.threshold > 7) {
+    if (props.studentPoint - props.threshold > 5) {
       setEntered("success");
-    } else if (Math.abs(props.studentPoint - props.threshold) <= 7) {
+    } else if (Math.abs(props.studentPoint - props.threshold) <= 5) {
       setEntered("warning");
-    } else if (props.threshold - props.studentPoint > 7) {
+    } else if (props.threshold - props.studentPoint > 5) {
       setEntered("danger");
     }
   }, [props.studentPoint]);

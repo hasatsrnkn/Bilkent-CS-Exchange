@@ -55,12 +55,12 @@ const MainPageForm = (props) => {
         dispatch(
           authActions.login({
             token: data.token,
-            type: data.type,
-            bilkentId: bilkentId,
+            type: data.type.toLowerCase(),
+            userID: data.id,
           })
         );
         const profileType = data.type.toLowerCase();
-        router.push(`${profileType}/myprofile/` + bilkentId);
+        router.push(`${profileType}/myprofile/` + data.id);
       })
       .catch((err) => {
         alert(err.message);

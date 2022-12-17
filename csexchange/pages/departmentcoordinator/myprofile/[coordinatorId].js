@@ -3,6 +3,8 @@ import { Col, Row } from "react-bootstrap";
 import PersonalInfo from "../../../components/Profile/PersonalInfo";
 import ToDoList from "../../../components/Profile/ToDoList/ToDoList";
 import CoordinatorInfo from "../../../components/Profile/DepartmentCoordinator/CoordinatorInfo";
+import { API_BASE_URL } from "../../api/api";
+import { Fragment } from "react";
 const coordinator = {
   name: "Can",
   surname: "Alkan",
@@ -42,7 +44,7 @@ const coordinator = {
 
 const CoordinatorProfilePage = (props) => {
   return (
-    <div>
+    <Fragment>
       <NavbarMenu></NavbarMenu>
       <Row>
         <Col className="col-2">
@@ -72,8 +74,26 @@ const CoordinatorProfilePage = (props) => {
           </Row>
         </Col>
       </Row>
-    </div>
+    </Fragment>
   );
 };
+
+export async function getStaticPaths() {
+  const res = await fetch(API_BASE_URL+"all-threads/");
+  const data = await res.json();
+
+  return {
+    fallback: false,
+    paths: data.map((coordinator) => ({
+      params: { coordinatorId: coordinator.id.toString() },
+    })),
+  };
+}
+
+export async function getStaticProps() {
+  return {
+    props: {},
+  };
+}
 
 export default CoordinatorProfilePage;
