@@ -10,8 +10,23 @@ def update_thread_reply_count(sender, instance, created=False, **kwargs):
         # Increment the reply_count field of the associated thread
         instance.thread.reply_count += 1
     else:
-        # Increment the reply_count field of the associated thread
+        # Decrement the reply_count field of the associated thread
         instance.thread.reply_count -= 1
 
     instance.thread.save()
+
+
+@receiver(post_save, sender='dbint.Review')
+@receiver(post_delete, sender='dbint.Review')
+def update_uni_review_count(sender, instance, created=False, **kwargs):
+    if created:
+        instance.university.review_count += 1
+        instance.university.calculate_rating()
+    else:
+        instance.university.review_count -= 1
+        instance.university.calculate_rating()
+
+    instance.university.save()
+
+
 

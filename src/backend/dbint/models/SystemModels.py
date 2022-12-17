@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.db.models.signals import post_save
 
 from dbint.constants import DEPARTMENT_CHOICES
-from dbint.signals import update_thread_reply_count
+from dbint.signals import update_thread_reply_count, update_uni_review_count
 from dbint import constants
 
 
@@ -14,6 +14,8 @@ from dbint import constants
 # delete options should be reviewed
 # relations - nullable problem ?
 # more departments should be added
+post_save.connect(update_thread_reply_count, sender='dbint.Reply')
+post_save.connect(update_uni_review_count, sender='dbint.Review')
 
 
 class Chat(models.Model):
@@ -77,9 +79,6 @@ class Thread(models.Model):
         ordering = ['start_date']
 
 
-post_save.connect(update_thread_reply_count, sender='dbint.Reply')
-
-
 class Reply(models.Model):
     thread = models.ForeignKey('dbint.Thread', related_name='replies', on_delete=models.CASCADE, default='')
     user = models.ForeignKey('dbint.User', on_delete=models.CASCADE)
@@ -102,6 +101,15 @@ class ToDoList(models.Model):
         verbose_name = 'TODO List'
 
 
+class ListItem(models.Model):
+    list = models.ForeignKey('dbint.ToDoList', blank=True, null=False,
+                             related_name='items',
+                             on_delete=models.CASCADE)
+    text = models.CharField(max_length=100, default='', blank=True)
+    completed = models.BooleanField(default=False)
+    deadline = models.DateTimeField(verbose_name="The task should be completed before this date")
+
+
 # not finished
 class University(models.Model):
     name = models.CharField(max_length=100, default='')
@@ -110,16 +118,27 @@ class University(models.Model):
     website_link = models.CharField(max_length=100, default='')
     contact = models.EmailField(max_length=100, default='')
     rating = models.FloatField(default=0.0)
-    reviewCount = models.IntegerField(default=0)
+    review_count = models.IntegerField(default=0)
 
     # TODO: Check deadline line. This line cannot be added automatically.
+
+    def __str__(self):
+        return self.id.__str__() + " - " + self.name
+
+    def calculate_rating(self):
+        sum = 0.0
+        if self.review_count <= 0:
+            self.rating = 0
+        else:
+            reviews_of_uni = self.reviews.all()
+            for rev in reviews_of_uni:
+                if not (rev.rating > 5 or rev.rating < 0):
+                    sum += rev.rating
+            self.rating = sum / self.review_count
 
     class Meta:
         verbose_name_plural = 'Universities'
         ordering = ['rating']
-
-    def __str__(self):
-        return self.id.__str__() + " - " + self.name
 
 
 # Department Specialized University ( NEW ) not finished
@@ -146,6 +165,7 @@ class UniversityDepartment(models.Model):
 
     # TODO: MUST REMOVE !!!!!!!!! I CANNOT REACH API SO I USE IT. DEFINITELY BE DELETED
     objects = models.Manager()
+
     # TODO: MUST REMOVE !!!!!!!!! I CANNOT REACH API SO I USE IT. DEFINITELY BE DELETED
     def __str__(self):
         return self.id.__str__() + " - " + self.university.name + " : " + self.get_department_display()
@@ -153,18 +173,22 @@ class UniversityDepartment(models.Model):
 
 # University review ( NEW )
 class Review(models.Model):
-    university = models.ForeignKey('dbint.University', on_delete=models.CASCADE, blank=False)
+    university = models.ForeignKey('dbint.University', on_delete=models.CASCADE, blank=False, related_name='reviews')
     reviewer = models.ForeignKey('dbint.User', on_delete=models.CASCADE)
     text = models.TextField(max_length=500, default='')
     rating = models.FloatField(default=0)
+    date = models.DateTimeField(max_length=40, auto_now_add=True)
+
+    def __str__(self):
+        return self.id.__str__() + " - Review to: " + self.university.name
 
 
 class Document(models.Model):
     documentName = models.CharField(max_length=100, default='')
     type = models.CharField(max_length=10, default='pdf')
     documentOwner = models.OneToOneField('dbint.User', blank=False, null=False,
-                                      default=None,
-                                      on_delete=models.CASCADE)
+                                         default=None,
+                                         on_delete=models.CASCADE)
     date = models.DateTimeField(max_length=40, default=timezone.now)
 
 
@@ -176,7 +200,7 @@ class PreApprovalFormContent(Document):
     hostInst = models.CharField(max_length=100, default='')
     academicYear = models.CharField(max_length=100, default='')
     semester = models.CharField(max_length=100, default='')
-    #courses = models.ManyToManyField('dbint.Course', related_name='courses', blank=True)
+    # courses = models.ManyToManyField('dbint.Course', related_name='courses', blank=True)
     coordinatorName = models.CharField(max_length=100, default='')
 
 

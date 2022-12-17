@@ -1,9 +1,11 @@
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import Permission
 
 from .models import *
 # Register your models here.
+from .models.SystemModels import ListItem
 
 
 class ASTUAdmin(UserAdmin):
@@ -16,7 +18,7 @@ class ASTUAdmin(UserAdmin):
 class FSTUAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
         ('Student Fields', {'fields': ('department', 'image', 'points')}),
-        ('FSTU Fields', {'fields': ('uni_visited', 'begin_date', 'end_date')}),
+        ('FSTU Fields', {'fields': ('uni_visited', 'begin_date')}),
     )
 
 
@@ -34,19 +36,27 @@ class INSTAdmin(UserAdmin):
     )
 
 
+class EXCCAdmin(UserAdmin):
+    fieldsets = UserAdmin.fieldsets + (
+        ('Management Fields', {'fields': ('image', 'check_list')}),
+    )
+
+
 admin.site.register(User, UserAdmin)
 
 admin.site.register(ApplyingStudent, ASTUAdmin)
 admin.site.register(FormerStudent, FSTUAdmin)
 admin.site.register(DepartmentCoordinator, DEPCAdmin)
 admin.site.register(Instructor, INSTAdmin)
-admin.site.register(ExchangeCoordinator, UserAdmin)
+admin.site.register(ExchangeCoordinator, EXCCAdmin)
 admin.site.register(ExchangeOffice, UserAdmin)
 
 admin.site.register(Notification)
 admin.site.register(ToDoList)
+admin.site.register(ListItem)
 admin.site.register(University)
 admin.site.register(UniversityDepartment)
+admin.site.register(Review)
 admin.site.register(Chat)
 admin.site.register(Message)
 admin.site.register(Announcement)
@@ -54,3 +64,4 @@ admin.site.register(Thread)
 admin.site.register(Reply)
 
 admin.site.register(Course)
+admin.site.register(Permission)
