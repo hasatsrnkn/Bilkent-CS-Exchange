@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.db.models.signals import post_save
 
 from dbint.constants import DEPARTMENT_CHOICES
+from dbint.constants import PERIOD_CHOICES
 from dbint.signals import update_thread_reply_count
 from dbint import constants
 
@@ -17,19 +18,20 @@ from dbint import constants
 
 
 class Chat(models.Model):
-    sender = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
-                               related_name='sender', default=None)
-    receiver = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
-                                 related_name='receiver', default=None)
-    # TODO: Use user1 and user2 because sender and receiver is not constant on chat (Just change names).
+    user1 = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
+                               related_name='user1', default=None)
+    user2 = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
+                                 related_name='user2', default=None)
 
 
 class Message(models.Model):
+    sender = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
+                               related_name='sender', default=None)
+    receiver = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
+                               related_name='receiver', default=None)
     text = models.CharField(max_length=500, default='')
     send_date = models.DateTimeField(max_length=40, auto_now_add=True)
     chat = models.ForeignKey('dbint.Chat', on_delete=models.CASCADE)
-    # TODO: add sender and receiver because it is important to show who is who on chat.
-    # TODO: Is 500 length okay for message context? If so, leave it.
 
 
 class Notification(models.Model):
@@ -136,7 +138,7 @@ class UniversityDepartment(models.Model):
     # ADDED FOR PLACEMENT ALGORITHM
     quotaPlacement = models.IntegerField(default=0)
     # TODO: Departmant choices değil period choices olcak (fall - spring gibi)
-    availablePeriod = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=1, )
+    availablePeriod = models.CharField(max_length=10, choices=PERIOD_CHOICES, default='FALL', )
     # ADDED FOR PLACEMENT ALGORITHM
 
     threshold = models.IntegerField(default=0)
@@ -183,5 +185,28 @@ class PreApprovalFormContent(Document):
 # not finished
 class Course(models.Model):
     name = models.CharField(max_length=100, default='')
+    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default='CS', )
     code = models.CharField(max_length=10, default='', blank=True)
     credits = models.FloatField(default=0)
+    syllabus_link = models.CharField(max_length=300, default='')
+
+class ForeignCourse(models.Model):
+    #Course'a child class olarak atayınca hata veriyor.
+    name = models.CharField(max_length=100, default='')
+    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default='CS', )
+    code = models.CharField(max_length=10, default='', blank=True)
+    credits = models.FloatField(default=0)
+    syllabus_link = models.CharField(max_length=300, default='')
+    university = models.ForeignKey('dbint.University', blank=False, null=False,
+                                   default=None, related_name='foreign_course_university',
+                                   on_delete=models.CASCADE)
+
+
+class CourseRelation(models.Model):
+    #TODO: bilkent_course objesinden departmanlar ve instructorlar çekilir ve ona göre ilgili
+    # departman koordinatörüne ve instructora gösterilir.
+    bilkent_course = models.ForeignKey('dbint.Course', related_name='bilkent_course', default=None,
+                                    on_delete=models.CASCADE)
+    foreign_course = models.ForeignKey('dbint.ForeignCourse', related_name='foreign_course', default=None,
+                                    on_delete=models.CASCADE)
+    approved_status = models.BooleanField(default=False)
