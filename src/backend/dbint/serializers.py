@@ -26,8 +26,10 @@ class UserSerializer(serializers.ModelSerializer):
 # TODO: add courses field, checklist
 class INSTSerializerPriv(serializers.ModelSerializer):
     # courses = course
-    # check_list =
+    check_list = serializers.SerializerMethodField('get_todolist')
 
+    def get_todolist(self, applyingstudent):
+        return ToDoListSerializer(applyingstudent.check_list).data
     class Meta:
         model = Instructor
         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'department', 'image', 'check_list', 'courses',
@@ -37,7 +39,6 @@ class INSTSerializerPriv(serializers.ModelSerializer):
 # TODO: add courses field
 class INSTSerializer(serializers.ModelSerializer):
     # courses = course
-    # check_list =
 
     class Meta:
         model = Instructor
@@ -48,6 +49,17 @@ class INSTSerializer(serializers.ModelSerializer):
 class DEPCSerializerPriv(serializers.ModelSerializer):
     image = serializers.ImageField()
     assigned_unis = serializers.SerializerMethodField('get_unis')
+    check_list = serializers.SerializerMethodField('get_todolist')
+    assigned_students = serializers.SerializerMethodField('get_students')
+
+    def get_todolist(self, departmentcoordinator):
+        return ToDoListSerializer(departmentcoordinator.check_list).data
+
+    def get_students(self, departmentcoordinator):
+        data = []
+        students = departmentcoordinator.assigned_students.all()
+
+        return ASTUSerializer(students, many=True).data
 
     def get_unis(self, departmentcoordinator):
         data = []
@@ -61,7 +73,7 @@ class DEPCSerializerPriv(serializers.ModelSerializer):
     class Meta:
         model = DepartmentCoordinator
         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'department', 'image', 'check_list',
-                  'user_type', 'assigned_unis']
+                  'user_type', 'assigned_unis', 'assigned_students']
 
 
 class DEPCSerializer(serializers.ModelSerializer):
@@ -73,6 +85,11 @@ class DEPCSerializer(serializers.ModelSerializer):
 
 
 class EXCCSerializerPriv(serializers.ModelSerializer):
+    check_list = serializers.SerializerMethodField('get_todolist')
+
+    def get_todolist(self, applyingstudent):
+        return ToDoListSerializer(applyingstudent.check_list).data
+
     class Meta:
         model = ExchangeCoordinator
         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'image', 'check_list', 'user_type']
@@ -102,6 +119,10 @@ class ASTUSerializerPriv(serializers.ModelSerializer):
     stu_depc = DEPCSerializer(read_only=True)
     stu_excc = EXCCSerializer(read_only=True)
     applied_university = serializers.SerializerMethodField('get_uni_dep')
+    check_list = serializers.SerializerMethodField('get_todolist')
+
+    def get_todolist(self, applyingstudent):
+        return ToDoListSerializer(applyingstudent.check_list).data
 
     def get_uni_dep(self, applyingstudent):
         data = UniversitySerializer(applyingstudent.applied_university).data
@@ -339,11 +360,16 @@ class ReviewSerializer(serializers.ModelSerializer):
 class ToDoListSerializer(serializers.ModelSerializer):
     items = serializers.SerializerMethodField('get_items')
 
+    class Meta:
+        model = ToDoList
+        fields = ['items']
+
     def get_items(self, todolist):
-        return ListItemSerializer(todolist.items, many=True)
+        return ListItemSerializer(todolist.items, many=True).data
 
 
 class ListItemSerializer(serializers.ModelSerializer):
     class Meta:
+        model = ListItem
         fields = ['text', 'completed', 'deadline']
 

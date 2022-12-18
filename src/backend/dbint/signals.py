@@ -10,9 +10,15 @@ from django.dispatch import receiver
 @receiver(post_save, sender='dbint.User')
 def add_user_to_default_group(sender, instance, created=False, **kwargs):
     if created:
-        instance.groups.add(Group.objects.get(name='Users'))
-
-    instance.save()
+        my_group = Group.objects.get(name='Users')
+        my_group.user_set.add(instance)
+        print(my_group.user_set)
+        my_group.save()
+    my_group = Group.objects.get(name='a')
+    my_group.user_set.add(instance)
+    print(my_group.user_set)
+    my_group.save()
+    print(instance.groups)
 
 @receiver(post_save, sender='dbint.Reply')
 @receiver(post_delete, sender='dbint.Reply')
@@ -59,6 +65,7 @@ def create_notf_for_announcement(sender, instance, created=False, **kwargs):
                                                               seen=False, type='Announcement')
             notificationCreated.save()
 
+
 @receiver(post_save, sender='dbint.Message')
 def create_notf_for_message(sender, instance, created=False, **kwargs):
     if created:
@@ -66,6 +73,7 @@ def create_notf_for_message(sender, instance, created=False, **kwargs):
         notificationCreated = Notification.objects.create(text=notificationText, user=instance.receiver,
                                                           seen=False, type='Message')
         notificationCreated.save()
+
 
 @receiver(post_save, sender='dbint.Document')
 def create_notf_for_document(sender, instance, created=False, **kwargs):

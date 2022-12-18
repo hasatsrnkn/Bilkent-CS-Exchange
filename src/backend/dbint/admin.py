@@ -1,11 +1,13 @@
-
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Permission
+from dbint.signals import *
 
 from .models import *
 from dbint.models.SystemModels import Document
 from dbint.models.SystemModels import ListItem
+
+
 # Register your models here.
 
 
@@ -68,10 +70,7 @@ admin.site.register(Reply)
 admin.site.register(Course)
 admin.site.register(Permission)
 
-from django.db.models.signals import post_save
-from django.db.models.signals import post_delete
-from dbint.signals import *
-
+post_save.connect(add_user_to_default_group, sender='dbint.User')
 post_save.connect(update_thread_reply_count, sender='dbint.Reply')
 post_save.connect(update_uni_review_count, sender='dbint.Review')
 post_save.connect(create_notf_for_announcement, sender='dbint.Announcement')

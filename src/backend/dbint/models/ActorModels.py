@@ -1,7 +1,4 @@
-from django.contrib.auth.models import UserManager, AbstractUser, Permission, Group
-from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.db.models.signals import post_save
-from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 
@@ -26,10 +23,6 @@ class User(AbstractUser):
             "unique": _("A user with that username already exists."),
         },)  #int or string????
     '''
-
-    def save(self, *args, **kwargs):
-
-        super(AbstractUser, self).save(*args, **kwargs)
 
     def get_manager(self):
         if self.user_type == ASTU:
@@ -72,7 +65,7 @@ class ExchangeOffice(User):
         if not self.pk:
             self.user_type = EXCO
 
-        super(User, self).save(*args, **kwargs)
+        super(ExchangeOffice, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Exchange Office Account'
@@ -92,7 +85,7 @@ class Management(User):
 class ApplyingStudent(Student):
     check_list = models.OneToOneField('dbint.ToDoList', blank=True, null=True, default=None, related_name='astu_owner',
                                       on_delete=models.CASCADE)
-    stu_depc = models.ForeignKey('dbint.DepartmentCoordinator', related_name='stu_depc', null=True, default=None,
+    stu_depc = models.ForeignKey('dbint.DepartmentCoordinator', related_name='assigned_students', null=True, default=None,
                                  on_delete=models.CASCADE)
     stu_excc = models.ForeignKey('dbint.ExchangeCoordinator', related_name='stu_excc', null=True, default=None,
                                  on_delete=models.CASCADE)
@@ -104,7 +97,7 @@ class ApplyingStudent(Student):
         if not self.pk:
             self.user_type = ASTU
 
-        super(Student, self).save(*args, **kwargs)
+        super(ApplyingStudent, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Applying Student'
@@ -122,7 +115,7 @@ class FormerStudent(Student):
         if not self.pk:
             self.user_type = FSTU
 
-        super(Student, self).save(*args, **kwargs)
+        super(FormerStudent, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Former Student'
@@ -136,7 +129,7 @@ class DepartmentCoordinator(Management):
         if not self.pk:
             self.user_type = DEPC
 
-        super(Management, self).save(*args, **kwargs)
+        super(DepartmentCoordinator, self).save(*args, **kwargs)
 
     def __str__(self):
         return '(' + self.id.__str__() + ')' + \
@@ -157,7 +150,7 @@ class Instructor(Management):
         if not self.pk:
             self.user_type = INST
 
-        super(Management, self).save(*args, **kwargs)
+        super(Instructor, self).save(*args, **kwargs)
 
     def __str__(self):
         return '(' + self.id.__str__() + ')' + \
@@ -174,7 +167,7 @@ class ExchangeCoordinator(Management):
         if not self.pk:
             self.user_type = EXCC
 
-        super(Management, self).save(*args, **kwargs)
+        super(ExchangeCoordinator, self).save(*args, **kwargs)
 
     def __str__(self):
         return '(' + self.id.__str__() + ')' + \

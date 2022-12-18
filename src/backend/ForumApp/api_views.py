@@ -4,6 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import HTTP_401_UNAUTHORIZED
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from hitcount.models import HitCount
+from hitcount.views import HitCountMixin
 
 from dbint.constants import DEPARTMENTS
 from dbint.models.SystemModels import Reply, Thread
@@ -72,10 +74,21 @@ class ForumThreadAPI(APIView):
     """
 
     def get(self, request, id_to_search, format=None):
-        threads = Thread.objects.get(id=id_to_search)
+        thread = Thread.objects.get(id=id_to_search)
 
-        if threads is not None:
-            serializer = ThreadSerializer(threads, context={'reply_strategy': AllReplies()})
+        # first get the related HitCount object for your model object
+        hit_count = HitCount.objects.get_for_object(thread)
+
+        # next, you can attempt to count a hit and get the response
+        # you need to pass it the request object as well
+        hit_count_response = HitCountMixin.hit_count(request, hit_count)
+
+        if hit_count_response:
+            thread.view_count += 1
+            thread.save()
+
+        if thread is not None:
+            serializer = ThreadSerializer(thread, context={'reply_strategy': AllReplies()})
             return Response(serializer.data, status=status.HTTP_302_FOUND)
 
         return Response(ThreadSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
