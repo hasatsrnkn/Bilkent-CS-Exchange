@@ -10,9 +10,7 @@ class UniReviewsAPI(APIView):
     def get(self, request, id_to_search, format=None):
         uni = University.objects.get(id=id_to_search)
         reviews = Review.objects.filter(university=uni)
-        if reviews:
-            serializer = ReviewSerializer(reviews, many=True)
-            return Response(serializer.data, status=HTTP_200_OK)
-        else:
-            return Response({}, status=HTTP_200_OK)
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data, status=HTTP_200_OK)
+
 

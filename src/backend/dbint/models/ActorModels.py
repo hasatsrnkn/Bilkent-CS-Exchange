@@ -28,8 +28,6 @@ class User(AbstractUser):
     '''
 
     def save(self, *args, **kwargs):
-        if not self.id:
-            self.groups.add(Group.objects.get(name='Users'))
 
         super(AbstractUser, self).save(*args, **kwargs)
 
@@ -114,7 +112,7 @@ class ApplyingStudent(Student):
 
 
 class FormerStudent(Student):
-    uni_visited = models.ForeignKey('dbint.UniversityDepartment', related_name='former_students', null=True, blank=True,
+    uni_visited = models.ForeignKey('dbint.University', related_name='former_students', null=True, blank=True,
                                     on_delete=models.CASCADE)
     begin_date = models.DateField(max_length='20', default=None, null=True)
     end_date = models.DateField(max_length='20', auto_now_add=True)

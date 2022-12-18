@@ -5,6 +5,6 @@ from django.conf.urls.static import static
 
 # [\w]+ - all characters
 urlpatterns = [
-    re_path(r'^my-profile/student/$', MyProfileAPI.as_view(), name='profile'),
+    re_path(r'^my-profile/$', MyProfileAPI.as_view(), name='profile'),
     re_path(r'^profile/(?P<id_to_search>\d+)/$', ProfileAPI.as_view(), name='profile'),
 ]

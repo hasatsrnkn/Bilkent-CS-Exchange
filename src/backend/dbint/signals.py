@@ -4,6 +4,12 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 
 
+@receiver(post_save, sender='dbint.User')
+def add_user_to_default_group(sender, instance, created=False, **kwargs):
+    if created:
+        sender.groups.add(Group.objects.get(name='Users'))
+
+
 @receiver(post_save, sender='dbint.Reply')
 @receiver(post_delete, sender='dbint.Reply')
 def update_thread_reply_count(sender, instance, created=False, **kwargs):
