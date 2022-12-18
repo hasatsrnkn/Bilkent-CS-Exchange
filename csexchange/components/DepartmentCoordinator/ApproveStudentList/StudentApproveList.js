@@ -8,71 +8,71 @@ import {
   Table,
 } from "react-bootstrap";
 import { useEffect, useState, useReducer } from "react";
-import Student from "./Student";
+import StudentApprove from "./StudentApprove";
 
-const StudentList = (props) => {
+const StudentApproveList = (props) => {
   const [students, setStudents] = useState([
     {
-      profilePhoto: "",
       name: "Kaan Burak",
       ID: "219000",
-      newOrEditedFiles: 3,
+      studentPoint: 90,
+      university: "Esiee Paris",
       fileLink: "",
       profileLink: "",
     },
     {
-      profilePhoto: "",
       name: "Ali Ahmet",
       ID: "222400",
-      newOrEditedFiles: 0,
+      studentPoint: 77,
+      university: "Bamberg University",
       fileLink: "",
       profileLink: "",
     },
     {
-      profilePhoto: "",
       name: "Mustafa Ak",
       ID: "23000",
-      newOrEditedFiles: 0,
+      studentPoint: 60,
+      university: "Esiee Paris",
       fileLink: "",
       profileLink: "",
     },
     {
-      profilePhoto: "",
       name: "Eren Ali",
       ID: "219000",
-      newOrEditedFiles: 2,
+      studentPoint: 50,
+      university: "Esiee Paris",
       fileLink: "",
       profileLink: "",
     },
     {
-      profilePhoto: "",
       name: "Eren Dur",
       ID: "219000",
-      newOrEditedFiles: 0,
+      studentPoint: 50,
+      university: "Esiee Paris",
       fileLink: "",
       profileLink: "",
     },
     {
-      profilePhoto: "",
       name: "Hasan Ali",
       ID: "219000",
-      newOrEditedFiles: 0,
+      studentPoint: 49,
+      university: "Esiee Paris",
       fileLink: "",
       profileLink: "",
     },
     {
-      profilePhoto: "",
       name: "Ege Can",
       ID: "219000",
-      newOrEditedFiles: 0,
+      studentPoint: 49,
+      university: "Esiee Paris",
       fileLink: "",
       profileLink: "",
     },
     {
-      profilePhoto: "",
       name: "Ayşe Su",
       ID: "219000",
-      newOrEditedFiles: 1,
+      studentPoint: 32,
+      university: "Esiee Paris",
       fileLink: "",
       profileLink: "",
     },
@@ -85,7 +85,9 @@ const StudentList = (props) => {
           <th></th>
           <th>Student Name</th>
           <th>ID</th>
-          <th>New or Edited Files</th>
+          <th>Student Point</th>
+          <th>University</th>
+          <th>Approve</th>
           <th></th>
         </tr>
       </thead>
@@ -93,10 +95,15 @@ const StudentList = (props) => {
       <tbody>
         {students.map((student) => {
           return (
-            <Student
+            <StudentApprove
               key={student.ID}
+              name={student.name}
+              id = {student.ID}
+              university = {student.university}
+              
+              firstTime={props.firstTime}
               {...student}
-            ></Student>
+            ></StudentApprove>
           );
         })}
       </tbody>
@@ -104,4 +111,4 @@ const StudentList = (props) => {
   );
 };
 
-export default StudentList;
+export default StudentApproveList;

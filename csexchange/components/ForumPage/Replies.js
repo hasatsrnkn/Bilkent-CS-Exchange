@@ -6,7 +6,7 @@ const Replies = (props) => {
 
   for (let i = 0; i < props.replyCount; i = i + 1) {
     if (props.replies[i]) {
-      if (!props.allReplies && i > 1) {
+      if (!props.allReplies && i > 2) {
         i = props.replyCount + 5;
       } else {
         nameSurname =

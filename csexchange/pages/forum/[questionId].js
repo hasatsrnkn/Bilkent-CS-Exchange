@@ -77,7 +77,6 @@ const questionPage = (props) => {
 
       formRef.current.reset();
       setShow(true);
-
     }
   };
 

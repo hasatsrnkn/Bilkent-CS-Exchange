@@ -3,29 +3,14 @@ import NavbarMenu from "../../../components/UI/NavbarMenu";
 import { Col, Row } from "react-bootstrap";
 import StudentInfo from "../../../components/Profile/Student/StudentInfo";
 import ToDoList from "../../../components/Profile/ToDoList/ToDoList";
-import { loadingActions } from "../../../store/loading";
+
 import {
   API_ALL_APPLYING_STUDENTS_ENDPOINT,
   API_MYPROFILE_ENDPOINT,
 } from "../../api/api";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-
-const student = {
-  toDoList: [
-    {
-      name: "sdasda",
-      done: true,
-      deadline: "20.01.2020",
-    },
-    {
-      name: "sdasda",
-      done: false,
-      deadline: "20.01.2020",
-    },
-  ],
-};
 
 const studentProfilePage = (props) => {
   const token = useSelector((state) => state.auth.token);
@@ -78,6 +63,12 @@ const studentProfilePage = (props) => {
               secretarySurname: data.stu_excc.last_name,
               secretaryID: data.stu_excc.id,
             },
+
+            toDoList: data.check_list.items.map((item) => ({
+              name: item.text,
+              done: item.completed,
+              deadline: item.deadline,
+            })),
           });
         })
         .catch((err) => {
@@ -107,12 +98,13 @@ const studentProfilePage = (props) => {
               universityName={user.university.universityName}
               universityWebLink={user.university.universityWebLink}
               coordinatorName={user.coordinator.coordinatorName}
-              coordinatorSurname = {user.coordinator.coordinatorSurname}
-              coordinatorID = {user.coordinator.coordinatorID}
+              coordinatorSurname={user.coordinator.coordinatorSurname}
+              coordinatorID={user.coordinator.coordinatorID}
               departmentSecretaryName={user.departmentSecretary.secretaryName}
-              departmentSecretarySurname = {user.departmentSecretary.secretarySurname}
-              departmentSecretaryID = {user.departmentSecretary.secretaryID}
-
+              departmentSecretarySurname={
+                user.departmentSecretary.secretarySurname
+              }
+              departmentSecretaryID={user.departmentSecretary.secretaryID}
             ></StudentInfo>
           </Col>
           <Col className="col-3">
@@ -123,7 +115,7 @@ const studentProfilePage = (props) => {
             </Row>
             <hr></hr>
             <Row>
-              <ToDoList toDoList={student.toDoList}></ToDoList>
+              <ToDoList toDoList={user.toDoList}></ToDoList>
             </Row>
           </Col>
         </Row>

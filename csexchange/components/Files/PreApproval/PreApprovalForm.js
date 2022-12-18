@@ -1,58 +1,58 @@
 import { Form, Row, Col, Container, Card, Button } from "react-bootstrap";
-import { useEffect, useState, useReducer } from "react"
+import { useEffect, useState, useReducer } from "react";
 import Courses from "./Courses";
 
 const PreApprovalForm = (props) => {
+  const [keyValue, setKeyValue] = useState(2);
+  const emptyFields = {
+    field1: "",
+    field2: "",
+    field3: "",
+    field4: "",
+    field5: "",
+    field6: "",
+  };
+  const initialCourses = { key: 1, ...emptyFields };
 
-  const emptyFields = {field1: "", field2: "", field3: "", field4: "", field5: "", field6: ""};
-  const initialCourses = {key: 1, ...emptyFields}
-  
   const [courses, setCourses] = useState([initialCourses]);
 
   //TODO
   const submitHandler = () => null;
 
   const changeHandler = (updatedCourse) => {
-
-    setCourses( (previousCourses) => {
-      return previousCourses.map( (course) => {
-        if(course.key === updatedCourse.key){
-          return updatedCourse
-        }
-        else{
+    setCourses((previousCourses) => {
+      return previousCourses.map((course) => {
+        if (course.key === updatedCourse.key) {
+          return updatedCourse;
+        } else {
           return course;
         }
       });
     });
-
-  }
-  console.log(courses)
+  };
+  console.log(courses);
 
   const removeCourseHandler = (key) => {
-    setCourses( (previousCourses) => {
-      return previousCourses.filter( (course) => course.key !== key ); //SHALLOW COPY! PROBLEM?
-    })
-
-  }
+    setCourses((previousCourses) => {
+      return previousCourses.filter((course) => course.key !== key); //SHALLOW COPY! PROBLEM?
+    });
+  };
 
   const addCourseHandler = () => {
-    setCourses( (previousCourses) => {
-      if (previousCourses !== null ){                          
-        return [...previousCourses, {key: previousCourses.length+1, ...emptyFields}]; 
-      } 
-      else{ 
-        return [initialCourses]; 
-      } 
+    setCourses((previousCourses) => {
+      if (previousCourses !== null) {
+        return [...previousCourses, { key: keyValue, ...emptyFields }];
+      } else {
+        return [initialCourses];
+      }
     });
-  }
 
-
-
-
+    setKeyValue(keyValue + 1);
+  };
 
   //useEffect(
-  
-    return (
+
+  return (
     <Container>
       <Row>
         <Form>
@@ -81,14 +81,25 @@ const PreApprovalForm = (props) => {
             </Row>
           </Card>
           <Row>
-            {courses.map( (x) =>  {return <Courses clickHandler={() => removeCourseHandler(x.key)} key={x.key} keyProp={x.key} onChange={changeHandler}></Courses>; })}
+            {courses.map((course) => {
+              return (
+                <Courses
+                  clickHandler={() => removeCourseHandler(course.key)}
+                  key={course.key}
+                  keyProp={course.key}
+                  onChange={changeHandler}
+                ></Courses>
+              );
+            })}
           </Row>
-          <Row>
-            <Button onClick={addCourseHandler}>New Course</Button>
-          </Row>
-          <Row>
-            <Button onClick={submitHandler}>Submit</Button>
-          </Row>
+          <Container>
+            <Row>
+              <Button onClick={addCourseHandler}>New Course</Button>
+            </Row>
+            <Row className="mt-5">
+              <Button onClick={submitHandler}>Submit</Button>
+            </Row>
+          </Container>
         </Form>
       </Row>
     </Container>

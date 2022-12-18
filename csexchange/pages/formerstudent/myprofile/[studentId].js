@@ -23,7 +23,7 @@ const FormerStudentProfilePage = (props) => {
   const token = useSelector((state) => state.auth.token);
   const [user, setUser] = useState(null);
   const router = useRouter();
-  const { userID } = router.query;
+  const { studentId } = router.query;
   const formRef = useRef(null);
   const [text, setText] = useState("");
   const [textIsEmpty, setTextIsEmpty] = useState(false);
@@ -68,11 +68,11 @@ const FormerStudentProfilePage = (props) => {
         });
     }
     fetchData();
-  }, [props, userID]);
+  }, [props, studentId]);
 
   const handleClose = () => {
     setShow(false);
-    router.push("/formerstudent/myprofile/" + userID);
+    router.push("/formerstudent/myprofile/" + studentId);
   };
 
   const textHandler = (event) => {

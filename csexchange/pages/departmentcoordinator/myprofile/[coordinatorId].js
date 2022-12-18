@@ -7,48 +7,12 @@ import { API_BASE_URL, API_MYPROFILE_ENDPOINT } from "../../api/api";
 import { Fragment, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
-const coordinator = {
-  name: "Can",
-  surname: "Alkan",
-  id: "21212",
-  picture: "picture",
-  type: "Department Coordinator",
-  email: "can.alkan@cs.bilkent.edu.tr",
-  universityName: "Bilkent University",
-  departmentSecretary: "Yelda Ateş",
-  toDoList: [
-    {
-      name: "sdasda",
-      done: true,
-      deadline: "20.01.2020",
-    },
-    {
-      name: "sdasda",
-      done: false,
-      deadline: "20.01.2020",
-    },
-  ],
-  universities: [
-    {
-      name: "asdasd uni",
-    },
-    {
-      name: "1aasad uni",
-    },
-    {
-      name: "sadasd uni",
-    },
-    {
-      name: "123123 uni",
-    },
-  ],
-};
 
 const CoordinatorProfilePage = (props) => {
   const token = useSelector((state) => state.auth.token);
   const [user, setUser] = useState(null);
   const router = useRouter();
-  const { userID } = router.query;
+  const { coordinatorId } = router.query;
 
   useEffect(() => {
     async function fetchData() {
@@ -80,9 +44,14 @@ const CoordinatorProfilePage = (props) => {
             pictureLink: data.image,
             bilkentID: data.username,
             type: data.user_type,
-            universities: data.assigned_unis.map( (uni) => ({
+            universities: data.assigned_unis.map((uni) => ({
               name: uni.name,
-            }))
+            })),
+            toDoList: data.check_list.items.map((item) => ({
+              name: item.text,
+              done: item.completed,
+              deadline: item.deadline,
+            })),
           });
         })
         .catch((err) => {
@@ -90,7 +59,7 @@ const CoordinatorProfilePage = (props) => {
         });
     }
     fetchData();
-  }, [props, userID]);
+  }, [props, coordinatorId]);
 
   if (user) {
     return (
@@ -108,9 +77,7 @@ const CoordinatorProfilePage = (props) => {
             ></PersonalInfo>
           </Col>
           <Col className="col-7">
-            <CoordinatorInfo
-              universities={user.universities}
-            ></CoordinatorInfo>
+            <CoordinatorInfo universities={user.universities} userID={coordinatorId} exchangeCoordinator={false}></CoordinatorInfo>
           </Col>
           <Col className="col-3">
             <Row>
@@ -120,15 +87,14 @@ const CoordinatorProfilePage = (props) => {
             </Row>
             <hr></hr>
             <Row>
-              <ToDoList toDoList={coordinator.toDoList}></ToDoList>
+              <ToDoList toDoList={user.toDoList}></ToDoList>
             </Row>
           </Col>
         </Row>
       </Fragment>
     );
-  }
-  else {
-    return( <p>Loading...</p>)
+  } else {
+    return <p>Loading...</p>;
   }
 };
 

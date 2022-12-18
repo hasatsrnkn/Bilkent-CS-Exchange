@@ -1,17 +1,28 @@
 import { Fragment, useState, useEffect } from "react";
-import { Col, Row, Button } from "react-bootstrap";
 import NavbarMenu from "../../../components/UI/NavbarMenu";
+import { API_BASE_URL } from "../../api/api";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
+import { Row, Col, Container } from "react-bootstrap";
 import PersonalInfo from "../../../components/Profile/PersonalInfo";
-import { API_MYPROFILE_ENDPOINT, API_BASE_URL } from "../../api/api";
-import Link from "next/link";
+import { API_MYPROFILE_ENDPOINT } from "../../api/api";
 import ToDoList from "../../../components/Profile/ToDoList/ToDoList";
-const ExchangeCoordinatorPage = (props) => {
+import InstructorInfo from "../../../components/Profile/Instructor/InstructorInfo";
+
+const courses = [
+  {
+    name: "CS 319",
+  },
+  {
+    name:"CS 322"
+  }
+];
+
+const InstructorPage = (props) => {
   const token = useSelector((state) => state.auth.token);
   const [user, setUser] = useState(null);
   const router = useRouter();
-  const { userID } = router.query;
+  const { instructorID } = router.query;
 
   useEffect(() => {
     async function fetchData() {
@@ -55,9 +66,8 @@ const ExchangeCoordinatorPage = (props) => {
         });
     }
     fetchData();
-  }, [props, userID]);
+  }, [props, instructorID]);
 
-  const link = "/exchangecoordinator/studentlist/" + userID;
   if (user) {
     return (
       <Fragment>
@@ -74,18 +84,10 @@ const ExchangeCoordinatorPage = (props) => {
             ></PersonalInfo>
           </Col>
           <Col className="col-7 mt-5 p-5">
-            <Link
-              href={link}
-              passHref
-              legacyBehavior
-            >
-              <Button variant="success" size="lg">
-                See Students List
-              </Button>
-            </Link>
+            <InstructorInfo courses={courses} userID={instructorID}></InstructorInfo>
           </Col>
           <Col className="col-3">
-          <Row>
+            <Row>
               <Col className="d-flex justify-content-center align-items-center">
                 <h2>To-Do List</h2>
               </Col>
@@ -99,19 +101,18 @@ const ExchangeCoordinatorPage = (props) => {
       </Fragment>
     );
   } else {
-    <p>loading....</p>;
+    <p></p>;
   }
 };
 
-//AYARLANACAK
 export async function getStaticPaths() {
-  const res = await fetch(API_BASE_URL + "all-exchange-coordinators/");
+  const res = await fetch(API_BASE_URL + "all-instructors/");
   const data = await res.json();
 
   return {
     fallback: false,
-    paths: data.map((coordinator) => ({
-      params: { userID: coordinator.id.toString() },
+    paths: data.map((instructor) => ({
+      params: { instructorID: instructor.id.toString() },
     })),
   };
 }
@@ -121,5 +122,4 @@ export async function getStaticProps() {
     props: {},
   };
 }
-
-export default ExchangeCoordinatorPage;
+export default InstructorPage;
