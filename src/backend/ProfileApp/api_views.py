@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from django.conf import settings
 from django.shortcuts import redirect
 from dbint.models import User, ApplyingStudent
-from dbint.serializers import user_serializer_dict
+from dbint.serializers import user_serializer_dict, ToDoListSerializer
 
 
 class MyProfileAPI(APIView):
@@ -20,7 +20,16 @@ class MyProfileAPI(APIView):
         logged_in_user = request.user.get_manager().get(username=request.user.username)
         user_serializer_class = user_serializer_dict['private'][logged_in_user.user_type]
         serializer = user_serializer_class(logged_in_user)
-        return Response(serializer.data)
+        return Response(serializer.data, status=HTTP_200_OK)
+
+
+class MyToDoListAPI(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        logged_in_user = request.user.get_manager().get(username=request.user.username)
+        return Response(ToDoListSerializer(logged_in_user.check_list).data, status=HTTP_200_OK)
 
 
 # TODO: correct user serializers and change private to public
@@ -34,4 +43,4 @@ class ProfileAPI(APIView):
         user_to_show = user_to_show.get_manager().get(id=id_to_search)
         user_serializer_class = user_serializer_dict['private'][user_to_show.user_type]
         serializer = user_serializer_class(user_to_show)
-        return Response(serializer.data)
+        return Response(serializer.data, status=HTTP_200_OK)

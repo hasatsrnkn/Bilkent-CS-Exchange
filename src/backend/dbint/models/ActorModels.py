@@ -54,7 +54,7 @@ class User(AbstractUser):
 
 class Student(User):
     department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=CS)
-    image = models.ImageField(upload_to='profile_pictures', blank=True, default='media/profile_pictures/default.png')
+    image = models.ImageField(upload_to='profile_pictures', blank=True, default='profile_pictures/default.png')
     points = models.FloatField(verbose_name="Erasmus grade points out of 100", default=0)
 
     class Meta:

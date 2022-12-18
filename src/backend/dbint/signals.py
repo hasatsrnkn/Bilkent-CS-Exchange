@@ -7,7 +7,9 @@ from django.dispatch import receiver
 @receiver(post_save, sender='dbint.User')
 def add_user_to_default_group(sender, instance, created=False, **kwargs):
     if created:
-        sender.groups.add(Group.objects.get(name='Users'))
+        instance.groups.add(Group.objects.get(name='Users'))
+
+    instance.save()
 
 
 @receiver(post_save, sender='dbint.Reply')
@@ -38,7 +40,10 @@ def update_uni_review_count(sender, instance, created=False, **kwargs):
         instance.university.review_count -= 1
         instance.university.calculate_rating()
 
+    instance.reviewer.save()
     instance.university.save()
 
 
-
+post_save.connect(update_thread_reply_count, sender='dbint.Reply')
+post_save.connect(update_uni_review_count, sender='dbint.Review')
+post_save.connect(add_user_to_default_group, sender='dbint.User')
