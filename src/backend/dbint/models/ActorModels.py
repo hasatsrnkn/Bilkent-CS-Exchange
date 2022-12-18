@@ -1,4 +1,4 @@
-from django.contrib.auth.models import UserManager, AbstractUser
+from django.contrib.auth.models import UserManager, AbstractUser, Permission
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils.translation import gettext_lazy as _
 from django.db import models
@@ -25,6 +25,7 @@ class User(AbstractUser):
             "unique": _("A user with that username already exists."),
         },)  #int or string????
     '''
+
     def get_manager(self):
         if self.user_type == ASTU:
             return ApplyingStudent.objects
@@ -40,7 +41,6 @@ class User(AbstractUser):
             return ExchangeOffice.objects
         else:
             return User.objects
-
 
     def __str__(self):
         return '(' + self.id.__str__() + ')' + \
@@ -71,11 +71,11 @@ class ExchangeOffice(User):
 
     class Meta:
         verbose_name = 'Exchange Office Account'
-        verbose_name_plural = 'Exchange Offices Accounts'
+        verbose_name_plural = 'Exchange Office Accounts'
 
 
 class Management(User):
-    check_list = models.ForeignKey('dbint.ToDoList', blank=True, null=True,
+    check_list = models.OneToOneField('dbint.ToDoList', blank=True, null=True, related_name='management_owner',
                                    on_delete=models.CASCADE)
     image = models.ImageField(upload_to='profile_pictures', blank=True, default=None)
 
@@ -85,12 +85,12 @@ class Management(User):
 
 
 class ApplyingStudent(Student):
-    check_list = models.OneToOneField('dbint.ToDoList', blank=True, null=True, default=None,
+    check_list = models.OneToOneField('dbint.ToDoList', blank=True, null=True, default=None, related_name='astu_owner',
                                       on_delete=models.CASCADE)
     stu_depc = models.ForeignKey('dbint.DepartmentCoordinator', related_name='stu_depc', null=True, default=None,
-                                    on_delete=models.CASCADE)
+                                 on_delete=models.CASCADE)
     stu_excc = models.ForeignKey('dbint.ExchangeCoordinator', related_name='stu_excc', null=True, default=None,
-                                        on_delete=models.CASCADE)
+                                 on_delete=models.CASCADE)
     applied_university = models.ForeignKey('dbint.University', blank=False, null=True,
                                            default=None, related_name='applied_university',
                                            on_delete=models.CASCADE)
@@ -107,10 +107,10 @@ class ApplyingStudent(Student):
 
 
 class FormerStudent(Student):
-    uni_visited = models.ForeignKey('dbint.UniversityDepartment', related_name='former_students',
+    uni_visited = models.ForeignKey('dbint.UniversityDepartment', related_name='former_students', null=True, blank=True,
                                     on_delete=models.CASCADE)
-    begin_date = models.DateField(max_length='20', default='')
-    end_date = models.DateField(max_length='20', default='')
+    begin_date = models.DateField(max_length='20', default=None, null=True)
+    end_date = models.DateField(max_length='20', auto_now_add=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -144,7 +144,7 @@ class DepartmentCoordinator(Management):
 
 class Instructor(Management):
     department = models.CharField(max_length=10, default='')
-    courses = models.ManyToManyField('dbint.Course', related_name='courses',
+    courses = models.ManyToManyField('dbint.Course', related_name='instructor_of_course',
                                      blank=True)
 
     def save(self, *args, **kwargs):
