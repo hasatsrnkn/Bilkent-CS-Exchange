@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Button, Col, Row, Card, Modal } from "react-bootstrap";
+import Link from "next/link";
+import { useSelector } from "react-redux";
 
 const StudentInfo = (props) => {
   const [show, setShow] = useState(false);
@@ -9,6 +11,8 @@ const StudentInfo = (props) => {
   const handleClose = () => {
     setShow(false);
   };
+
+  const user = useSelector((state) => state.auth.bilkentId);
 
   return (
     <Card className="p-2">
@@ -53,19 +57,25 @@ const StudentInfo = (props) => {
         </Row>
         <Row className="mt-5">
           <Col className="col-4 d-flex justify-content-center align-items-center">
-            <Button variant="success" size="lg">
-              Fill Pre-Approval
-            </Button>
+            <Link href={`/student/preapproval/${user}`} passHref legacyBehavior>
+              <Button variant="success" size="lg">
+                Fill Pre-Approval
+              </Button>
+            </Link>
           </Col>
           <Col className="col-4 d-flex justify-content-center align-items-center">
-            <Button variant="success" size="lg">
-              Fill Learning Agreement
-            </Button>
+            <Link href={`/student/learningagreement/${user}`} passHref legacyBehavior>
+              <Button variant="success" size="lg">
+                Fill Learning Agreement
+              </Button>
+            </Link>
           </Col>
           <Col className="col-4 d-flex justify-content-center align-items-center">
-            <Button variant="success" size="lg">
-              Go To Files
-            </Button>
+          <Link href={`/student/files/${user}`} passHref legacyBehavior>
+              <Button variant="success" size="lg">
+                Go to Files
+              </Button>
+            </Link>
           </Col>
         </Row>
       </Col>
