@@ -1,10 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
-from django.db.models.signals import post_save
 
 from dbint.constants import DEPARTMENT_CHOICES, CS
-from dbint.signals import update_thread_reply_count, update_uni_review_count
 from dbint.constants import PERIOD_CHOICES
 from dbint import constants
 
@@ -43,6 +41,9 @@ class Notification(models.Model):
     banner = models.ImageField(verbose_name='a small image about the notification', blank=True,
                                default=None, upload_to='noti_banners')
     type = models.CharField(max_length=100, default='', blank=True)
+
+    class Meta:
+        ordering = ['receive_date']
 
 
 class Announcement(models.Model):
@@ -129,7 +130,9 @@ class University(models.Model):
         else:
             reviews_of_uni = self.reviews.order_by('date')
             for rev in reviews_of_uni:
-                if rev.rating <= 5 or rev.rating >= 0 or (not rev.reviewer.entered_review):
+                if rev.rating <= 5 and rev.rating >= 0 and (not rev.reviewer.entered_review):
+                    rev.reviewer.entered_review = True
+                    rev.reviewer.save()
                     sum += rev.rating
             self.rating = sum / self.review_count
 
@@ -193,6 +196,9 @@ class Document(models.Model):
                                          default=None,
                                          on_delete=models.CASCADE)
     date = models.DateTimeField(max_length=40, default=timezone.now)
+
+    class Meta:
+        verbose_name_plural = 'Documents'
 
 
 class PreApprovalFormContent(Document):
