@@ -1,6 +1,7 @@
 from abc import abstractmethod, ABC
 from django.utils import timezone
 from rest_framework import serializers
+from rest_framework.serializers import Serializer, FileField
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied, APIException
 
 import dbint
@@ -347,3 +348,14 @@ class ListItemSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ['text', 'completed', 'deadline']
 
+class UploadFileSerializer(serializers.ModelSerializer):
+    #file_uploaded = FileField()
+    #class Meta:
+    #    fields = ['file_uploaded']
+    def get_queryset(self):
+        return
+
+
+    class Meta:
+        model = Document
+        fields = '__all__'

@@ -193,8 +193,10 @@ class Review(models.Model):
 
 
 class Document(models.Model):
+    document = models.FileField(upload_to='files', default=None)
     documentName = models.CharField(max_length=100, default='')
-    type = models.CharField(max_length=10, default='pdf')
+    extension = models.CharField(max_length=10, default='xlsx')
+    type = models.CharField(max_length=100, default='Excel File')
     documentOwner = models.OneToOneField('dbint.User', blank=False, null=False,
                                          default=None,
                                          on_delete=models.CASCADE)
