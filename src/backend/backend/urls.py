@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/', include('LoginApp.urls')),
     path('api/', include('ProfileApp.urls')),
     path('api/', include('UniInfoApp.urls')),
+    path('api/', include('FileAnalyzeApp.urls')),
     #TODO: Will be deleted this line (Move to fileanalyzer app)
     path('', include('FileAnalyzeApp.urls')),
     path('', include('PlacementApp.urls')),

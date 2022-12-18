@@ -14,15 +14,24 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.urls import path
+from django.urls import path, include, re_path
 from . import views
 from backend import settings
+from FileAnalyzeApp.api_views import UploadViewSet
 from django.conf.urls.static import static
+from rest_framework import routers
+
+#router = routers.DefaultRouter()
+#router.register(r'upload', UploadViewSet, basename="upload")
+
 urlpatterns =[
-path("",views.Import_Excel_pandas,name="Import_Excel_pandas"),
+re_path(r'^files/$', UploadViewSet.as_view(), name='files'),
+#path("",views.Import_Excel_pandas,name="Import_Excel_pandas"),
 path("pdffile",views.ReadAndWritePdf,name="ReadAndWritePdf"),
 path('Import_Excel_pandas/', views.Import_Excel_pandas,name="Import_Excel_pandas"),
 path('Import_excel',views.Import_excel,name="Import_excel"),
+#path("",views.Import_Excel_pandas,name="Import_Excel_pandas"),
+#path('', include(router.urls)),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
