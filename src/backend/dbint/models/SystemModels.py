@@ -1,8 +1,9 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django.db.models.signals import post_save
 
-from dbint.constants import DEPARTMENT_CHOICES
+from dbint.constants import DEPARTMENT_CHOICES, CS
 from dbint.signals import update_thread_reply_count, update_uni_review_count
 from dbint.constants import PERIOD_CHOICES
 from dbint import constants
@@ -15,8 +16,6 @@ from dbint import constants
 # delete options should be reviewed
 # relations - nullable problem ?
 # more departments should be added
-post_save.connect(update_thread_reply_count, sender='dbint.Reply')
-post_save.connect(update_uni_review_count, sender='dbint.Review')
 
 
 class Chat(models.Model):
@@ -66,7 +65,7 @@ class Announcement(models.Model):
 class Thread(models.Model):
     header = models.CharField(max_length=50, default='')
     question = models.TextField(max_length=1500, default='')
-    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=1, )
+    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=CS)
     user = models.ForeignKey('dbint.User', on_delete=models.CASCADE)
     reply_count = models.IntegerField(default=0, blank=True)
     solved = models.BooleanField(default=False)
@@ -132,9 +131,9 @@ class University(models.Model):
         if self.review_count <= 0:
             self.rating = 0
         else:
-            reviews_of_uni = self.reviews.all()
+            reviews_of_uni = self.reviews.order_by('date')
             for rev in reviews_of_uni:
-                if not (rev.rating > 5 or rev.rating < 0):
+                if rev.rating <= 5 or rev.rating >= 0 or (not rev.reviewer.entered_review):
                     sum += rev.rating
             self.rating = sum / self.review_count
 
@@ -176,10 +175,16 @@ class UniversityDepartment(models.Model):
 # University review ( NEW )
 class Review(models.Model):
     university = models.ForeignKey('dbint.University', on_delete=models.CASCADE, blank=False, related_name='reviews')
-    reviewer = models.ForeignKey('dbint.User', on_delete=models.CASCADE)
+    reviewer = models.ForeignKey('dbint.FormerStudent', related_name='fstu_reviews', on_delete=models.CASCADE)
     text = models.TextField(max_length=500, default='')
     rating = models.FloatField(default=0)
     date = models.DateTimeField(max_length=40, auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if self.university == self.reviewer.uni_visited:
+            super(Review, self).save(*args, **kwargs)
+        else:
+            raise ValidationError('Former students can only review their universities')
 
     def __str__(self):
         return self.id.__str__() + " - Review to: " + self.university.name
@@ -212,7 +217,8 @@ class Course(models.Model):
     department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default='CS', )
     code = models.CharField(max_length=10, default='', blank=True)
     credits = models.FloatField(default=0)
-    syllabus_link = models.CharField(max_length=300, default='')
+    syllabus_link = models.URLField(max_length=300, default='')
+
 
 class ForeignCourse(models.Model):
     #Course'a child class olarak atayınca hata veriyor.

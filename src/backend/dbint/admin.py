@@ -18,7 +18,7 @@ class ASTUAdmin(UserAdmin):
 class FSTUAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
         ('Student Fields', {'fields': ('department', 'image', 'points')}),
-        ('FSTU Fields', {'fields': ('uni_visited', 'begin_date')}),
+        ('FSTU Fields', {'fields': ('uni_visited', 'begin_date', 'entered_review')}),
     )
 
 
@@ -32,7 +32,7 @@ class DEPCAdmin(UserAdmin):
 class INSTAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
         ('Management Fields', {'fields': ('image', 'check_list')}),
-        ('DEPC Fields', {'fields': ('department', 'courses')}),
+        ('INST Fields', {'fields': ('department', 'courses')}),
     )
 
 

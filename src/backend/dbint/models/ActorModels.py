@@ -1,5 +1,6 @@
-from django.contrib.auth.models import UserManager, AbstractUser, Permission
+from django.contrib.auth.models import UserManager, AbstractUser, Permission, Group
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.db.models.signals import post_save
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.conf import settings
@@ -26,6 +27,12 @@ class User(AbstractUser):
         },)  #int or string????
     '''
 
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.groups.add(Group.objects.get(name='Users'))
+
+        super(AbstractUser, self).save(*args, **kwargs)
+
     def get_manager(self):
         if self.user_type == ASTU:
             return ApplyingStudent.objects
@@ -49,7 +56,7 @@ class User(AbstractUser):
 
 class Student(User):
     department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=CS)
-    image = models.ImageField(upload_to='profile_pictures', blank=True, default=None)
+    image = models.ImageField(upload_to='profile_pictures', blank=True, default='media/profile_pictures/default.png')
     points = models.FloatField(verbose_name="Erasmus grade points out of 100", default=0)
 
     class Meta:
@@ -67,7 +74,7 @@ class ExchangeOffice(User):
         if not self.pk:
             self.user_type = EXCO
 
-        super(ExchangeOffice, self).save(*args, **kwargs)
+        super(User, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Exchange Office Account'
@@ -77,7 +84,7 @@ class ExchangeOffice(User):
 class Management(User):
     check_list = models.OneToOneField('dbint.ToDoList', blank=True, null=True, related_name='management_owner',
                                    on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='profile_pictures', blank=True, default=None)
+    image = models.ImageField(upload_to='profile_pictures', blank=True, default='media/profile_pictures/default.png')
 
     def __str__(self):
         return '(' + self.id.__str__() + ')' + \
@@ -99,7 +106,7 @@ class ApplyingStudent(Student):
         if not self.pk:
             self.user_type = ASTU
 
-        super(ApplyingStudent, self).save(*args, **kwargs)
+        super(Student, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Applying Student'
@@ -111,12 +118,13 @@ class FormerStudent(Student):
                                     on_delete=models.CASCADE)
     begin_date = models.DateField(max_length='20', default=None, null=True)
     end_date = models.DateField(max_length='20', auto_now_add=True)
+    entered_review = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.pk:
             self.user_type = FSTU
 
-        super(FormerStudent, self).save(*args, **kwargs)
+        super(Student, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Former Student'
@@ -130,7 +138,7 @@ class DepartmentCoordinator(Management):
         if not self.pk:
             self.user_type = DEPC
 
-        super(DepartmentCoordinator, self).save(*args, **kwargs)
+        super(Management, self).save(*args, **kwargs)
 
     def __str__(self):
         return '(' + self.id.__str__() + ')' + \
@@ -143,7 +151,7 @@ class DepartmentCoordinator(Management):
 
 
 class Instructor(Management):
-    department = models.CharField(max_length=10, default='')
+    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=CS)
     courses = models.ManyToManyField('dbint.Course', related_name='instructor_of_course',
                                      blank=True)
 
@@ -151,7 +159,7 @@ class Instructor(Management):
         if not self.pk:
             self.user_type = INST
 
-        super(Instructor, self).save(*args, **kwargs)
+        super(Management, self).save(*args, **kwargs)
 
     def __str__(self):
         return '(' + self.id.__str__() + ')' + \
@@ -168,7 +176,7 @@ class ExchangeCoordinator(Management):
         if not self.pk:
             self.user_type = EXCC
 
-        super(ExchangeCoordinator, self).save(*args, **kwargs)
+        super(Management, self).save(*args, **kwargs)
 
     def __str__(self):
         return '(' + self.id.__str__() + ')' + \

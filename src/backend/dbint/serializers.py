@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from django.utils import timezone
 from rest_framework import serializers
-from rest_framework.exceptions import NotAuthenticated, PermissionDenied
+from rest_framework.exceptions import NotAuthenticated, PermissionDenied, APIException
 
 import dbint
 from dbint.constants import *
@@ -9,6 +9,8 @@ from dbint.models.SystemModels import *
 from dbint.models.ActorModels import User, Instructor, DepartmentCoordinator, ApplyingStudent, \
     ExchangeCoordinator, ExchangeOffice, FormerStudent
 from rest_framework.fields import empty
+
+REPLY_PER_THREAD = 3
 
 # TODO: CHANGE USER SERIALIZER IMPLEMENTATION, DYNAMIC FIELDS !!!!!!!, maybe create a private fields, zıpzıp fields
 #  dictionary-list
@@ -105,7 +107,6 @@ class ASTUSerializerPriv(serializers.ModelSerializer):
 
 
 class ASTUSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = ApplyingStudent
         fields = ['id', 'first_name', 'last_name', 'email', 'department', 'image', 'user_type']
@@ -120,7 +121,8 @@ class FSTUSerializerPriv(serializers.ModelSerializer):
 
     class Meta:
         model = FormerStudent
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'department', 'points', 'begin_date', 'end_date',
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'department', 'points', 'begin_date',
+                  'end_date',
                   'image', 'uni_visited', 'user_type']
 
 
@@ -151,16 +153,15 @@ class ReplySerializer(serializers.ModelSerializer):
         model = Reply
         fields = ['user', 'text', 'date']
 
-    '''
     def create(self, validated_data):
         request = self.context['request']
         creator = request.user
         if not creator.is_authenticated:
             raise NotAuthenticated('Authentication required.')
-        thread = Thread.objects.get(pk=request.data['thread_id'])
-        user = Us.objects.get(pk=request.data['user_id'])
+        thread = Thread.objects.get(id=request.data['thread_id'])
+        user = request.user.get_manager().get(username=request.user.username)
         return Reply.objects.create(text=validated_data['text'], user=user, thread=thread)
-
+    '''
     # copy-pasted code from another program for reference, does not work
     def update(self, instance, validated_data):
         request = self.context['request']
@@ -181,10 +182,14 @@ class ReplyStrategy(ABC):
         pass
 
 
-class TwoMostRecent(ReplyStrategy):
+class XMostRecent(ReplyStrategy):
+
+    def __init__(self, reply_number):
+        self.reply_number = reply_number
+        super(ReplyStrategy, self).__init__()
 
     def get_replies(self, thread):
-        replies = thread.replies.all()[:2]
+        replies = thread.replies.all()[:self.reply_number]
         if replies:
             return ReplySerializer(replies, many=True).data
         else:
@@ -212,9 +217,21 @@ class NoReplies(ReplyStrategy):
 
 
 # TODO: may need a look
+
 class ThreadSerializer(serializers.ModelSerializer):
     replies = serializers.SerializerMethodField('reply_strategy')
     user = serializers.SerializerMethodField('get_user')
+
+    def create(self, validated_data):
+        request = self.context['request']
+        creator = request.user
+        if not creator.is_authenticated:
+            raise NotAuthenticated('Authentication required.')
+
+        user = request.user.get_manager().get(username=request.user.username)
+        return Thread.objects.create(user=user, header=validated_data['header'],
+                                     question=validated_data['question'],
+                                     department=validated_data['department'])
 
     def get_user(self, thread):
         custom_user = thread.user.get_manager().get(id=thread.user.id)
@@ -223,7 +240,10 @@ class ThreadSerializer(serializers.ModelSerializer):
         return serializer.data
 
     def reply_strategy(self, thread):
-        return self.context.get('reply_strategy').get_replies(thread)
+        if self.context.get('reply_strategy'):
+            return self.context.get('reply_strategy').get_replies(thread)
+        else:
+            return None
 
     '''def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -251,7 +271,8 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         if not creator.is_authenticated:
             raise NotAuthenticated('Authentication required.')
         announcer = request.user.get_manager().get(username=request.user.username)
-        return Announcement.objects.create(announcer=announcer, text=validated_data['text'], context=validated_data['context'])
+        return Announcement.objects.create(announcer=announcer, text=validated_data['text'],
+                                           context=validated_data['context'])
 
     class Meta:
         model = Announcement
