@@ -7,6 +7,9 @@ import {
   Alert,
   Badge,
 } from "react-bootstrap";
+
+import StudentList from "./StudentList";
+
 const CoordinatorInfo = (props) => {
   return (
     <Card className="p-2">
@@ -42,6 +45,8 @@ const CoordinatorInfo = (props) => {
           <Button variant="success">Go To Students List</Button>
         </Col>
       </Row>
+
+      <StudentList/>
     </Card>
   );
 };
