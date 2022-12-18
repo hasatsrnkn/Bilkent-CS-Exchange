@@ -47,13 +47,21 @@ class INSTSerializer(serializers.ModelSerializer):
 # TODO: add checklist
 class DEPCSerializerPriv(serializers.ModelSerializer):
     image = serializers.ImageField()
+    assigned_unis = serializers.SerializerMethodField('get_unis')
+
+    def get_unis(self, departmentcoordinator):
+        data = []
+        unis = departmentcoordinator.assigned_unis.all()
+        for uni in unis:
+            data.append({'name': uni.university.name})
+        return data
 
     # check_list =
 
     class Meta:
         model = DepartmentCoordinator
         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'department', 'image', 'check_list',
-                  'user_type']
+                  'user_type', 'assigned_unis']
 
 
 class DEPCSerializer(serializers.ModelSerializer):
@@ -117,7 +125,7 @@ class FSTUSerializerPriv(serializers.ModelSerializer):
     image = serializers.ImageField()
 
     def get_uni_dep(self, formerstudent):
-        return UniversityDepartmentSerializer(formerstudent.uni_visited).data
+        return UniversitySerializer(formerstudent.uni_visited).data
 
     class Meta:
         model = FormerStudent
@@ -151,7 +159,7 @@ class ReplySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reply
-        fields = ['user', 'text', 'date']
+        fields = ['id','user', 'text', 'date']
 
     def create(self, validated_data):
         request = self.context['request']
@@ -307,6 +315,16 @@ class UniversityDepartmentSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     reviewer = serializers.SerializerMethodField('get_user')
 
+    def create(self, validated_data):
+        request = self.context['request']
+        user = request.user
+        if not user.is_authenticated:
+            raise NotAuthenticated('Authentication required.')
+        custom_user = user.get_manager().get(username=user.username)
+        uni = University.objects.get(id=custom_user.uni_visited.id)
+        return Review.objects.create(text=validated_data['text'], reviewer=custom_user, university=uni,
+                                     rating=validated_data['rating'])
+
     def get_user(self, review):
         custom_user = review.reviewer.get_manager().get(id=review.reviewer.id)
         user_serializer_class = user_serializer_dict['public'][review.reviewer.user_type]
@@ -316,3 +334,16 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = ['id', 'reviewer', 'text', 'rating']
+
+
+class ToDoListSerializer(serializers.ModelSerializer):
+    items = serializers.SerializerMethodField('get_items')
+
+    def get_items(self, todolist):
+        return ListItemSerializer(todolist.items, many=True)
+
+
+class ListItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ['text', 'completed', 'deadline']
+

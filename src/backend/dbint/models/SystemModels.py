@@ -107,6 +107,9 @@ class ListItem(models.Model):
     completed = models.BooleanField(default=False)
     deadline = models.DateTimeField(verbose_name="The task should be completed before this date")
 
+    def __str__(self):
+        return self.id.__str__() + " - Task: " + self.text[:10] + "..."
+
 
 # not finished
 class University(models.Model):
@@ -150,7 +153,7 @@ class UniversityDepartment(models.Model):
     taught_in_english_info = models.CharField(max_length=150, blank=True, default='')
     quota = models.IntegerField(default=0)
     language_requirements = models.CharField(max_length=40, blank=True, default='')
-    coordinator = models.ForeignKey('dbint.DepartmentCoordinator', related_name='coordinator',
+    coordinator = models.ForeignKey('dbint.DepartmentCoordinator', related_name='assigned_unis',
                                     on_delete=models.CASCADE, blank=False, default=None)
     # ADDED FOR PLACEMENT ALGORITHM
     quotaPlacement = models.IntegerField(default=0)

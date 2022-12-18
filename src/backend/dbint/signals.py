@@ -10,9 +10,9 @@ from django.dispatch import receiver
 @receiver(post_save, sender='dbint.User')
 def add_user_to_default_group(sender, instance, created=False, **kwargs):
     if created:
-        sender.groups.add(Group.objects.get(name='Users'))
-    #sender.save()
+        instance.groups.add(Group.objects.get(name='Users'))
 
+    instance.save()
 
 @receiver(post_save, sender='dbint.Reply')
 @receiver(post_delete, sender='dbint.Reply')
@@ -47,6 +47,7 @@ def update_uni_review_count(sender, instance, created=False, **kwargs):
             instance.university.calculate_rating()
             instance.reviewer.save()
 
+    instance.reviewer.save()
     instance.university.save()
 
 @receiver(post_save, sender='dbint.Announcement')
@@ -81,3 +82,4 @@ def create_notf_for_document(sender, instance, created=False, **kwargs):
                                                                   seen=False, type='File Upload')
             notificationCreatedDEPC.save()
             notificationCreatedEXCC.save()
+
