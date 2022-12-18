@@ -78,7 +78,7 @@ const StudentInfo = (props) => {
         </Row>
         <Row className="mt-5">
           <Col className="col-6 d-flex justify-content-center align-items-center">
-            <Link href={`/student/preapproval/${userID}`} passHref legacyBehavior>
+            <Link href={`/applyingstudent/preapproval/${userID}`} passHref legacyBehavior>
               <Button variant="success" size="lg">
                 Fill Pre-Approval
               </Button>
@@ -86,7 +86,7 @@ const StudentInfo = (props) => {
           </Col>
 
           <Col className="col-6 d-flex justify-content-center align-items-center">
-            <Link href={`/student/files/${userID}`} passHref legacyBehavior>
+            <Link href={`/applyingstudent/files/${userID}`} passHref legacyBehavior>
               <Button variant="success" size="lg">
                 Go to Files
               </Button>

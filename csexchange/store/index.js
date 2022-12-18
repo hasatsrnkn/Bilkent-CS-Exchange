@@ -9,7 +9,7 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-import storage from "redux-persist/lib/storage";
+import syncStorage from "./sync_storage";
 import authReducer from "./auth";
 import loadingReducer from "./loading";
 
@@ -20,7 +20,7 @@ const reducers = combineReducers({
 
 const persistConfig = {
   key: "root",
-  storage,
+  storage: syncStorage,
   blacklist: ["loading"],
 };
 

@@ -2,7 +2,7 @@ import NavbarMenu from "../../components/UI/NavbarMenu";
 import Universities from "../../components/Universities/Universities";
 import { Col, Row } from "react-bootstrap";
 import UniversitiesFilter from "../../components/Universities/UniversitiesFilter";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import PointCalculator from "../../components/Universities/PointCalculator";
 import { API_UNIS_INFO_ENDPOINT } from "../api/api";
 import { loadingActions } from "../../store/loading";
@@ -27,7 +27,7 @@ const UniversitiesPage = (props) => {
   });
 
   return (
-    <div>
+    <Fragment style={{ width: "100vw" }}>
       <NavbarMenu></NavbarMenu>
       <Row className="ms-3">
         <Col>
@@ -45,14 +45,13 @@ const UniversitiesPage = (props) => {
         universities={filteredUnis}
         theStudentPoint={studentPoint}
       ></Universities>
-    </div>
+    </Fragment>
   );
 };
 
 export async function getStaticProps() {
   const res = await fetch(API_UNIS_INFO_ENDPOINT);
   const data = await res.json();
-  
 
   /* python manage.py runserver */
   return {
@@ -73,6 +72,17 @@ export async function getStaticProps() {
           name: uni.coordinator.first_name,
           surname: uni.coordinator.last_name,
         },
+        
+      
+
+        reviews: uni.reviews? uni.reviews.map((review) => ({
+          id: review.id,
+          userName: review.reviewer.first_name,
+          userSurname: review.reviewer.last_name,
+          image: review.reviewer.image,
+          text: review.text,
+          rating: review.rating,
+        })) : null,
       })),
     },
     revalidate: 1,

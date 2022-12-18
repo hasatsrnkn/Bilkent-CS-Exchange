@@ -1,7 +1,9 @@
 import { Col, Row, Card } from "react-bootstrap";
+import { API_BASE_URL } from "../../pages/api/api";
 const Replies = (props) => {
   var replies = [];
   var nameSurname;
+
   for (let i = 0; i < props.replyCount; i = i + 1) {
     if (props.replies[i]) {
       if (!props.allReplies && i > 1) {

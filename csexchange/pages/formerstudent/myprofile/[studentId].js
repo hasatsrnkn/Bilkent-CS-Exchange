@@ -1,69 +1,202 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useState, useRef } from "react";
 import NavbarMenu from "../../../components/UI/NavbarMenu";
-import { Row, Container, Card, Button } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Container,
+  Card,
+  Button,
+  Form,
+  Modal,
+} from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { API_MYPROFILE_STUDENT_ENDPOINT } from "../../api/api";
+import {
+  API_ALL_FORMER_STUDENTS_ENDPOINT,
+  API_MYPROFILE_ENDPOINT,
+  API_UNI_REVIEWS_ENDPOINT,
+} from "../../api/api";
 import { useRouter } from "next/router";
-const student = {
-  name: "ali",
-  surname: "veli",
-  id: "21001221",
-  picture: "picture",
-  type: "Student (Applying)",
-  email: "ali.veli@hotmail.com",
-  coordinator: "Can Alkan",
-  universityName: "Bilkent University",
-  departmentSecretary: "Yelda Ateş",
-  toDoList: [
-    {
-      name: "sdasda",
-      done: true,
-      deadline: "20.01.2020",
-    },
-    {
-      name: "sdasda",
-      done: false,
-      deadline: "20.01.2020",
-    },
-  ],
-};
+import PersonalInfo from "../../../components/Profile/PersonalInfo";
+import Rating from "@mui/material/Rating";
 
 const FormerStudentProfilePage = (props) => {
- 
+  const token = useSelector((state) => state.auth.token);
+  const [user, setUser] = useState(null);
+  const router = useRouter();
+  const { userID } = router.query;
+  const formRef = useRef(null);
+  const [text, setText] = useState("");
+  const [textIsEmpty, setTextIsEmpty] = useState(false);
+  const [show, setShow] = useState(false);
+  const [value, setValue] = useState(2);
 
-  return (
-    <Fragment>
-      <NavbarMenu></NavbarMenu>
-      <Container>
-        <Card className="align-items-center justify-content-center">
-          <Row className="mt-3 align-items-center justify-content-center">
-            <h1>Picture: {student.picture} </h1>
-          </Row>
-          <Row className="mt-3 align-items-center justify-content-center">
-            <h1>Name: {student.name}</h1>
-          </Row>
-          <Row className="mt-3 align-items-center justify-content-center">
-            <h1>Surname: {student.surname}</h1>
-          </Row>
-          <Row className="mt-3 align-items-center justify-content-center">
-            <h1>Bilkent ID:{bilkentId}</h1>
-          </Row>
-          <Row className="mt-3 align-items-center justify-content-center">
-            <h1>Type: {student.type}</h1>
-          </Row>
-          <Row className="mt-3 align-items-center justify-content-center">
-            <h1>E-mail: {student.email}</h1>
-          </Row>
-          <Row className="mt-3 align-items-center justify-content-center">
-            <h1>University Name: {student.universityName}</h1>
-          </Row>
-          <Row className="mt-3 align-items-center justify-content-center">
-            <Button>Review Your University</Button>
-          </Row>
-        </Card>
-      </Container>
-    </Fragment>
-  );
+  useEffect(() => {
+    async function fetchData() {
+      fetch(API_MYPROFILE_ENDPOINT, {
+        method: "GET",
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+        .then((res) => {
+          if (res.ok) {
+            return res.json();
+          } else {
+            return res.json().then((data) => {
+              let errorMessage = "Authentication failed!";
+              // if (data && data.error && data.error.message) {
+              //   errorMessage = data.error.message;
+              // }
+
+              throw new Error(errorMessage);
+            });
+          }
+        })
+        .then((data) => {
+          setUser({
+            name: data.first_name,
+            surname: data.last_name,
+            email: data.email,
+            universityName: data.uni_visited.name,
+            pictureLink: data.image,
+            bilkentID: data.username,
+            type: data.user_type,
+          });
+        })
+        .catch((err) => {
+          alert(err.message);
+        });
+    }
+    fetchData();
+  }, [props, userID]);
+
+  const handleClose = () => {
+    setShow(false);
+    router.push("/formerstudent/myprofile/" + userID);
+  };
+
+  const textHandler = (event) => {
+    event.preventDefault();
+    setText(event.target.value);
+    setTextIsEmpty(false);
+  };
+
+  const submitHandler = (event) => {
+    event.preventDefault();
+
+    if (text == "") {
+      setTextIsEmpty(true);
+    } else {
+      const urlAsked = API_UNI_REVIEWS_ENDPOINT + "post-review/";
+      fetch(urlAsked, {
+        method: "POST",
+        body: JSON.stringify({
+          text: text,
+          rating: value,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      formRef.current.reset();
+      setShow(true);
+    }
+  };
+
+  if (user) {
+    return (
+      <Fragment>
+        <NavbarMenu></NavbarMenu>
+        <Row>
+          <Col className="col-2">
+            <PersonalInfo
+              name={user.name}
+              id={user.bilkentID}
+              surname={user.surname}
+              picture={user.pictureLink}
+              type={user.type}
+              email={user.email}
+            ></PersonalInfo>
+          </Col>
+          <Col className="col-4 mb-5 d-flex align-items-center">
+            <h3>Your University: {user.universityName} </h3>
+          </Col>
+          <Col className="col-6 mt-5 d-flex justify-content-center">
+            <Container className="p-4">
+              <h1>Review Your University</h1>
+              <Form ref={formRef}>
+                <Form.Group
+                  className="mb-3"
+                  controlId="exampleForm.ControlTextarea1"
+                >
+                  <Form.Label>Review</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    onChange={textHandler}
+                    placeholder="Your Answer"
+                    isInvalid={textIsEmpty}
+                  />
+                </Form.Group>
+              </Form>
+              <Rating
+                name="half-rating"
+                value={value}
+                defaultValue={2.5}
+                size="large"
+                onChange={(event, newValue) => {
+                  event.preventDefault();
+                  setValue(newValue);
+                }}
+              />
+
+              <Button className="ms-5" onClick={submitHandler} type="submit">
+                Add Review
+              </Button>
+              <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Success</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <h5>
+                    <Row>You successfully added a review!</Row>
+                  </h5>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleClose}>
+                    Close
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+            </Container>
+          </Col>
+          <Col className="col-3"></Col>
+        </Row>
+      </Fragment>
+    );
+  } else {
+    <p>Loading...</p>;
+  }
 };
+
+export async function getStaticPaths() {
+  const res = await fetch(API_ALL_FORMER_STUDENTS_ENDPOINT);
+  const data = await res.json();
+
+  return {
+    fallback: false,
+    paths: data.map((student) => ({
+      params: { studentId: student.id.toString() },
+    })),
+  };
+}
+
+export async function getStaticProps() {
+  return {
+    props: {},
+  };
+}
 
 export default FormerStudentProfilePage;

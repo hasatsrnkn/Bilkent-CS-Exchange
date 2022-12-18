@@ -57,15 +57,17 @@ const NavbarMenu = (props) => {
           </Link>
         )}
       </Nav>
-      <Form className="d-flex me-5">
-        <Form.Control
-          type="search"
-          placeholder="Search"
-          className="me-2"
-          aria-label="Search"
-        />
-        <Button variant="info">Search</Button>
-      </Form>
+      {isAuth && (
+        <Form className="d-flex me-5">
+          <Form.Control
+            type="search"
+            placeholder="Search"
+            className="me-2"
+            aria-label="Search"
+          />
+          <Button variant="danger">Search</Button>
+        </Form>
+      )}
     </Navbar>
   );
 };

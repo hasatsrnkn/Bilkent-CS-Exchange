@@ -1,16 +1,27 @@
 import { Fragment } from "react";
-
+import { ListGroup, Figure, Row, Col } from "react-bootstrap";
+import Rating from "@mui/material/Rating";
+import { BASE_URL } from "../../pages/api/api";
 const Review = (props) => {
+  const fullname = props.userName + " " + props.userSurname;
+  const image = BASE_URL + props.image;
   return (
-    <Fragment>
+    <ListGroup.Item>
       <Row>
-        <Col>{props.user}</Col>
-        <Col>{props.description}</Col>
+        <Col className="ps-3">
+          <Figure className="me-3">
+            <Figure.Image width={100} src={image}></Figure.Image>
+          </Figure>
+          {fullname}
+        </Col>
+        <Col className="mt-2">{props.text}</Col>
       </Row>
       <Row>
-        <Col>{props.rating}</Col>
+        <Col>
+          <Rating precision={0.5} value={props.rating} readOnly />
+        </Col>
       </Row>
-    </Fragment>
+    </ListGroup.Item>
   );
 };
 

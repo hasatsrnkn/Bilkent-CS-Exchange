@@ -6,7 +6,7 @@ import ToDoList from "../../../components/Profile/ToDoList/ToDoList";
 import { loadingActions } from "../../../store/loading";
 import {
   API_ALL_APPLYING_STUDENTS_ENDPOINT,
-  API_MYPROFILE_STUDENT_ENDPOINT,
+  API_MYPROFILE_ENDPOINT,
 } from "../../api/api";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -31,14 +31,11 @@ const studentProfilePage = (props) => {
   const token = useSelector((state) => state.auth.token);
   const [user, setUser] = useState(null);
   const router = useRouter();
-  const isLoading = useSelector((state) => state.loading.isLoading);
-  const dispatch = useDispatch();
-
   const { userID } = router.query;
 
   useEffect(() => {
     async function fetchData() {
-      fetch(API_MYPROFILE_STUDENT_ENDPOINT, {
+      fetch(API_MYPROFILE_ENDPOINT, {
         method: "GET",
         headers: {
           Authorization: `Token ${token}`,
