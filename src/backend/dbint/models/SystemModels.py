@@ -36,17 +36,13 @@ class Message(models.Model):
 
 
 class Notification(models.Model):
-    text = models.CharField(max_length=100, default='', blank=True)
-    user = models.ForeignKey('dbint.User', on_delete=models.CASCADE)
+    text = models.CharField(max_length=200, default='', blank=True)
+    user = models.ForeignKey('dbint.User', on_delete=models.CASCADE, default=None)
     receive_date = models.DateTimeField(max_length=40, auto_now_add=True)
     seen = models.BooleanField(default=False)
     banner = models.ImageField(verbose_name='a small image about the notification', blank=True,
                                default=None, upload_to='noti_banners')
-    # TODO: Is 100 length okay for notification context? If so, leave it.
-    # TODO: If user is blank or user id = 0, the notification can be sended to all students or all users. (Something like that)
-    # TODO: Maybe specify the notification (Message notification or todo list notification etc.) (area = models.IntegerField())
-    #       For example the area of the notification is 0, it means the notification is a message notification.
-    #       For example the area of the notification is 6, it means the notification is a todolist notification...
+    type = models.CharField(max_length=100, default='', blank=True)
 
 
 class Announcement(models.Model):
