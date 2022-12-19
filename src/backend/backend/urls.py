@@ -27,9 +27,7 @@ urlpatterns = [
     path('api/', include('ProfileApp.urls')),
     path('api/', include('UniInfoApp.urls')),
     path('api/', include('FileAnalyzeApp.urls')),
-    #TODO: Will be deleted this line (Move to fileanalyzer app)
-    path('', include('PlacementApp.urls')),
-    #TODO: Will be deleted this line (Move to fileanalyzer app)
+    path('api/', include('PlacementApp.urls')),
     path(r'api/auth/', include('knox.urls')),
 ]
 
