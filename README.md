@@ -15,7 +15,7 @@ use these credentials to log into different user accounts:<br/>
   pw: hasat123<br/>
   
   username: eray<br/>
-  pw:hasat123<br/>
+  pw: hasat123<br/>
   
 # Bilkent-CS-Exchange
 CS319 term project (an administration system for Bilkent Exchange-Erasmus programs)
