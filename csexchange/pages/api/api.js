@@ -2,7 +2,7 @@ const HasatPhoneIP = "http://172.20.10.8:1000";
 const HasatHomeIP = "http://192.168.1.40:1000";
 
 //BASE
-const BASE_URL = HasatPhoneIP;
+const BASE_URL = HasatHomeIP;
 const API_BASE_URL = `${BASE_URL}/api/`;
 //UNI INFO
 const API_UNIS_INFO_ENDPOINT = `${API_BASE_URL}all-unis/`;
@@ -23,6 +23,12 @@ const API_ALL_USERS = `${API_BASE_URL}all-users/`;
 const API_ALL_FORMER_STUDENTS_ENDPOINT = `${API_BASE_URL}all-former-students/`;
 const API_ALL_APPLYING_STUDENTS_ENDPOINT = `${API_BASE_URL}all-applying-students/`;
 
+//FILES
+const API_FILES_ENDPOINT = `${API_BASE_URL}upload-file/`;
+const API_DOWNLOAD_FILES_ENDPOINT = `${API_BASE_URL}download-file/`;
+const API_EXCEL_ENDPOINT = `${API_BASE_URL}upload-excel/`;
+const API_PRE_APPROVAL_ENDPOINT =`${API_BASE_URL}pdffile/`;
+
 module.exports = {
   BASE_URL,
   API_BASE_URL,
@@ -39,4 +45,8 @@ module.exports = {
   API_MAKE_ANNOUNCEMENT_ENDPOINT,
   API_ASK_QUESTION_ENPOINT,
   API_ALL_FORMER_STUDENTS_ENDPOINT,
+  API_FILES_ENDPOINT,
+  API_DOWNLOAD_FILES_ENDPOINT,
+  API_EXCEL_ENDPOINT,
+  API_PRE_APPROVAL_ENDPOINT,
 };

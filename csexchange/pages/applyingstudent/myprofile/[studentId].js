@@ -64,11 +64,11 @@ const studentProfilePage = (props) => {
               secretaryID: data.stu_excc.id,
             },
 
-            toDoList: data.check_list.items.map((item) => ({
+            toDoList: data.check_list ? data.check_list.items.map((item) => ({
               name: item.text,
               done: item.completed,
               deadline: item.deadline,
-            })),
+            })): null,
           });
         })
         .catch((err) => {

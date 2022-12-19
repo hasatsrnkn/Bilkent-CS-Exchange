@@ -10,6 +10,7 @@ const Courses = (props) => {
     field5: "",
   });
 
+  
   const changeHandler = (event, field) => {
     let newFields;
     async function setNewFields() {

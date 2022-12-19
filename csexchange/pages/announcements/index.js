@@ -23,7 +23,8 @@ const AnnouncementsPage = (props) => {
   useEffect(() => {
     if (
       userType == "departmentcoordinator" ||
-      userType == "exchangecoordinator"
+      userType == "exchangecoordinator" ||
+      userType == "instructor"
     ) {
       setAuthorized(true);
     }
