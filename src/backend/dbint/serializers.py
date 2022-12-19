@@ -374,14 +374,17 @@ class ListItemSerializer(serializers.ModelSerializer):
         model = ListItem
         fields = ['text', 'completed', 'deadline']
 
-class UploadFileSerializer(serializers.ModelSerializer):
-    #file_uploaded = FileField()
-    #class Meta:
-    #    fields = ['file_uploaded']
-    def get_queryset(self):
-        return
 
+class DocumentSerializer(serializers.ModelSerializer):
+    document = serializers.FileField()
 
     class Meta:
         model = Document
+        fields = ['document']
+
+
+class CourseSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Course
         fields = '__all__'

@@ -18,16 +18,16 @@ from dbint import constants
 
 class Chat(models.Model):
     user1 = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
-                               related_name='user1', default=None)
+                              related_name='user1', default=None)
     user2 = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
-                                 related_name='user2', default=None)
+                              related_name='user2', default=None)
 
 
 class Message(models.Model):
     sender = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
                                related_name='sender', default=None)
     receiver = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
-                               related_name='receiver', default=None)
+                                 related_name='receiver', default=None)
     text = models.CharField(max_length=500, default='')
     send_date = models.DateTimeField(max_length=40, auto_now_add=True)
     chat = models.ForeignKey('dbint.Chat', on_delete=models.CASCADE)
@@ -133,7 +133,7 @@ class University(models.Model):
         else:
             reviews_of_uni = self.reviews.order_by('date')
             for rev in reviews_of_uni:
-                if rev.rating <= 5 and rev.rating >= 0 and (not rev.reviewer.entered_review):
+                if 5 >= rev.rating >= 0 and (not rev.reviewer.entered_review):
                     rev.reviewer.entered_review = True
                     rev.reviewer.save()
                     sum += rev.rating
@@ -197,9 +197,9 @@ class Document(models.Model):
     documentName = models.CharField(max_length=100, default='')
     extension = models.CharField(max_length=10, default='xlsx')
     type = models.CharField(max_length=100, default='Excel File')
-    documentOwner = models.OneToOneField('dbint.User', blank=False, null=False,
-                                         default=None,
-                                         on_delete=models.CASCADE)
+    document_owner = models.ForeignKey('dbint.User', blank=False, null=False,
+                                          default=None, related_name='docs',
+                                          on_delete=models.CASCADE)
     date = models.DateTimeField(max_length=40, default=timezone.now)
 
     class Meta:
@@ -228,7 +228,7 @@ class Course(models.Model):
 
 
 class ForeignCourse(models.Model):
-    #Course'a child class olarak atayınca hata veriyor.
+    # Course'a child class olarak atayınca hata veriyor.
     name = models.CharField(max_length=100, default='')
     department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default='CS', )
     code = models.CharField(max_length=10, default='', blank=True)
@@ -240,10 +240,10 @@ class ForeignCourse(models.Model):
 
 
 class CourseRelation(models.Model):
-    #TODO: bilkent_course objesinden departmanlar ve instructorlar çekilir ve ona göre ilgili
+    # TODO: bilkent_course objesinden departmanlar ve instructorlar çekilir ve ona göre ilgili
     # departman koordinatörüne ve instructora gösterilir.
     bilkent_course = models.ForeignKey('dbint.Course', related_name='bilkent_course', default=None,
-                                    on_delete=models.CASCADE)
+                                       on_delete=models.CASCADE)
     foreign_course = models.ForeignKey('dbint.ForeignCourse', related_name='foreign_course', default=None,
-                                    on_delete=models.CASCADE)
+                                       on_delete=models.CASCADE)
     approved_status = models.BooleanField(default=False)

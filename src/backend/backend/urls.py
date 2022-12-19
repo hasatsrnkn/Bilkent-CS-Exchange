@@ -28,7 +28,6 @@ urlpatterns = [
     path('api/', include('UniInfoApp.urls')),
     path('api/', include('FileAnalyzeApp.urls')),
     #TODO: Will be deleted this line (Move to fileanalyzer app)
-    path('', include('FileAnalyzeApp.urls')),
     path('', include('PlacementApp.urls')),
     #TODO: Will be deleted this line (Move to fileanalyzer app)
     path(r'api/auth/', include('knox.urls')),

@@ -1,4 +1,5 @@
 from knox.auth import TokenAuthentication
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
@@ -8,7 +9,7 @@ from rest_framework.views import APIView
 from django.conf import settings
 from django.shortcuts import redirect
 from dbint.models import User, ApplyingStudent
-from dbint.serializers import user_serializer_dict, ToDoListSerializer
+from dbint.serializers import user_serializer_dict, ToDoListSerializer, CourseSerializer
 
 
 class MyProfileAPI(APIView):
@@ -44,3 +45,20 @@ class ProfileAPI(APIView):
         user_serializer_class = user_serializer_dict['private'][user_to_show.user_type]
         serializer = user_serializer_class(user_to_show)
         return Response(serializer.data, status=HTTP_200_OK)
+
+
+class AddCourseAPI(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+
+        if request.user.has_perm('dbint.add_course'):
+            serializer = CourseSerializer(data=request.data, context={'request': request})
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'detail': "You do not have permission to perform this action."},
+                                    status=status.HTTP_401_UNAUTHORIZED)

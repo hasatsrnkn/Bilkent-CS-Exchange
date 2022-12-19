@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='Document',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('documentName', models.CharField(default='', max_length=100)),
+                ('document_name', models.CharField(default='', max_length=100)),
                 ('type', models.CharField(default='pdf', max_length=10)),
                 ('date', models.DateTimeField(default=django.utils.timezone.now, max_length=40)),
                 ('documentOwner', models.OneToOneField(default=None, on_delete=django.db.models.deletion.CASCADE, to='dbint.user')),

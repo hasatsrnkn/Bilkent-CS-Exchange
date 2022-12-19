@@ -72,7 +72,7 @@ admin.site.register(Permission)
 
 post_save.connect(add_user_to_default_group, sender='dbint.User')
 post_save.connect(update_thread_reply_count, sender='dbint.Reply')
-post_save.connect(update_uni_review_count, sender='dbint.Review')
+#post_save.connect(update_uni_review_count, sender='dbint.Review')
 post_save.connect(create_notf_for_announcement, sender='dbint.Announcement')
 post_save.connect(create_notf_for_message, sender='dbint.Message')
 post_save.connect(create_notf_for_document, sender='dbint.Document')

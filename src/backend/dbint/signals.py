@@ -39,22 +39,26 @@ def update_thread_reply_count(sender, instance, created=False, **kwargs):
 
 
 @receiver(post_save, sender='dbint.Review')
-@receiver(post_delete, sender='dbint.Review')
-def update_uni_review_count(sender, instance, created=False, **kwargs):
+def increment_uni_review_count(sender, instance, created=False, **kwargs):
     if created:
-        instance.university.review_count += 1
         if not instance.reviewer.entered_review:
+            instance.university.review_count += 1
             instance.university.calculate_rating()
 
     else:
-        instance.university.review_count -= 1
-        if not instance.reviewer.fstu_reviews.all():
-            instance.reviewer.entered_review = False
-            instance.university.calculate_rating()
-            instance.reviewer.save()
-
+        pass
     instance.reviewer.save()
     instance.university.save()
+
+
+@receiver(post_delete, sender='dbint.Review')
+def decrement_uni_review_count(sender, instance, created=False, **kwargs):
+    instance.university.review_count -= 1
+    if not instance.reviewer.fstu_reviews.all():
+        instance.reviewer.entered_review = False
+        instance.university.calculate_rating()
+        instance.reviewer.save()
+
 
 @receiver(post_save, sender='dbint.Announcement')
 def create_notf_for_announcement(sender, instance, created=False, **kwargs):
@@ -78,15 +82,15 @@ def create_notf_for_message(sender, instance, created=False, **kwargs):
 @receiver(post_save, sender='dbint.Document')
 def create_notf_for_document(sender, instance, created=False, **kwargs):
     if created:
-        student_type = instance.documentOwner.user_type
+        student_type = instance.document_owner.user_type
         if student_type == ASTU:
-            notificationText = instance.documentOwner.first_name + instance.documentOwner.last_name + " uploaded a file!"
-            notificationCreatedDEPC = Notification.objects.create(text=notificationText, user=instance.documentOwner.get_manager()
-                                                                  .get(id=instance.documentOwner.id).stu_depc,
+            notificationText = instance.document_owner.first_name + instance.document_owner.last_name + " uploaded a file!"
+            notificationCreatedDEPC = Notification.objects.create(text=notificationText, user=instance.document_owner.get_manager()
+                                                                  .get(id=instance.document_owner.id).stu_depc,
                                                               seen=False, type='File Upload')
             notificationCreatedEXCC = Notification.objects.create(text=notificationText,
-                                                                  user=instance.documentOwner.get_manager()
-                                                                  .get(id=instance.documentOwner.id).stu_excc,
+                                                                  user=instance.document_owner.get_manager()
+                                                                  .get(id=instance.document_owner.id).stu_excc,
                                                                   seen=False, type='File Upload')
             notificationCreatedDEPC.save()
             notificationCreatedEXCC.save()
