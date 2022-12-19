@@ -15,6 +15,7 @@ from dbint import *
 
 from dbint.models.SystemModels import Document
 from dbint.serializers import DocumentSerializer
+from dbint.signals import _delete_file
 from .models import ExcelStudents
 from PyPDF2 import PdfFileWriter, PdfFileReader
 import io
@@ -43,14 +44,33 @@ class UploadFileAPI(APIView):
 
             file = request.data['file']
             file_name = request.data['file_name']
-
-            instance = Document.objects.create(document=file, documentName=file_name,
-                                            extension=".pdf", document_owner=request.user, type='PDF File')
-            instance.save()
-            if instance:
-                return Response(status=status.HTTP_200_OK)
+            user_docs = Document.objects.filter(document_owner=request.user)
+            if user_docs:
+                user_doc = user_docs.get(documentName=file_name)
+                if user_doc:
+                    _delete_file(MEDIA_ROOT + '/' + user_doc.document.__str__())
+                    user_doc.document = file
+                    user_doc.save()
+                    if user_doc.document:
+                        return Response(status=status.HTTP_200_OK)
+                    else:
+                        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                else:
+                    instance = Document.objects.create(document=file, documentName=file_name,
+                                                       extension=".pdf", document_owner=request.user, type='PDF File')
+                    instance.save()
+                    if instance:
+                        return Response(status=status.HTTP_200_OK)
+                    else:
+                        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             else:
-                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                instance = Document.objects.create(document=file, documentName=file_name,
+                                            extension=".pdf", document_owner=request.user, type='PDF File')
+                instance.save()
+                if instance:
+                    return Response(status=status.HTTP_200_OK)
+                else:
+                    return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
             return Response({'details': 'You do not have permission'}, status=status.HTTP_401_UNAUTHORIZED)
 

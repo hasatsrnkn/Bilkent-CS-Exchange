@@ -81,5 +81,6 @@ post_save.connect(create_todo_list_for_management, sender='dbint.Management')
 post_save.connect(create_todo_list_for_department_coordinator, sender='dbint.DepartmentCoordinator')
 post_save.connect(create_todo_list_for_management_instructor, sender='dbint.Instructor')
 
+post_delete.connect(delete_file, sender='dbint.Document')
 post_delete.connect(decrease_thread_reply_count, sender='dbint.Reply')
 post_delete.connect(decrease_uni_review_count, sender='dbint.Review')

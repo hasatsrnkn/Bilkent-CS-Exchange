@@ -1,12 +1,31 @@
 from django.contrib.auth.models import Group
 from django.db.models.signals import post_save
 from django.db.models.signals import post_delete
+
+from backend.settings import MEDIA_ROOT
 from dbint.constants import *
 from dbint.models.ActorModels import Student
 from dbint.models.SystemModels import Notification
 from dbint.models.SystemModels import ToDoList
 from dbint.models.SystemModels import ListItem
 from django.dispatch import receiver
+import os
+from django.db import models
+
+
+def _delete_file(path):
+    """ Deletes file from filesystem. """
+    if os.path.isfile(path):
+        os.remove(path)
+        print('-File removed from file system-')
+
+
+@receiver(post_delete, sender='dbint.Document')
+def delete_file(sender, instance, *args, **kwargs):
+    """ Deletes image files on `post_delete` """
+    print(instance.document)
+    if instance.document:
+        _delete_file(MEDIA_ROOT + '/' + instance.document.__str__())
 
 
 @receiver(post_save, sender='dbint.User')
@@ -22,6 +41,7 @@ def add_user_to_default_group(sender, instance, created=False, **kwargs):
     my_group.save()
     print(instance.groups)
 
+
 @receiver(post_save, sender='dbint.Reply')
 def increase_thread_reply_count(sender, instance, created=False, **kwargs):
     if created:
@@ -35,11 +55,13 @@ def increase_thread_reply_count(sender, instance, created=False, **kwargs):
 
     instance.thread.save()
 
+
 @receiver(post_delete, sender='dbint.Reply')
-def decrease_thread_reply_count(sender,instance, *args, **kwargs):
+def decrease_thread_reply_count(sender, instance, *args, **kwargs):
     # Decrement the reply_count field of the associated thread
     instance.thread.reply_count -= 1
     instance.thread.save()
+
 
 @receiver(post_save, sender='dbint.Review')
 def increase_uni_review_count(sender, instance, created=False, **kwargs):
@@ -49,8 +71,9 @@ def increase_uni_review_count(sender, instance, created=False, **kwargs):
             instance.university.calculate_rating()
     instance.university.save()
 
+
 @receiver(post_delete, sender='dbint.Review')
-def decrease_uni_review_count(sender,instance, *args, **kwargs):
+def decrease_uni_review_count(sender, instance, *args, **kwargs):
     instance.university.review_count -= 1
     if not instance.reviewer.fstu_reviews.all():
         instance.reviewer.entered_review = False
@@ -93,9 +116,10 @@ def create_notf_for_document(sender, instance, created=False, **kwargs):
         student_type = instance.document_owner.user_type
         if student_type == ASTU:
             notificationText = instance.document_owner.first_name + instance.document_owner.last_name + " uploaded a file!"
-            notificationCreatedDEPC = Notification.objects.create(text=notificationText, user=instance.document_owner.get_manager()
+            notificationCreatedDEPC = Notification.objects.create(text=notificationText,
+                                                                  user=instance.document_owner.get_manager()
                                                                   .get(id=instance.document_owner.id).stu_depc,
-                                                              seen=False, type='File Upload')
+                                                                  seen=False, type='File Upload')
             notificationCreatedEXCC = Notification.objects.create(text=notificationText,
                                                                   user=instance.document_owner.get_manager()
                                                                   .get(id=instance.document_owner.id).stu_excc,
@@ -104,47 +128,52 @@ def create_notf_for_document(sender, instance, created=False, **kwargs):
             notificationCreatedEXCC.save()
 
             if (sender.type == 'Approval Form'):
-                listItem = ListItem.objects.get(list=instance.documentOwner.get_manager().check_list, type='Approval Form')
+                listItem = ListItem.objects.get(list=instance.documentOwner.get_manager().check_list,
+                                                type='Approval Form')
                 listItem.completed = True
                 listItem.save()
             elif (sender.type == 'Learning Agreement'):
-                listItem = ListItem.objects.get(list=uinstance.documentOwner.get_manager().check_list, type='Learning Agreement')
+                listItem = ListItem.objects.get(list=instance.documentOwner.get_manager().check_list,
+                                                type='Learning Agreement')
                 listItem.completed = True
                 listItem.save()
 
-@receiver(post_save, sender='dbint.ApplyingStudent') #bir de management
+
+@receiver(post_save, sender='dbint.ApplyingStudent')  # bir de management
 def create_todo_list(sender, instance, created=False, **kwargs):
     if created:
         todolist = ToDoList.objects.create()
         sender.check_list = todolist
         sender.save()
         firstListItem = ListItem.objects.create(list=todolist, text='Upload Learning Agreement', completed=False,
-                                 deadline=2023-1-7, type='Learning Agreement')
+                                                deadline=2023 - 1 - 7, type='Learning Agreement')
         secondListItem = ListItem.objects.create(list=todolist, text='Upload Approval Form', completed=False,
-                                 deadline=2023-1-12, type='Approval Form')
+                                                 deadline=2023 - 1 - 12, type='Approval Form')
         firstListItem.save()
         secondListItem.save()
 
-@receiver(post_save, sender='dbint.Management') #bir de management
+
+@receiver(post_save, sender='dbint.Management')  # bir de management
 def create_todo_list_for_management(sender, instance, created=False, **kwargs):
     if created:
         todolist = ToDoList.objects.create()
         sender.check_list = todolist
         sender.save()
 
-@receiver(post_save, sender='dbint.DepartmentCoordinator') #bir de management
+
+@receiver(post_save, sender='dbint.DepartmentCoordinator')  # bir de management
 def create_todo_list_for_department_coordinator(sender, instance, created=False, **kwargs):
     if created:
         todolist = sender.check_list
         firstListItem = ListItem.objects.create(list=todolist, text='Approve Students', completed=False,
-                                 deadline=2023-1-7, type='Approve Students')
+                                                deadline=2023 - 1 - 7, type='Approve Students')
         firstListItem.save()
 
-@receiver(post_save, sender='dbint.Instructor') #bir de management
+
+@receiver(post_save, sender='dbint.Instructor')  # bir de management
 def create_todo_list_for_management_instructor(sender, instance, created=False, **kwargs):
     if created:
         todolist = sender.check_list
         firstListItem = ListItem.objects.create(list=todolist, text='Approve Courses', completed=False,
-                                 deadline=2023-1-7, type='Approve Course')
+                                                deadline=2023 - 1 - 7, type='Approve Course')
         firstListItem.save()
-
