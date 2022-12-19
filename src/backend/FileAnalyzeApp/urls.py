@@ -18,6 +18,8 @@ from django.urls import path, include, re_path
 from . import views
 from backend import settings
 from FileAnalyzeApp.api_views import UploadViewSet
+from FileAnalyzeApp.api_views import ReadExcel
+from FileAnalyzeApp.api_views import CreatePDF
 from django.conf.urls.static import static
 from rest_framework import routers
 
@@ -26,10 +28,11 @@ from rest_framework import routers
 
 urlpatterns =[
 re_path(r'^files/$', UploadViewSet.as_view(), name='files'),
+re_path(r'^read_excel/$', ReadExcel.as_view(), name='excel'),
+re_path(r'^create_pdf/$', CreatePDF.as_view(), name='pdf'),
 #path("",views.Import_Excel_pandas,name="Import_Excel_pandas"),
 path("pdffile",views.ReadAndWritePdf,name="ReadAndWritePdf"),
 path('Import_Excel_pandas/', views.Import_Excel_pandas,name="Import_Excel_pandas"),
-path('Import_excel',views.Import_excel,name="Import_excel"),
 #path("",views.Import_Excel_pandas,name="Import_Excel_pandas"),
 #path('', include(router.urls)),
 ]

@@ -92,6 +92,7 @@ class ApplyingStudent(Student):
     applied_university = models.ForeignKey('dbint.University', blank=False, null=True,
                                            default=None, related_name='applied_university',
                                            on_delete=models.CASCADE)
+    period = models.CharField(max_length=100, default='')
 
     def save(self, *args, **kwargs):
         if not self.pk:

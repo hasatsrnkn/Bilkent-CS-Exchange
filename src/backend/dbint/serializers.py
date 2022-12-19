@@ -375,9 +375,6 @@ class ListItemSerializer(serializers.ModelSerializer):
         fields = ['text', 'completed', 'deadline']
 
 class UploadFileSerializer(serializers.ModelSerializer):
-    #file_uploaded = FileField()
-    #class Meta:
-    #    fields = ['file_uploaded']
     def get_queryset(self):
         return
 

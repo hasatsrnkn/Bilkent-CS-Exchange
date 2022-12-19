@@ -53,20 +53,21 @@ def index(request):
 def Import_Excel_pandas(request):
     if request.method == 'POST' and request.FILES['myfile']:
         myfile = request.FILES['myfile']
-        fs = FileSystemStorage()
+        fs = FileSystemStorage(location='media/')
         filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = fs.url(filename)
-        empexceldata = pd.read_excel(filename)
+        uploaded_file_url = fs.url("media/" + filename)
+        empexceldata = pd.read_excel("media/" + filename)
         dbframe = empexceldata
         for dbframe in dbframe.itertuples():
-            #print >>sys.stderr, (dbframe)
-            obj = ExcelStudents.objects.create(firstName=dbframe.FirstName, Lastname=dbframe.Lastname,
-                                          studentID=dbframe.StudentIDNumber,
-                                          faculty=dbframe.Faculty, department=dbframe.Department, transcriptPoints=dbframe.TranscriptPoints,
-                                          totalPoints=dbframe.TotalPoints,
-                                          duration=dbframe.DurationPreferred, firstPrefUni=dbframe.PreferredUniversity1, secondPrefUni=dbframe.PreferredUniversity2,
-                                               thirdPrefUni=dbframe.PreferredUniversity3, fourthPrefUni=dbframe.PreferredUniversity4,
-                                               fifthPrefUni=dbframe.PreferredUniversity5)
+            if (pd.isnull(dbframe[5])):
+                break
+            obj = ExcelStudents.objects.create(firstName=dbframe[1], lastname=dbframe[2],
+                                          studentID=dbframe[3],
+                                          faculty=dbframe[5], department=dbframe[6], transcriptPoints=dbframe[19],
+                                          totalPoints=dbframe[20],
+                                          duration=dbframe[21], firstPrefUni=dbframe[22], secondPrefUni=dbframe[23],
+                                               thirdPrefUni=dbframe[24], fourthPrefUni=dbframe[25],
+                                               fifthPrefUni=dbframe[26])
             obj.save()
         return render(request, 'import_excel_db.html', {
             'uploaded_file_url': uploaded_file_url
@@ -129,30 +130,3 @@ def ReadAndWritePdf(request):
     outputStream.close()
 
     return render(request, 'import_excel_db.html', {})
-
-def createWordFile(request):
-    document = Document()
-    docx_title = "TEST_DOCUMENT.docx"
-    document.add_paragraph('Dear Sir or Madam:')
-
-    table = document.add_table(0, 0)  # we add rows iteratively
-    table.style = 'TableGrid'
-    first_column_width = 5
-    second_column_with = 10
-    table.add_column(Cm(first_column_width))
-    table.add_column(Cm(second_column_with))
-    table.add_row()
-    row = table.rows[0]
-    row.cells[0].text = "Deneme"
-    f = io.BytesIO()
-    document.save(docx_title + '.docx')
-    document.save(f)
-    length = f.tell()
-    f.seek(0)
-    response = HttpResponse(
-        f.getvalue(),
-        content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    )
-    response['Content-Disposition'] = 'attachment; filename=' + docx_title
-    response['Content-Length'] = length
-    return response

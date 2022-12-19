@@ -106,6 +106,7 @@ class ListItem(models.Model):
     text = models.CharField(max_length=100, default='', blank=True)
     completed = models.BooleanField(default=False)
     deadline = models.DateTimeField(verbose_name="The task should be completed before this date")
+    type = models.CharField(max_length=100, default='Upload File')
 
     def __str__(self):
         return self.id.__str__() + " - Task: " + self.text[:10] + "..."
