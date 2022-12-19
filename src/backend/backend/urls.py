@@ -25,10 +25,9 @@ urlpatterns = [
     path('api/', include('dbint.urls')),
     path('api/', include('LoginApp.urls')),
     path('api/', include('ProfileApp.urls')),
-    #TODO: Will be deleted this line (Move to fileanalyzer app)
-    path('', include('FileAnalyzeApp.urls')),
-    path('', include('PlacementApp.urls')),
-    #TODO: Will be deleted this line (Move to fileanalyzer app)
+    path('api/', include('UniInfoApp.urls')),
+    path('api/', include('FileAnalyzeApp.urls')),
+    path('api/', include('PlacementApp.urls')),
     path(r'api/auth/', include('knox.urls')),
 ]
 

@@ -1,6 +1,4 @@
-from django.contrib.auth.models import UserManager, AbstractUser
-from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
 
@@ -25,6 +23,7 @@ class User(AbstractUser):
             "unique": _("A user with that username already exists."),
         },)  #int or string????
     '''
+
     def get_manager(self):
         if self.user_type == ASTU:
             return ApplyingStudent.objects
@@ -41,7 +40,6 @@ class User(AbstractUser):
         else:
             return User.objects
 
-
     def __str__(self):
         return '(' + self.id.__str__() + ')' + \
                ' User: ' + self.first_name + ' ' + self.last_name
@@ -49,7 +47,7 @@ class User(AbstractUser):
 
 class Student(User):
     department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=CS)
-    image = models.ImageField(upload_to='profile_pictures', blank=True, default=None)
+    image = models.ImageField(upload_to='profile_pictures', blank=True, default='profile_pictures/default.png')
     points = models.FloatField(verbose_name="Erasmus grade points out of 100", default=0)
 
     class Meta:
@@ -71,13 +69,13 @@ class ExchangeOffice(User):
 
     class Meta:
         verbose_name = 'Exchange Office Account'
-        verbose_name_plural = 'Exchange Offices Accounts'
+        verbose_name_plural = 'Exchange Office Accounts'
 
 
 class Management(User):
-    check_list = models.ForeignKey('dbint.ToDoList', blank=True, null=True,
+    check_list = models.OneToOneField('dbint.ToDoList', blank=True, null=True, related_name='management_owner',
                                    on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='profile_pictures', blank=True, default=None)
+    image = models.ImageField(upload_to='profile_pictures', blank=True, default='media/profile_pictures/default.png')
 
     def __str__(self):
         return '(' + self.id.__str__() + ')' + \
@@ -85,15 +83,16 @@ class Management(User):
 
 
 class ApplyingStudent(Student):
-    check_list = models.OneToOneField('dbint.ToDoList', blank=True, null=True, default=None,
+    check_list = models.OneToOneField('dbint.ToDoList', blank=True, null=True, default=None, related_name='astu_owner',
                                       on_delete=models.CASCADE)
-    stu_depc = models.ForeignKey('dbint.DepartmentCoordinator', related_name='stu_depc', null=True, default=None,
-                                    on_delete=models.CASCADE)
+    stu_depc = models.ForeignKey('dbint.DepartmentCoordinator', related_name='assigned_students', null=True, default=None,
+                                 on_delete=models.CASCADE)
     stu_excc = models.ForeignKey('dbint.ExchangeCoordinator', related_name='stu_excc', null=True, default=None,
-                                        on_delete=models.CASCADE)
+                                 on_delete=models.CASCADE)
     applied_university = models.ForeignKey('dbint.University', blank=False, null=True,
                                            default=None, related_name='applied_university',
                                            on_delete=models.CASCADE)
+    period = models.CharField(max_length=100, default='')
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -107,10 +106,11 @@ class ApplyingStudent(Student):
 
 
 class FormerStudent(Student):
-    uni_visited = models.ForeignKey('dbint.UniversityDepartment', related_name='former_students',
+    uni_visited = models.ForeignKey('dbint.University', related_name='former_students', null=True, blank=True,
                                     on_delete=models.CASCADE)
-    begin_date = models.DateField(max_length='20', default='')
-    end_date = models.DateField(max_length='20', default='')
+    begin_date = models.DateField(max_length='20', default=None, null=True)
+    end_date = models.DateField(max_length='20', auto_now_add=True)
+    entered_review = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -143,8 +143,8 @@ class DepartmentCoordinator(Management):
 
 
 class Instructor(Management):
-    department = models.CharField(max_length=10, default='')
-    courses = models.ManyToManyField('dbint.Course', related_name='courses',
+    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=CS)
+    courses = models.ManyToManyField('dbint.Course', related_name='instructor_of_course',
                                      blank=True)
 
     def save(self, *args, **kwargs):

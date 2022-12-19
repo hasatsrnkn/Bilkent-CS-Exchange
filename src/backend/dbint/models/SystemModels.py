@@ -1,9 +1,9 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
-from django.db.models.signals import post_save
 
-from dbint.constants import DEPARTMENT_CHOICES
-from dbint.signals import update_thread_reply_count
+from dbint.constants import DEPARTMENT_CHOICES, CS
+from dbint.constants import PERIOD_CHOICES
 from dbint import constants
 
 
@@ -17,33 +17,33 @@ from dbint import constants
 
 
 class Chat(models.Model):
+    user1 = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
+                              related_name='user1', default=None)
+    user2 = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
+                              related_name='user2', default=None)
+
+
+class Message(models.Model):
     sender = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
                                related_name='sender', default=None)
     receiver = models.ForeignKey('dbint.User', on_delete=models.CASCADE,
                                  related_name='receiver', default=None)
-    # TODO: Use user1 and user2 because sender and receiver is not constant on chat (Just change names).
-
-
-class Message(models.Model):
     text = models.CharField(max_length=500, default='')
     send_date = models.DateTimeField(max_length=40, auto_now_add=True)
     chat = models.ForeignKey('dbint.Chat', on_delete=models.CASCADE)
-    # TODO: add sender and receiver because it is important to show who is who on chat.
-    # TODO: Is 500 length okay for message context? If so, leave it.
 
 
 class Notification(models.Model):
-    text = models.CharField(max_length=100, default='', blank=True)
-    user = models.ForeignKey('dbint.User', on_delete=models.CASCADE)
+    text = models.CharField(max_length=200, default='', blank=True)
+    user = models.ForeignKey('dbint.User', on_delete=models.CASCADE, default=None)
     receive_date = models.DateTimeField(max_length=40, auto_now_add=True)
     seen = models.BooleanField(default=False)
     banner = models.ImageField(verbose_name='a small image about the notification', blank=True,
                                default=None, upload_to='noti_banners')
-    # TODO: Is 100 length okay for notification context? If so, leave it.
-    # TODO: If user is blank or user id = 0, the notification can be sended to all students or all users. (Something like that)
-    # TODO: Maybe specify the notification (Message notification or todo list notification etc.) (area = models.IntegerField())
-    #       For example the area of the notification is 0, it means the notification is a message notification.
-    #       For example the area of the notification is 6, it means the notification is a todolist notification...
+    type = models.CharField(max_length=100, default='', blank=True)
+
+    class Meta:
+        ordering = ['receive_date']
 
 
 class Announcement(models.Model):
@@ -62,7 +62,7 @@ class Announcement(models.Model):
 class Thread(models.Model):
     header = models.CharField(max_length=50, default='')
     question = models.TextField(max_length=1500, default='')
-    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=1, )
+    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=CS)
     user = models.ForeignKey('dbint.User', on_delete=models.CASCADE)
     reply_count = models.IntegerField(default=0, blank=True)
     solved = models.BooleanField(default=False)
@@ -75,9 +75,6 @@ class Thread(models.Model):
 
     class Meta:
         ordering = ['start_date']
-
-
-post_save.connect(update_thread_reply_count, sender='dbint.Reply')
 
 
 class Reply(models.Model):
@@ -102,6 +99,19 @@ class ToDoList(models.Model):
         verbose_name = 'TODO List'
 
 
+class ListItem(models.Model):
+    list = models.ForeignKey('dbint.ToDoList', blank=True, null=False,
+                             related_name='items',
+                             on_delete=models.CASCADE)
+    text = models.CharField(max_length=100, default='', blank=True)
+    completed = models.BooleanField(default=False)
+    deadline = models.DateTimeField(verbose_name="The task should be completed before this date")
+    type = models.CharField(max_length=100, default='Upload File')
+
+    def __str__(self):
+        return self.id.__str__() + " - Task: " + self.text[:10] + "..."
+
+
 # not finished
 class University(models.Model):
     name = models.CharField(max_length=100, default='')
@@ -110,16 +120,29 @@ class University(models.Model):
     website_link = models.CharField(max_length=100, default='')
     contact = models.EmailField(max_length=100, default='')
     rating = models.FloatField(default=0.0)
-    reviewCount = models.IntegerField(default=0)
+    review_count = models.IntegerField(default=0)
 
     # TODO: Check deadline line. This line cannot be added automatically.
+
+    def __str__(self):
+        return self.id.__str__() + " - " + self.name
+
+    def calculate_rating(self):
+        sum = 0.0
+        if self.review_count <= 0:
+            self.rating = 0
+        else:
+            reviews_of_uni = self.reviews.order_by('date')
+            for rev in reviews_of_uni:
+                if 5 >= rev.rating >= 0 and (not rev.reviewer.entered_review):
+                    rev.reviewer.entered_review = True
+                    rev.reviewer.save()
+                    sum += rev.rating
+            self.rating = sum / self.review_count
 
     class Meta:
         verbose_name_plural = 'Universities'
         ordering = ['rating']
-
-    def __str__(self):
-        return self.id.__str__() + " - " + self.name
 
 
 # Department Specialized University ( NEW ) not finished
@@ -131,12 +154,12 @@ class UniversityDepartment(models.Model):
     taught_in_english_info = models.CharField(max_length=150, blank=True, default='')
     quota = models.IntegerField(default=0)
     language_requirements = models.CharField(max_length=40, blank=True, default='')
-    coordinator = models.ForeignKey('dbint.DepartmentCoordinator', related_name='coordinator',
+    coordinator = models.ForeignKey('dbint.DepartmentCoordinator', related_name='assigned_unis',
                                     on_delete=models.CASCADE, blank=False, default=None)
     # ADDED FOR PLACEMENT ALGORITHM
     quotaPlacement = models.IntegerField(default=0)
     # TODO: Departmant choices değil period choices olcak (fall - spring gibi)
-    availablePeriod = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default=1, )
+    availablePeriod = models.CharField(max_length=10, choices=PERIOD_CHOICES, default='FALL', )
     # ADDED FOR PLACEMENT ALGORITHM
 
     threshold = models.IntegerField(default=0)
@@ -146,6 +169,7 @@ class UniversityDepartment(models.Model):
 
     # TODO: MUST REMOVE !!!!!!!!! I CANNOT REACH API SO I USE IT. DEFINITELY BE DELETED
     objects = models.Manager()
+
     # TODO: MUST REMOVE !!!!!!!!! I CANNOT REACH API SO I USE IT. DEFINITELY BE DELETED
     def __str__(self):
         return self.id.__str__() + " - " + self.university.name + " : " + self.get_department_display()
@@ -153,19 +177,34 @@ class UniversityDepartment(models.Model):
 
 # University review ( NEW )
 class Review(models.Model):
-    university = models.ForeignKey('dbint.University', on_delete=models.CASCADE, blank=False)
-    reviewer = models.ForeignKey('dbint.User', on_delete=models.CASCADE)
+    university = models.ForeignKey('dbint.University', on_delete=models.CASCADE, blank=False, related_name='reviews')
+    reviewer = models.ForeignKey('dbint.FormerStudent', related_name='fstu_reviews', on_delete=models.CASCADE)
     text = models.TextField(max_length=500, default='')
     rating = models.FloatField(default=0)
+    date = models.DateTimeField(max_length=40, auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if self.university == self.reviewer.uni_visited:
+            super(Review, self).save(*args, **kwargs)
+        else:
+            raise ValidationError('Former students can only review their universities')
+
+    def __str__(self):
+        return self.id.__str__() + " - Review to: " + self.university.name
 
 
 class Document(models.Model):
+    document = models.FileField(upload_to='files', default=None)
     documentName = models.CharField(max_length=100, default='')
-    type = models.CharField(max_length=10, default='pdf')
-    documentOwner = models.OneToOneField('dbint.User', blank=False, null=False,
-                                      default=None,
-                                      on_delete=models.CASCADE)
+    extension = models.CharField(max_length=10, default='xlsx')
+    type = models.CharField(max_length=100, default='Excel File')
+    document_owner = models.ForeignKey('dbint.User', blank=False, null=False,
+                                          default=None, related_name='docs',
+                                          on_delete=models.CASCADE)
     date = models.DateTimeField(max_length=40, default=timezone.now)
+
+    class Meta:
+        verbose_name_plural = 'Documents'
 
 
 class PreApprovalFormContent(Document):
@@ -176,12 +215,36 @@ class PreApprovalFormContent(Document):
     hostInst = models.CharField(max_length=100, default='')
     academicYear = models.CharField(max_length=100, default='')
     semester = models.CharField(max_length=100, default='')
-    #courses = models.ManyToManyField('dbint.Course', related_name='courses', blank=True)
+    # courses = models.ManyToManyField('dbint.Course', related_name='courses', blank=True)
     coordinatorName = models.CharField(max_length=100, default='')
 
 
 # not finished
 class Course(models.Model):
     name = models.CharField(max_length=100, default='')
+    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default='CS', )
     code = models.CharField(max_length=10, default='', blank=True)
     credits = models.FloatField(default=0)
+    syllabus_link = models.URLField(max_length=300, default='')
+
+
+class ForeignCourse(models.Model):
+    # Course'a child class olarak atayınca hata veriyor.
+    name = models.CharField(max_length=100, default='')
+    department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default='CS', )
+    code = models.CharField(max_length=10, default='', blank=True)
+    credits = models.FloatField(default=0)
+    syllabus_link = models.CharField(max_length=300, default='')
+    university = models.ForeignKey('dbint.University', blank=False, null=False,
+                                   default=None, related_name='foreign_course_university',
+                                   on_delete=models.CASCADE)
+
+
+class CourseRelation(models.Model):
+    # TODO: bilkent_course objesinden departmanlar ve instructorlar çekilir ve ona göre ilgili
+    # departman koordinatörüne ve instructora gösterilir.
+    bilkent_course = models.ForeignKey('dbint.Course', related_name='bilkent_course', default=None,
+                                       on_delete=models.CASCADE)
+    foreign_course = models.ForeignKey('dbint.ForeignCourse', related_name='foreign_course', default=None,
+                                       on_delete=models.CASCADE)
+    approved_status = models.BooleanField(default=False)

@@ -17,6 +17,22 @@ class LoginView(KnoxLoginView):
 
     permission_classes = [permissions.AllowAny]
 
+    def get_post_response_data(self, request, token, instance):
+        UserSerializer = self.get_user_serializer_class()
+
+        data = {
+            'expiry': self.format_expiry_datetime(instance.expiry),
+            'token': token,
+            'type': request.user.user_type,
+            'id': request.user.id
+        }
+        if UserSerializer is not None:
+            data["user"] = UserSerializer(
+                request.user,
+                context=self.get_context()
+            ).data
+        return data
+
     def post(self, request, format=None):
         serializer = AuthTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
