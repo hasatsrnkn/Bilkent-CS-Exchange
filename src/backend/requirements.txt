@@ -1,0 +1,13 @@
+django
+pillow
+tablib
+openpyxl
+pandas
+pypdf2
+reportlab
+python-docx
+cryptography
+django-rest-knox
+django-import-export
+django-hitcount
+axios
