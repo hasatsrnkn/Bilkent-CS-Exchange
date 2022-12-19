@@ -93,6 +93,15 @@ def create_notf_for_document(sender, instance, created=False, **kwargs):
             notificationCreatedDEPC.save()
             notificationCreatedEXCC.save()
 
+            if (sender.type == 'Approval Form'):
+                listItem = ListItem.objects.get(list=instance.documentOwner.get_manager().check_list, type='Approval Form')
+                listItem.completed = True
+                listItem.save()
+            elif (sender.type == 'Learning Agreement'):
+                listItem = ListItem.objects.get(list=uinstance.documentOwner.get_manager().check_list, type='Learning Agreement')
+                listItem.completed = True
+                listItem.save()
+
 @receiver(post_save, sender='dbint.ApplyingStudent') #bir de management
 def create_todo_list(sender, instance, created=False, **kwargs):
     if created:
@@ -128,3 +137,4 @@ def create_todo_list_for_management_instructor(sender, instance, created=False, 
         firstListItem = ListItem.objects.create(list=todolist, text='Approve Courses', completed=False,
                                  deadline=2023-1-7, type='Approve Course')
         firstListItem.save()
+

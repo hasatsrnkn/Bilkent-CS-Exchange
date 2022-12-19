@@ -18,15 +18,6 @@ class UploadViewSet(APIView):
         #TODO: ID DEĞİŞTİR tokendan alacaktın ve type'ı al. Type ı nasıl alacağını merak ediyorsan: signalslerde var
         type = 'xxx'
         user = User.get_manager().get(id=16)
-        if(user.user_type == 'Applying Student'):
-            if (type == 'Approval Form'):
-                listItem = ListItem.objects.get(list=user.check_list, type='Approval Form')
-                listItem.completed = True
-                listItem.save()
-            elif (type == 'Learning Agreement'):
-                listItem = ListItem.objects.get(list=user.check_list, type='Learning Agreement')
-                listItem.completed = True
-                listItem.save()
 
         try:
             if request.method == 'POST':
