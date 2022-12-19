@@ -21,9 +21,11 @@ const AnnouncementsList = (props) => {
           <Announcement
             announcer_name={announ.announcer_name}
             announcer_surname={announ.announcer_surname}
+            announcer_image = {announ.announcer_image}
             context={announ.context}
             text={announ.text}
             date={announ.date}
+
           ></Announcement>
         ))}
       </ListGroup>

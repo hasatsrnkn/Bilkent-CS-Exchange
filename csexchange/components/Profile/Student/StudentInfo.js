@@ -5,6 +5,11 @@ import { useSelector } from "react-redux";
 
 const StudentInfo = (props) => {
   const [show, setShow] = useState(false);
+  const coordinatorFullName =
+    props.coordinatorName + " " + props.coordinatorSurname;
+
+  const departmentSecretaryFullName =
+    props.departmentSecretaryName + " " + props.departmentSecretarySurname;
   const handleShow = () => {
     setShow(true);
   };
@@ -12,7 +17,7 @@ const StudentInfo = (props) => {
     setShow(false);
   };
 
-  const user = useSelector((state) => state.auth.bilkentId);
+  const userID = useSelector((state) => state.auth.userID);
 
   return (
     <Card className="p-2">
@@ -25,7 +30,15 @@ const StudentInfo = (props) => {
             <h4>University: {props.universityName} </h4>
           </Col>
           <Col className="col-3">
-            <Button variant="secondary">Go To University Page</Button>
+            <Link href={props.universityWebLink} passHref legacyBehavior>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-item"
+              >
+                <Button>Go to University Page</Button>
+              </a>
+            </Link>
           </Col>
           <Col className="col-3">
             <Button variant="danger" onClick={handleShow}>
@@ -35,43 +48,45 @@ const StudentInfo = (props) => {
         </Row>
         <Row className="mt-5 pb-5">
           <Col className="col-6">
-            <h4>Coordinator: {props.coordinator}</h4>
+            <h4>Department Coordinator: {coordinatorFullName}</h4>
           </Col>
           <Col className="col-3">
-            <Button variant="secondary">Go To Coordinator Profile</Button>
+            <Link
+              href={`/profile/${props.coordinatorID}`}
+              passHref
+              legacyBehavior
+            >
+              <Button variant="secondary">Go to Coordinator Profile</Button>
+            </Link>
           </Col>
-          <Col className="col-3">
-            <Button variant="secondary">Send Message</Button>
-          </Col>
+          
         </Row>
         <Row className="mt-5 pb-5">
           <Col className="col-6">
-            <h4>Department Secretary: {props.departmentSecretary}</h4>
+            <h4>Exchange Coordinator: {departmentSecretaryFullName}</h4>
           </Col>
-          <Col className="col-3">
-            <Button variant="secondary">Go To Secretary Profile</Button>
+          <Col className="col-6">
+            <Link
+              href={`/profile/${props.departmentSecretaryID}`}
+              passHref
+              legacyBehavior
+            >
+              <Button variant="secondary">Go to Exchange Coordinator Profile</Button>
+            </Link>
           </Col>
-          <Col className="col-3">
-            <Button variant="secondary">Send Message</Button>
-          </Col>
+          
         </Row>
         <Row className="mt-5">
-          <Col className="col-4 d-flex justify-content-center align-items-center">
-            <Link href={`/student/preapproval/${user}`} passHref legacyBehavior>
+          <Col className="col-6 d-flex justify-content-center align-items-center">
+            <Link href={`/applyingstudent/preapproval/${userID}`} passHref legacyBehavior>
               <Button variant="success" size="lg">
                 Fill Pre-Approval
               </Button>
             </Link>
           </Col>
-          <Col className="col-4 d-flex justify-content-center align-items-center">
-            <Link href={`/student/learningagreement/${user}`} passHref legacyBehavior>
-              <Button variant="success" size="lg">
-                Fill Learning Agreement
-              </Button>
-            </Link>
-          </Col>
-          <Col className="col-4 d-flex justify-content-center align-items-center">
-          <Link href={`/student/files/${user}`} passHref legacyBehavior>
+
+          <Col className="col-6 d-flex justify-content-center align-items-center">
+            <Link href={`/applyingstudent/files/${userID}`} passHref legacyBehavior>
               <Button variant="success" size="lg">
                 Go to Files
               </Button>

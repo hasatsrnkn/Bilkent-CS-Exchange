@@ -3,15 +3,17 @@ import { Card, Col, ListGroup, Row, Alert, Button } from "react-bootstrap";
 import Rating from "@mui/material/Rating";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import ReviewList from "../Review/ReviewList";
+
 const University = (props) => {
   const [entered, setEntered] = useState("danger");
 
   useEffect(() => {
-    if (props.studentPoint - props.threshold > 7) {
+    if (props.studentPoint - props.threshold > 5) {
       setEntered("success");
-    } else if (Math.abs(props.studentPoint - props.threshold) <= 7) {
+    } else if (Math.abs(props.studentPoint - props.threshold) <= 5) {
       setEntered("warning");
-    } else if (props.threshold - props.studentPoint > 7) {
+    } else if (props.threshold - props.studentPoint > 5) {
       setEntered("danger");
     }
   }, [props.studentPoint]);
@@ -59,12 +61,22 @@ const University = (props) => {
             <Row>
               <h4>Taught In English: {props.taughtInEnglishInfo}</h4>
             </Row>
-            <Row>
+            <Row className="mt-4">
               <h4>Languages: {props.languageRequirements}</h4>
             </Row>
           </Col>
           <Col>
-            <h1>reviews</h1>
+            <Row>
+              <Col className="d-flex justify-content-start">
+                <Link
+                  href={`/universities/allreviews/${props.id}`}
+                  passHref
+                  legacyBehavior
+                >
+                  <Button>See All Reviews</Button>
+                </Link>
+              </Col>
+            </Row>
           </Col>
           <Col>
             <Link href={props.webSiteLink} passHref legacyBehavior>

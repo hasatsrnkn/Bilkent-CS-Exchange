@@ -19,6 +19,7 @@ const Universities = (props) => {
           department = {university.department}
           quota = {university.quota}
           coordinator = {university.coordinator}
+          reviews= {university.reviews}
         ></University>
       ))}
     </ListGroup>

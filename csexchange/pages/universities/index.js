@@ -2,7 +2,7 @@ import NavbarMenu from "../../components/UI/NavbarMenu";
 import Universities from "../../components/Universities/Universities";
 import { Col, Row } from "react-bootstrap";
 import UniversitiesFilter from "../../components/Universities/UniversitiesFilter";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import PointCalculator from "../../components/Universities/PointCalculator";
 import { API_UNIS_INFO_ENDPOINT } from "../api/api";
 import { loadingActions } from "../../store/loading";
@@ -11,7 +11,8 @@ import { useDispatch } from "react-redux";
 const UniversitiesPage = (props) => {
   const [filteredUniDepartment, setFilteredUniDepartment] = useState("cs");
   const [studentPoint, setStudentPoint] = useState(0);
-  
+  const dispatch = useDispatch();
+  dispatch(loadingActions.setIsNotLoading());
 
   const filterChangeHandler = (selectedUnis) => {
     setFilteredUniDepartment(selectedUnis);
@@ -26,7 +27,7 @@ const UniversitiesPage = (props) => {
   });
 
   return (
-    <div>
+    <Fragment style={{ width: "100vw" }}>
       <NavbarMenu></NavbarMenu>
       <Row className="ms-3">
         <Col>
@@ -44,15 +45,13 @@ const UniversitiesPage = (props) => {
         universities={filteredUnis}
         theStudentPoint={studentPoint}
       ></Universities>
-    </div>
+    </Fragment>
   );
 };
 
 export async function getStaticProps() {
   const res = await fetch(API_UNIS_INFO_ENDPOINT);
   const data = await res.json();
-  const dispatch = useDispatch();
-  dispatch(loadingActions.setIsNotLoading());
 
   /* python manage.py runserver */
   return {
@@ -70,10 +69,20 @@ export async function getStaticProps() {
         threshold: uni.threshold,
         quota: uni.quota,
         coordinator: {
-          id: uni.coordinator.id,
-          name: uni.coordinator.name,
-          surname: uni.coordinator.surname,
+          name: uni.coordinator.first_name,
+          surname: uni.coordinator.last_name,
         },
+        
+      
+
+        reviews: uni.reviews? uni.reviews.map((review) => ({
+          id: review.id,
+          userName: review.reviewer.first_name,
+          userSurname: review.reviewer.last_name,
+          image: review.reviewer.image,
+          text: review.text,
+          rating: review.rating,
+        })) : null,
       })),
     },
     revalidate: 1,

@@ -25,14 +25,20 @@ const PointCalculator = (props) => {
 
   useEffect(() => {
     const thePoint = (eng101No + eng102No + (100 / 3) * (cgpaNo - 2.5));
-    setNumber(thePoint.toFixed(2));
+    if( cgpaNo < 2.5 || cgpaNo > 4 ) {
+      setNumber("INVALID CGPA")
+    }
+    else {
+      setNumber(thePoint.toFixed(2));
+    }
+    
     props.onChangePoint(thePoint.toFixed(2));
   }, [eng101No, eng102No, cgpaNo]);
 
   return (
     <Row>
       <Col>
-        <h5 className="text-info">Calculate Your Point</h5>
+        <h5 className="text-dark">Calculate Your Point</h5>
       </Col>
       <Col>
         <Box sx={{ width: 100 }}>
@@ -90,9 +96,9 @@ const PointCalculator = (props) => {
       </Col>
       <Col>
         <Row>
-          <h5 className="text-info">Your Points</h5>
+          <h5 className="text-dark">Your Points</h5>
         </Row>
-        <Row className="ps-3 text-info">{number}</Row>
+        <Row className="ps-3 text-dark">{number}</Row>
       </Col>
     </Row>
   );
