@@ -44,9 +44,8 @@ class UploadFileAPI(APIView):
 
             file = request.data['file']
             file_name = request.data['file_name']
-            user_docs = Document.objects.filter(document_owner=request.user)
-            if user_docs:
-                user_doc = user_docs.get(documentName=file_name)
+            try:
+                user_doc = Document.objects.filter(document_owner=request.user).get(documentName=file_name)
                 if user_doc:
                     _delete_file(MEDIA_ROOT + '/' + user_doc.document.__str__())
                     user_doc.document = file
@@ -63,7 +62,7 @@ class UploadFileAPI(APIView):
                         return Response(status=status.HTTP_200_OK)
                     else:
                         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            else:
+            except Document.DoesNotExist:
                 instance = Document.objects.create(document=file, documentName=file_name,
                                             extension=".pdf", document_owner=request.user, type='PDF File')
                 instance.save()
