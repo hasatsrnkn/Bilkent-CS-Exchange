@@ -4,6 +4,7 @@ import LastDate from "../components/mainMenuPage/LastDate";
 import MainPageForm from "../components/mainMenuPage/MainPageForm";
 import { useSelector } from "react-redux";
 import bg from "../assets/bilkent_background.jpg";
+import bilkentLogo from "../assets/bilkentlogo.png";
 
 const HomePage = () => {
   const isLoading = useSelector((state) => state.loading.isLoading);
@@ -21,11 +22,11 @@ const HomePage = () => {
           <Container className="d-flex align-items-center justify-content-center mt-5">
             <Row>
               <Col className="pt-5 me-5">
-                <Row>
+                <Row className="ps-5">
                   <Figure>
                     <Figure.Image
                       width={300}
-                      src="https://upload.wikimedia.org/wikipedia/tr/e/ee/Bilkent%C3%9Cniversitesi-logo.png"
+                      src={bilkentLogo.src}
                     ></Figure.Image>
                   </Figure>
                 </Row>

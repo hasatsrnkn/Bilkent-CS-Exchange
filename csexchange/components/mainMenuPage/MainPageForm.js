@@ -29,7 +29,7 @@ const MainPageForm = (props) => {
     fetch(API_LOGIN_ENDPOINT, {
       method: "POST",
       body: JSON.stringify({
-        bilkent_id: bilkentId,
+        username: bilkentId,
         password: password,
       }),
       headers: {
@@ -55,12 +55,12 @@ const MainPageForm = (props) => {
         dispatch(
           authActions.login({
             token: data.token,
-            type: data.type,
-            bilkentId: bilkentId,
+            type: data.type.toLowerCase(),
+            userID: data.id,
           })
         );
         const profileType = data.type.toLowerCase();
-        router.push(`${profileType}/profile/` + bilkentId);
+        router.push(`${profileType}/myprofile/` + data.id);
       })
       .catch((err) => {
         alert(err.message);
