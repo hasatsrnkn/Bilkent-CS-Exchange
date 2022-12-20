@@ -14,8 +14,8 @@ const courses = [
     name: "CS 319",
   },
   {
-    name:"CS 322"
-  }
+    name: "CS 322",
+  },
 ];
 
 const InstructorPage = (props) => {
@@ -59,6 +59,9 @@ const InstructorPage = (props) => {
               done: item.completed,
               deadline: item.deadline,
             })),
+            courses: data.courses.map((course) => ({
+              name: course.name,
+            })),
           });
         })
         .catch((err) => {
@@ -84,7 +87,10 @@ const InstructorPage = (props) => {
             ></PersonalInfo>
           </Col>
           <Col className="col-7 mt-5 p-5">
-            <InstructorInfo courses={courses} userID={instructorID}></InstructorInfo>
+            <InstructorInfo
+              courses={user.courses}
+              userID={instructorID}
+            ></InstructorInfo>
           </Col>
           <Col className="col-3">
             <Row>
@@ -101,7 +107,7 @@ const InstructorPage = (props) => {
       </Fragment>
     );
   } else {
-    <p></p>;
+    <p>Loading...</p>;
   }
 };
 

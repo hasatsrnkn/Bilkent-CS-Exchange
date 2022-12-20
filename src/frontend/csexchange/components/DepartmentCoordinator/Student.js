@@ -1,16 +1,19 @@
-import { Form, Row, Col, Container, Card, Button } from "react-bootstrap";
-
+import { Button } from "react-bootstrap";
+import Link from "next/link";
 
 const Student = (props) => {
+  const nameSurname = props.name + " " + props.surname;
   return (
     <tr>
       <td></td>
-      <td>{props.name}</td>
-      <td>{props.ID}</td>
-      <td>{props.newOrEditedFiles ? props.newOrEditedFiles : "0"}</td>
-    
+      <td>{nameSurname}</td>
+      <td>{props.bilkentId}</td>
+      <td>{props.newOrEditedFiles}</td>
+
       <td>
-        <Button>View Profile</Button>
+        <Link href={`/profile/student/${props.id}`} passHref legacyBehavior>
+          <Button className="ms-4">View Profile</Button>
+        </Link>
       </td>
     </tr>
   );

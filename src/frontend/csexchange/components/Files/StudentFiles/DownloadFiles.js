@@ -1,12 +1,14 @@
 import { Row, Col, Button } from "react-bootstrap";
-import { API_DOWNLOAD_FILES_ENDPOINT } from "../../../pages/api/api";
+import { API_BASE_URL, API_DOWNLOAD_FILES_ENDPOINT } from "../../../pages/api/api";
 import { useSelector } from "react-redux";
 const DownloadFiles = (props) => {
   const token = useSelector((state) => state.auth.token);
 
   const downloadHandler = (event, file_name) => {
     event.preventDefault();
-    const url = API_DOWNLOAD_FILES_ENDPOINT + file_name +"/";
+    const url = !props.studentId
+      ? API_DOWNLOAD_FILES_ENDPOINT + file_name + "/"
+      : API_BASE_URL + "download-file-other/" + file_name + "/" + props.studentId + "/";
     fetch(url, {
       method: "GET",
       headers: {
@@ -82,9 +84,13 @@ const DownloadFiles = (props) => {
               </Button>
             </Row>
             <Row className="mt-5">
-              <Button size="lg" variant="secondary" onClick={(e) => {
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={(e) => {
                   downloadHandler(e, "pre_approval");
-                }}>
+                }}
+              >
                 Download Pre-Approval
               </Button>
             </Row>

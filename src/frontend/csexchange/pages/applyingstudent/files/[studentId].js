@@ -1,13 +1,22 @@
-import { Row  } from "react-bootstrap";
+import { Fragment } from "react";
+import { Alert, Container, Row, Col } from "react-bootstrap";
 import StudentFiles from "../../../components/Files/StudentFiles/StudentFiles";
 import NavbarMenu from "../../../components/UI/NavbarMenu";
 import { API_ALL_APPLYING_STUDENTS_ENDPOINT } from "../../api/api";
 const FilesPage = (props) => {
   return (
-    <Row>
+    <Fragment>
       <NavbarMenu></NavbarMenu>
       <StudentFiles></StudentFiles>
-    </Row>
+      <Container>
+        <Alert variant="danger" className="justify-content-center text-center">
+          <Row>
+            <b>Warning</b>
+          </Row>
+          The former file will be deleted when you upload a file!
+        </Alert>
+      </Container>
+    </Fragment>
   );
 };
 

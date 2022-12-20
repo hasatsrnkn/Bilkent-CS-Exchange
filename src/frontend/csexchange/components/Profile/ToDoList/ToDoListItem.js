@@ -17,6 +17,8 @@ const ToDoListItem = (props) => {
     </Tooltip>
   );
 
+  const date = new Date(props.deadline);
+
   useEffect(() => {
     if (props.done) {
       setDoneClass("success");
@@ -35,9 +37,13 @@ const ToDoListItem = (props) => {
         <Row>
           <Alert variant={doneClass}>
             <Row>{props.name}</Row>
-            <Row>Deadline: {props.deadline}</Row>
-            
-            </Alert>
+            <Row>
+              Deadline: {date.toLocaleDateString()} --
+              {date
+                .toLocaleTimeString()
+                .replace(/([\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3")}
+            </Row>
+          </Alert>
         </Row>
       </OverlayTrigger>
     </ListGroup.Item>

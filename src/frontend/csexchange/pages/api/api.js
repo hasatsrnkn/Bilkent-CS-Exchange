@@ -1,9 +1,10 @@
 const HasatPhoneIP = "http://172.20.10.8:1000";
 const HasatHomeIP = "http://192.168.1.40:1000";
 const local = "http://127.0.0.1:8000";
+const test = "http://10.22.159.2:1000";
 
 //BASE
-const BASE_URL = local;
+const BASE_URL = HasatPhoneIP;
 const API_BASE_URL = `${BASE_URL}/api/`;
 //UNI INFO
 const API_UNIS_INFO_ENDPOINT = `${API_BASE_URL}all-unis/`;
@@ -29,6 +30,14 @@ const API_FILES_ENDPOINT = `${API_BASE_URL}upload-file/`;
 const API_DOWNLOAD_FILES_ENDPOINT = `${API_BASE_URL}download-file/`;
 const API_EXCEL_ENDPOINT = `${API_BASE_URL}upload-excel/`;
 const API_PRE_APPROVAL_ENDPOINT =`${API_BASE_URL}pdffile/`;
+const API_STUDENT_LIST_ENDPOINT =`${API_BASE_URL}student-list/`;
+
+//NOTIFICATIONS
+const API_NOTIFICATIONS_ENDPOINT =`${API_BASE_URL}notifications/`;
+
+//COURSES
+const API_COURSES_ENDPOINT =`${API_BASE_URL}courses/`;
+const API_INSTRUCTOR_COURSES_ENDPOINT =`${API_BASE_URL}instructor-courses/`;
 
 module.exports = {
   BASE_URL,
@@ -50,4 +59,8 @@ module.exports = {
   API_DOWNLOAD_FILES_ENDPOINT,
   API_EXCEL_ENDPOINT,
   API_PRE_APPROVAL_ENDPOINT,
+  API_STUDENT_LIST_ENDPOINT,
+  API_NOTIFICATIONS_ENDPOINT,
+  API_COURSES_ENDPOINT,
+  API_INSTRUCTOR_COURSES_ENDPOINT,
 };

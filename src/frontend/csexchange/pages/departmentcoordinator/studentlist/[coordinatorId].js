@@ -1,18 +1,69 @@
-import { Fragment } from "react";
+import { Fragment,useEffect,useState } from "react";
 import StudentList from "../../../components/DepartmentCoordinator/StudentList";
 import NavbarMenu from "../../../components/UI/NavbarMenu";
 import { Row } from "react-bootstrap";
-import PersonalInfo from "../../../components/Profile/PersonalInfo";
-import { API_BASE_URL } from "../../api/api";
+import { API_BASE_URL, API_STUDENT_LIST_ENDPOINT } from "../../api/api";
+import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
+
 const StudentListPage = (props) => {
-  return (
-    <Fragment>
-      <NavbarMenu></NavbarMenu>
-      <Row className="mt-4">
-        <StudentList firstTime ={false}></StudentList>
-      </Row>
-    </Fragment>
-  );
+  const token = useSelector((state) => state.auth.token);
+  const [user, setUser] = useState(null);
+  const router = useRouter();
+  const { coordinatorId } = router.query;
+
+  useEffect(() => {
+    async function fetchData() {
+      fetch(API_STUDENT_LIST_ENDPOINT, {
+        method: "GET",
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+        .then((res) => {
+          if (res.ok) {
+            return res.json();
+          } else {
+            return res.json().then((data) => {
+              let errorMessage = "Authentication failed!";
+              // if (data && data.error && data.error.message) {
+              //   errorMessage = data.error.message;
+              // }
+
+              throw new Error(errorMessage);
+            });
+          }
+        })
+        .then((data) => {
+          setUser({
+            students: data.map((student) => ({
+              name: student.first_name,
+              surname: student.last_name,
+              id: student.id,
+              bilkentId: student.username,
+              newOrEditedFiles: student.newOrEditedFiles,
+            })),
+          });
+        })
+        .catch((err) => {
+          alert(err.message);
+        });
+    }
+    fetchData();
+  }, [props, coordinatorId]);
+
+  if (user) {
+    return (
+      <Fragment>
+        <NavbarMenu></NavbarMenu>
+        <Row className="mt-4">
+          <StudentList students={user.students}></StudentList>
+        </Row>
+      </Fragment>
+    );
+  } else {
+    <p>Loading...</p>;
+  }
 };
 
 export async function getStaticPaths() {

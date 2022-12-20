@@ -1,11 +1,21 @@
-import { Form, Row, Col, Container, Card, Button } from "react-bootstrap";
-import { useEffect, useState, useReducer } from "react";
+import {
+  Form,
+  Row,
+  Col,
+  Container,
+  Card,
+  Button,
+  Modal,
+  Alert,
+} from "react-bootstrap";
+import { useState } from "react";
 import Courses from "./Courses";
 import { API_PRE_APPROVAL_ENDPOINT } from "../../../pages/api/api";
 import { useSelector } from "react-redux";
 
 const PreApprovalForm = (props) => {
   const [keyValue, setKeyValue] = useState(2);
+
   const emptyFields = {
     field1: "",
     field2: "",
@@ -17,12 +27,17 @@ const PreApprovalForm = (props) => {
   const initialCourses = { key: 1, ...emptyFields };
 
   const token = useSelector((state) => state.auth.token);
+  const userID = useSelector((state) => state.auth.userID);
   const [courses, setCourses] = useState([initialCourses]);
-
+  const [show, setShow] = useState(false);
   const [size, setSize] = useState(1);
-  const [host, setHost] = useState(null);
   const [year, setYear] = useState(null);
   const [semester, setSemester] = useState(null);
+
+  //proplar üzeri next page'e yolla, orada userouterla sayfayı yenile
+  const handleClose = () => {
+    setShow(false);
+  };
 
   //TODO
   const submitHandler = (event) => {
@@ -33,12 +48,12 @@ const PreApprovalForm = (props) => {
       academic_year: year,
       semester: semester,
       courses: courses.map((course) => ({
-        foreign_code: course.field1,
-        foreign_name: course.field2,
-        foreign_credit: course.field3,
-        code_name: course.field4,
-        credit: course.field5,
-        exemption: course.field6,
+        foreign_code: course.field1 ? course.field1 : "",
+        foreign_name: course.field2 ? course.field2 : "",
+        foreign_credit: course.field3 ? course.field3 : "",
+        code_name: course.field4 ? course.field4 : "",
+        credit: course.field5 ? course.field5 : "",
+        exemption: course.field6 ? course.field6 : "",
       })),
     };
     fetch(API_PRE_APPROVAL_ENDPOINT, {
@@ -49,6 +64,7 @@ const PreApprovalForm = (props) => {
         Authorization: `Token ${token}`,
       },
     });
+    setShow(true);
   };
 
   const changeHandler = (updatedCourse) => {
@@ -108,15 +124,6 @@ const PreApprovalForm = (props) => {
           <Card className="p-5 m-5">
             <Row>
               <Col className="col-6 d-flex justify-content-center align-items-center">
-                <Form.Group>
-                  <Form.Label>Name of the host institution</Form.Label>
-                  <Form.Control
-                    type="text"
-                    onChange={hostHandler}
-                  ></Form.Control>
-                </Form.Group>
-              </Col>
-              <Col className="col-6">
                 <Row>
                   <Form.Group>
                     <Form.Label>Academic Year</Form.Label>
@@ -126,15 +133,15 @@ const PreApprovalForm = (props) => {
                     ></Form.Control>
                   </Form.Group>
                 </Row>
-                <Row>
-                  <Form.Group>
-                    <Form.Label>Semester</Form.Label>
-                    <Form.Control
-                      type="text"
-                      onChange={semesterHandler}
-                    ></Form.Control>
-                  </Form.Group>
-                </Row>
+              </Col>
+              <Col className="col-6 d-flex justify-content-center align-items-center">
+                <Form.Group>
+                  <Form.Label>Semester</Form.Label>
+                  <Form.Control
+                    type="text"
+                    onChange={semesterHandler}
+                  ></Form.Control>
+                </Form.Group>
               </Col>
             </Row>
           </Card>
@@ -160,6 +167,32 @@ const PreApprovalForm = (props) => {
           </Container>
         </Form>
       </Row>
+      <Container>
+        <Alert
+          variant="danger"
+          className="justify-content-center text-center mt-5"
+        >
+          <Row>
+            <b>Warning</b>
+          </Row>
+          The former file will be deleted when you upload a file!
+        </Alert>
+      </Container>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Success</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h5>
+            <Row>You created pre-approval form successfully!</Row>
+          </h5>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

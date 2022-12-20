@@ -6,6 +6,7 @@ const Universities = (props) => {
     <ListGroup>
       {props.universities.map((university) => (
         <University
+          key = {university.id}
           id= {university.id}
           name= {university.name}
           location= {university.location}

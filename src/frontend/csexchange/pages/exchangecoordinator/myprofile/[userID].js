@@ -73,19 +73,18 @@ const ExchangeCoordinatorPage = (props) => {
               email={user.email}
             ></PersonalInfo>
           </Col>
-          <Col className="col-7 mt-5 p-5">
-            <Link
-              href={link}
-              passHref
-              legacyBehavior
-            >
-              <Button variant="success" size="lg">
-                See Students List
-              </Button>
-            </Link>
-          </Col>
+    
+            <Col className="col-7 d-flex align-items-center justify-content-center">
+              <Link href={link} passHref legacyBehavior>
+                <Button variant="success" size="lg">
+                  See Students List
+                </Button>
+              </Link>
+            </Col>
+         
+
           <Col className="col-3">
-          <Row>
+            <Row>
               <Col className="d-flex justify-content-center align-items-center">
                 <h2>To-Do List</h2>
               </Col>
@@ -103,7 +102,6 @@ const ExchangeCoordinatorPage = (props) => {
   }
 };
 
-//AYARLANACAK
 export async function getStaticPaths() {
   const res = await fetch(API_BASE_URL + "all-exchange-coordinators/");
   const data = await res.json();

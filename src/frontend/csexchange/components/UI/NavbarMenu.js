@@ -35,6 +35,9 @@ const NavbarMenu = (props) => {
         <Link href="/announcements" passHref legacyBehavior>
           <Nav.Link className="ms-5">Announcements</Nav.Link>
         </Link>
+        <Link href="/courses" passHref legacyBehavior>
+          <Nav.Link className="ms-5">Courses</Nav.Link>
+        </Link>
         {!isAuth && (
           <Link href="/" passHref legacyBehavior>
             <Nav.Link className="ms-5">Login</Nav.Link>
@@ -47,6 +50,11 @@ const NavbarMenu = (props) => {
             legacyBehavior
           >
             <Nav.Link className="ms-5">Profile</Nav.Link>
+          </Link>
+        )}
+        {isAuth && (
+          <Link href={`/notifications/${userID}`} passHref legacyBehavior>
+            <Nav.Link className="ms-5">Notifications</Nav.Link>
           </Link>
         )}
         {isAuth && (
