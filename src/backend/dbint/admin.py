@@ -4,7 +4,7 @@ from django.contrib.auth.models import Permission
 from dbint.signals import *
 
 from .models import *
-from dbint.models.SystemModels import Document
+from dbint.models.SystemModels import Document, ForeignCourse, CourseRelation
 from dbint.models.SystemModels import ListItem
 
 
@@ -68,6 +68,8 @@ admin.site.register(Thread)
 admin.site.register(Reply)
 
 admin.site.register(Course)
+admin.site.register(ForeignCourse)
+admin.site.register(CourseRelation)
 admin.site.register(Permission)
 
 post_save.connect(add_user_to_default_group, sender='dbint.User')

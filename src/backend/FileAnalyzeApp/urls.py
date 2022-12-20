@@ -17,7 +17,7 @@ Including another URLconf
 from django.urls import path, include, re_path
 from . import views
 from backend import settings
-from FileAnalyzeApp.api_views import UploadFileAPI, DownloadFileAPI
+from FileAnalyzeApp.api_views import UploadFileAPI, DownloadFileAPI, DownloadOthersFilesAPI
 from django.conf.urls.static import static
 from rest_framework import routers
 
@@ -28,6 +28,7 @@ from .api_views import ReadAndWritePdf
 urlpatterns = [
     re_path(r'^upload-file/$', UploadFileAPI.as_view(), name='files'),
     re_path(r'^download-file/(?P<file_name>.+)/$', DownloadFileAPI.as_view(), name='download'),
+    re_path(r'^download-file-other/(?P<file_name>.+)/(?P<id_to_search>\d+)/$', DownloadOthersFilesAPI.as_view(), name='download-others'),
 
     # path("",views.Import_Excel_pandas,name="Import_Excel_pandas"),
     path("pdffile/", ReadAndWritePdf.as_view(), name="ReadAndWritePdf"),

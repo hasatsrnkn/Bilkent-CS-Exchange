@@ -13,6 +13,7 @@ from rest_framework.fields import empty
 
 REPLY_PER_THREAD = 3
 
+
 # TODO: CHANGE USER SERIALIZER IMPLEMENTATION, DYNAMIC FIELDS !!!!!!!, maybe create a private fields, zıpzıp fields
 #  dictionary-list
 # commented out codes are copy-paste codes for testing purposes
@@ -26,11 +27,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 # TODO: add courses field, checklist
 class INSTSerializerPriv(serializers.ModelSerializer):
-    # courses = course
+    courses = serializers.SerializerMethodField('get_courses')
     check_list = serializers.SerializerMethodField('get_todolist')
+
+    def get_courses(self, instructor):
+        courses = Course.objects.filter(instructor_of_course=instructor)
+        return CourseSerializer(courses, many=True).data
 
     def get_todolist(self, applyingstudent):
         return ToDoListSerializer(applyingstudent.check_list).data
+
     class Meta:
         model = Instructor
         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'department', 'image', 'check_list', 'courses',
@@ -39,7 +45,6 @@ class INSTSerializerPriv(serializers.ModelSerializer):
 
 # TODO: add courses field
 class INSTSerializer(serializers.ModelSerializer):
-    # courses = course
 
     class Meta:
         model = Instructor
@@ -52,6 +57,7 @@ class DEPCSerializerPriv(serializers.ModelSerializer):
     assigned_unis = serializers.SerializerMethodField('get_unis')
     check_list = serializers.SerializerMethodField('get_todolist')
     assigned_students = serializers.SerializerMethodField('get_students')
+    file_upload_noti_count = serializers.SerializerMethodField('get_noti_count')
 
     def get_todolist(self, departmentcoordinator):
         return ToDoListSerializer(departmentcoordinator.check_list).data
@@ -69,12 +75,15 @@ class DEPCSerializerPriv(serializers.ModelSerializer):
             data.append({'name': uni.university.name})
         return data
 
-    # check_list =
+    def get_noti_count(self, departmentcoordinator):
+        file_upload_noti_count = departmentcoordinator.notifications.filter(type='file_upload').filter(
+            seen=False).count()
+        return file_upload_noti_count
 
     class Meta:
         model = DepartmentCoordinator
         fields = ['id', 'username', 'first_name', 'last_name', 'email', 'department', 'image', 'check_list',
-                  'user_type', 'assigned_unis', 'assigned_students']
+                  'user_type', 'assigned_unis', 'assigned_students', 'file_upload_noti_count']
 
 
 class DEPCSerializer(serializers.ModelSerializer):
@@ -181,7 +190,7 @@ class ReplySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reply
-        fields = ['id','user', 'text', 'date']
+        fields = ['id', 'user', 'text', 'date']
 
     def create(self, validated_data):
         request = self.context['request']
@@ -191,6 +200,7 @@ class ReplySerializer(serializers.ModelSerializer):
         thread = Thread.objects.get(id=request.data['thread_id'])
         user = request.user.get_manager().get(username=request.user.username)
         return Reply.objects.create(text=validated_data['text'], user=user, thread=thread)
+
     '''
     # copy-pasted code from another program for reference, does not work
     def update(self, instance, validated_data):
@@ -384,7 +394,32 @@ class DocumentSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Course
-        fields = '__all__'
+        fields = ['name', 'department', 'credits']
+
+
+class ForeignCourseSerializer(serializers.ModelSerializer):
+    university = serializers.SerializerMethodField('get_uni_name')
+
+    def get_uni_name(self, foreigncourse):
+        return foreigncourse.university.name
+
+    class Meta:
+        model = ForeignCourse
+        fields = ['name', 'department', 'code', 'credits', 'university']
+
+
+class CourseRelationSerializer(serializers.ModelSerializer):
+    bilkent_course = CourseSerializer(read_only=True)
+    foreign_course = ForeignCourseSerializer(read_only=True)
+
+    class Meta:
+        model = CourseRelation
+        fields = ['id', 'bilkent_course', 'foreign_course', 'approved_status']
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ['id', 'text', 'receive_date']

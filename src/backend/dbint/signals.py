@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.models import Group
 from django.db.models.signals import post_save
 from django.db.models.signals import post_delete
@@ -33,13 +35,10 @@ def add_user_to_default_group(sender, instance, created=False, **kwargs):
     if created:
         my_group = Group.objects.get(name='Users')
         my_group.user_set.add(instance)
-        print(my_group.user_set)
         my_group.save()
     my_group = Group.objects.get(name='a')
     my_group.user_set.add(instance)
-    print(my_group.user_set)
     my_group.save()
-    print(instance.groups)
 
 
 @receiver(post_save, sender='dbint.Reply')
@@ -96,9 +95,9 @@ def create_notf_for_announcement(sender, instance, created=False, **kwargs):
     if created:
         students = Student.objects.all()
         for tempStudent in students:
-            notificationCreated = Notification.objects.create(text='There is an announcement!', user=tempStudent,
+            notificationCreated = Notification.objects.create(text='There is an announcement: ' + instance.text[:20] + "...",
+                                                              user=tempStudent,
                                                               seen=False, type='Announcement')
-            notificationCreated.save()
 
 
 @receiver(post_save, sender='dbint.Message')
@@ -112,68 +111,78 @@ def create_notf_for_message(sender, instance, created=False, **kwargs):
 
 @receiver(post_save, sender='dbint.Document')
 def create_notf_for_document(sender, instance, created=False, **kwargs):
-    if created:
-        student_type = instance.document_owner.user_type
-        if student_type == ASTU:
-            notificationText = instance.document_owner.first_name + instance.document_owner.last_name + " uploaded a file!"
-            notificationCreatedDEPC = Notification.objects.create(text=notificationText,
-                                                                  user=instance.document_owner.get_manager()
-                                                                  .get(id=instance.document_owner.id).stu_depc,
-                                                                  seen=False, type='File Upload')
-            notificationCreatedEXCC = Notification.objects.create(text=notificationText,
-                                                                  user=instance.document_owner.get_manager()
-                                                                  .get(id=instance.document_owner.id).stu_excc,
-                                                                  seen=False, type='File Upload')
-            notificationCreatedDEPC.save()
-            notificationCreatedEXCC.save()
+    user_type = instance.document_owner.user_type
+    if user_type == ASTU:
+        notificationText = instance.document_owner.first_name + " " + instance.document_owner.last_name + " uploaded a file!"
+        notificationCreatedDEPC = Notification.objects.create(text=notificationText,
+                                                              user=instance.document_owner.get_manager()
+                                                              .get(id=instance.document_owner.id).stu_depc,
+                                                              seen=False, type='file_upload',
+                                                              included_user=instance.document_owner)
+        notificationCreatedEXCC = Notification.objects.create(text=notificationText,
+                                                              user=instance.document_owner.get_manager()
+                                                              .get(id=instance.document_owner.id).stu_excc,
+                                                              seen=False, type='file_upload',
+                                                              included_user=instance.document_owner)
+        print('notification created')
+        notificationCreatedDEPC.save()
+        notificationCreatedEXCC.save()
+        if created:
+            user = instance.document_owner.get_manager().get(id=instance.document_owner.id)
+            if instance.documentName == 'pre_approval':
+                listItem = ListItem.objects.get(list=user.check_list,
+                                                type='pre_approval')
+                listItem.completed = True
+                listItem.save()
+            elif instance.documentName == 'learning_agreement':
+                listItem = ListItem.objects.get(list=user.check_list,
+                                                type='learning_agreement')
+                listItem.completed = True
+                listItem.save()
+            elif instance.documentName == 'health_and_travel':
+                listItem = ListItem.objects.get(list=user.check_list,
+                                                type='health_and_travel')
+                listItem.completed = True
+                listItem.save()
 
-            if (sender.type == 'Approval Form'):
-                listItem = ListItem.objects.get(list=instance.documentOwner.get_manager().check_list,
-                                                type='Approval Form')
-                listItem.completed = True
-                listItem.save()
-            elif (sender.type == 'Learning Agreement'):
-                listItem = ListItem.objects.get(list=instance.documentOwner.get_manager().check_list,
-                                                type='Learning Agreement')
-                listItem.completed = True
-                listItem.save()
 
 
 @receiver(post_save, sender='dbint.ApplyingStudent')  # bir de management
 def create_todo_list(sender, instance, created=False, **kwargs):
     if created:
         todolist = ToDoList.objects.create()
-        sender.check_list = todolist
-        sender.save()
-        firstListItem = ListItem.objects.create(list=todolist, text='Upload Learning Agreement', completed=False,
-                                                deadline=2023 - 1 - 7, type='Learning Agreement')
-        secondListItem = ListItem.objects.create(list=todolist, text='Upload Approval Form', completed=False,
-                                                 deadline=2023 - 1 - 12, type='Approval Form')
-        firstListItem.save()
-        secondListItem.save()
+        instance.check_list = todolist
+        instance.save()
+        ListItem.objects.create(list=todolist, text='Upload Learning Agreement', completed=False,
+                                deadline=datetime.datetime(2023, 3, 15, 23, 59), type='learning_agreement')
+        ListItem.objects.create(list=todolist, text='Upload Health and Travel Insurance Form', completed=False,
+                                deadline=datetime.datetime(2023, 3, 15, 23, 59), type='health_and_travel')
+        ListItem.objects.create(list=todolist, text='Generate Pre-Approval Form', completed=False,
+                                deadline=datetime.datetime(2023, 3, 15, 23, 59),
+                                type='pre_approval')
 
 
 @receiver(post_save, sender='dbint.Management')  # bir de management
 def create_todo_list_for_management(sender, instance, created=False, **kwargs):
     if created:
         todolist = ToDoList.objects.create()
-        sender.check_list = todolist
-        sender.save()
+        instance.check_list = todolist
+        instance.save()
 
 
 @receiver(post_save, sender='dbint.DepartmentCoordinator')  # bir de management
 def create_todo_list_for_department_coordinator(sender, instance, created=False, **kwargs):
     if created:
-        todolist = sender.check_list
-        firstListItem = ListItem.objects.create(list=todolist, text='Approve Students', completed=False,
-                                                deadline=2023 - 1 - 7, type='Approve Students')
-        firstListItem.save()
+        todolist = instance.check_list
+        ListItem.objects.create(list=todolist, text='Approve Students', completed=False,
+                                                deadline=datetime.datetime(2023, 3, 15, 23, 59),
+                                                type='approve_students')
 
 
 @receiver(post_save, sender='dbint.Instructor')  # bir de management
 def create_todo_list_for_management_instructor(sender, instance, created=False, **kwargs):
     if created:
-        todolist = sender.check_list
+        todolist = instance.check_list
         firstListItem = ListItem.objects.create(list=todolist, text='Approve Courses', completed=False,
-                                                deadline=2023 - 1 - 7, type='Approve Course')
+                                                deadline=datetime.datetime(2023, 3, 15, 23, 59), type='approve_courses')
         firstListItem.save()

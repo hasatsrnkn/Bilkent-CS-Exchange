@@ -35,15 +35,20 @@ class Message(models.Model):
 
 class Notification(models.Model):
     text = models.CharField(max_length=200, default='', blank=True)
-    user = models.ForeignKey('dbint.User', on_delete=models.CASCADE, default=None)
+    user = models.ForeignKey('dbint.User', on_delete=models.CASCADE, default=None, related_name='notifications')
     receive_date = models.DateTimeField(max_length=40, auto_now_add=True)
     seen = models.BooleanField(default=False)
     banner = models.ImageField(verbose_name='a small image about the notification', blank=True,
                                default=None, upload_to='noti_banners')
     type = models.CharField(max_length=100, default='', blank=True)
+    included_user = models.ForeignKey('dbint.User', on_delete=models.CASCADE, default=None, null=True,
+                                      related_name='in_notis')
 
     class Meta:
-        ordering = ['receive_date']
+        ordering = ['-receive_date']
+
+    def __str__(self):
+        return self.id.__str__() + " Noti to: - " + self.user.__str__() + " - " + self.text[:25]
 
 
 class Announcement(models.Model):
@@ -171,6 +176,14 @@ class UniversityDepartment(models.Model):
     objects = models.Manager()
 
     # TODO: MUST REMOVE !!!!!!!!! I CANNOT REACH API SO I USE IT. DEFINITELY BE DELETED
+    def calculateThreshold(self):
+        sum = 0.0
+        students = self.university.former_students.all()
+        stu_count = students.count()
+        for stu in students:
+            sum += 1
+
+
     def __str__(self):
         return self.id.__str__() + " - " + self.university.name + " : " + self.get_department_display()
 
@@ -203,6 +216,9 @@ class Document(models.Model):
                                           on_delete=models.CASCADE)
     date = models.DateTimeField(max_length=40, default=timezone.now)
 
+    def __str__(self):
+        return self.id.__str__() + " " + self.documentName + " - Document of: " + self.document_owner.username
+
     class Meta:
         verbose_name_plural = 'Documents'
 
@@ -221,9 +237,8 @@ class PreApprovalFormContent(Document):
 
 # not finished
 class Course(models.Model):
-    name = models.CharField(max_length=100, default='')
+    name = models.CharField(max_length=100, default='') # with code
     department = models.CharField(max_length=10, choices=DEPARTMENT_CHOICES, default='CS', )
-    code = models.CharField(max_length=10, default='', blank=True)
     credits = models.FloatField(default=0)
     syllabus_link = models.URLField(max_length=300, default='')
 
@@ -243,8 +258,8 @@ class ForeignCourse(models.Model):
 class CourseRelation(models.Model):
     # TODO: bilkent_course objesinden departmanlar ve instructorlar çekilir ve ona göre ilgili
     # departman koordinatörüne ve instructora gösterilir.
-    bilkent_course = models.ForeignKey('dbint.Course', related_name='bilkent_course', default=None,
+    bilkent_course = models.ForeignKey('dbint.Course', related_name='relation', default=None,
                                        on_delete=models.CASCADE)
-    foreign_course = models.ForeignKey('dbint.ForeignCourse', related_name='foreign_course', default=None,
+    foreign_course = models.ForeignKey('dbint.ForeignCourse', related_name='foreign_relation', default=None,
                                        on_delete=models.CASCADE)
     approved_status = models.BooleanField(default=False)

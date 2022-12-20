@@ -11,3 +11,5 @@ django-rest-knox
 django-import-export
 django-hitcount
 axios
+djangorestframework
+docx

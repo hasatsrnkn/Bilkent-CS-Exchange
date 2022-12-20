@@ -27,4 +27,6 @@ USER_TYPE_CHOICES = [
     (EXCO, EXCO)
 ]
 
+FILE_UPLOAD = 'File Upload'
+NOTI_TYPES = {FILE_UPLOAD: 'File Upload'}
 
