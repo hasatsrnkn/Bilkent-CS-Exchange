@@ -24,7 +24,6 @@ CS319 term project (an administration system for Bilkent Exchange-Erasmus progra
 - Mehmet Eren Balasar 22001954
 - Yüksel Berkay Erdem 21801863
 - Tuna Okçu 22002940
-- Aftab Fakir 22201062
 
 # Basic Description
 An app to minimize email correspondence between students and the relevant staff handling the ERASMUS application process and the paperwork required throughout said process via interactive forms.
