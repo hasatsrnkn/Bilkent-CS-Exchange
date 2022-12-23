@@ -7,6 +7,7 @@ pypdf2
 reportlab
 python-docx
 cryptography
+django-cors-headers
 django-rest-knox
 django-import-export
 django-hitcount
