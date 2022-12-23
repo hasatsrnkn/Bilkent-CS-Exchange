@@ -3,7 +3,7 @@ const HasatHomeIP = "http://192.168.1.40:1000";
 const local = "http://127.0.0.1:8000";
 
 //BASE
-const BASE_URL = HasatPhoneIP;
+const BASE_URL = local;
 const API_BASE_URL = `${BASE_URL}/api/`;
 //UNI INFO
 const API_UNIS_INFO_ENDPOINT = `${API_BASE_URL}all-unis/`;

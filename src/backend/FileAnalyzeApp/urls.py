@@ -33,7 +33,7 @@ urlpatterns = [
     # path("",views.Import_Excel_pandas,name="Import_Excel_pandas"),
     path("pdffile/", ReadAndWritePdf.as_view(), name="ReadAndWritePdf"),
     path('upload-excel/', views.Import_Excel_pandas.as_view(), name="Import_Excel_pandas"),
-    path('Import_excel', views.Import_excel, name="Import_excel"),
+
     # path("",views.Import_Excel_pandas,name="Import_Excel_pandas"),
     # path('', include(router.urls)),
 ]

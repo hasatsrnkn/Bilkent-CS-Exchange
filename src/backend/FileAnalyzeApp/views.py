@@ -18,7 +18,9 @@ import pandas as pd
 import os
 from django.core.files.storage import FileSystemStorage
 
-from dbint.models.SystemModels import Document
+from dbint.constants import TURKISH_DEPARTMENT
+from dbint.models import ApplyingStudent, ExchangeCoordinator, User
+from dbint.models.SystemModels import Document, UniversityDepartment, University
 from dbint.serializers import DocumentSerializer
 from .models import ExcelStudents
 from PyPDF2 import PdfFileWriter, PdfFileReader
@@ -32,98 +34,83 @@ from django.http import HttpResponse
 from .resources import ExcelStudentsResource
 
 
-def index(request):
-    if "GET" == request.method:
-        return render(request, 'index.html', {})
-    else:
-        excel_file = request.FILES["excel_file"]
-
-        # you may put validations here to check extension or file size
-
-        wb = openpyxl.load_workbook(excel_file)
-
-        # getting a particular sheet by name out of many sheets
-        worksheet = wb["Placed"]
-        print >> sys.stderr, (worksheet)
-
-        excel_data = list()
-        # iterating over the rows and
-        # getting value from each cell in row
-        for row in worksheet.iter_rows():
-            row_data = list()
-            for cell in row:
-                row_data.append(str(cell.value))
-            excel_data.append(row_data)
-
-        return render(request, 'index.html', {"excel_data":excel_data})
-
-    # Create your views here.
-
-
 class Import_Excel_pandas(APIView):
     def post(self, request):
-        if request.method == 'POST' :
+        if request.method == 'POST':
             file = request.data['file']
             file_name = request.data['file_name']
 
-            instance = Document.objects.create(document=file, documentName=file_name,
+            instance = Document.objects.get_or_create(document=file, documentName=file_name,
                                                extension=".xlsx", document_owner=request.user, type='PDF File')
-            instance.save()
+            instance[0].save()
 
-            document_object = request.user.docs.get(documentName=file_name)
+            document_object = instance[0]
             file_path = DocumentSerializer(document_object).data['document']
 
+            print(MEDIA_ROOT + file_path)
             empexceldata = pd.read_excel(MEDIA_ROOT + file_path[6:])
             dbframe = empexceldata
             for dbframe in dbframe.itertuples():
-                print >> sys.stderr, (dbframe)
-                obj = ExcelStudents.objects.create(firstName=dbframe.FirstName, Lastname=dbframe.Lastname,
-                                              studentID=dbframe.StudentIDNumber,
-                                              faculty=dbframe.Faculty, department=dbframe.Department, transcriptPoints=dbframe.TranscriptPoints,
-                                              totalPoints=dbframe.TotalPoints,
-                                              duration=dbframe.DurationPreferred, firstPrefUni=dbframe.PreferredUniversity1, secondPrefUni=dbframe.PreferredUniversity2,
-                                                   thirdPrefUni=dbframe.PreferredUniversity3, fourthPrefUni=dbframe.PreferredUniversity4,
-                                                   fifthPrefUni=dbframe.PreferredUniversity5)
+                if (pd.isnull(dbframe[5])):
+                    break
+                print(int(dbframe[4]).__str__())
+                obj = ExcelStudents.objects.create(firstName=dbframe[2], lastname=dbframe[3],
+                                                   studentID=int(dbframe[4]).__str__(),
+                                                   faculty=dbframe[5], department=dbframe[6],
+                                                   transcriptPoints=dbframe[20],
+                                                   totalPoints=dbframe[21],
+                                                   duration=dbframe[22], firstPrefUni=dbframe[23],
+                                                   secondPrefUni=dbframe[24],
+                                                   thirdPrefUni=dbframe[25], fourthPrefUni=dbframe[26],
+                                                   fifthPrefUni=dbframe[27])
                 obj.save()
 
+            PlaceStudent()
             return Response({'uploaded_file_url': 'uploaded_file_url'}, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-def Import_excel(request):
-    if request.method == 'POST':
-        ExcelStudents = ExcelStudentsResource()
-        dataset = Dataset()
-        new_employee = request.FILES['myfile']
-        data_import = dataset.load(new_employee.read())
-        result = ExcelStudentsResource.import_data(dataset, dry_run=True)
-        if not result.has_errors():
-            ExcelStudentsResource.import_data(dataset, dry_run=False)
-    return render(request, 'import_excel_db.html', {})
 
 
-def createWordFile(request):
-    document = Document()
-    docx_title = "TEST_DOCUMENT.docx"
-    document.add_paragraph('Dear Sir or Madam:')
+def PlaceStudent():
+    students = ExcelStudents.objects.all()
+    universities = University.objects.all()
 
-    table = document.add_table(0, 0)  # we add rows iteratively
-    table.style = 'TableGrid'
-    first_column_width = 5
-    second_column_with = 10
-    table.add_column(Cm(first_column_width))
-    table.add_column(Cm(second_column_with))
-    table.add_row()
-    row = table.rows[0]
-    row.cells[0].text = "Deneme"
-    f = io.BytesIO()
-    document.save(docx_title + '.docx')
-    document.save(f)
-    length = f.tell()
-    f.seek(0)
-    response = HttpResponse(
-        f.getvalue(),
-        content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    )
-    response['Content-Disposition'] = 'attachment; filename=' + docx_title
-    response['Content-Length'] = length
-    return response
+    for stu in students:
+        for i in range(0, 5):
+            if i == 0:
+                universityName = stu.firstPrefUni
+            elif i == 1:
+                universityName = stu.secondPrefUni
+            elif i == 2:
+                universityName = stu.thirdPrefUni
+            elif i == 3:
+                universityName = stu.fourthPrefUni
+            else:
+                universityName = stu.fifthPrefUni
+            for tempUniversity in universities:
+                if (universityName == tempUniversity.name):
+                    # universityDepartments = tempUniversity.university_departments.all()
+                    departments = UniversityDepartment.objects.all()
+                    for currentDepartment in departments:
+
+                        if currentDepartment.university.name == universityName and TURKISH_DEPARTMENT.get(
+                                stu.department) == currentDepartment.department and currentDepartment.quotaPlacement > 0:
+                            stu.placedUni = tempUniversity
+                            stu.save(update_fields=["placedUni"])
+                            tempQuota = currentDepartment.quotaPlacement
+                            tempQuota = tempQuota - 1
+                            currentDepartment.quotaPlacement = tempQuota
+                            currentDepartment.save(update_fields=["quotaPlacement"])
+                            createdApplyingStudents = ApplyingStudent.objects.create(
+                                first_name=stu.firstName, last_name=stu.lastname,
+                                username=stu.studentID,
+                                department=TURKISH_DEPARTMENT.get(stu.department), points=stu.totalPoints,
+                                applied_university=tempUniversity)
+                            createdApplyingStudents.set_password('12345')
+                            createdApplyingStudents.stu_depc = currentDepartment.coordinator
+                            createdApplyingStudents.stu_excc = ExchangeCoordinator.objects.get(username='yelda')
+                            createdApplyingStudents.save()
+                            break
+                        elif TURKISH_DEPARTMENT.get(
+                                stu.department) == currentDepartment.department and currentDepartment.quotaPlacement == 0:
+                            break
+                        else:
+                            pass

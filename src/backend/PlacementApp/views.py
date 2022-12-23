@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from FileAnalyzeApp.models import ExcelStudents
 from dbint.models.SystemModels import UniversityDepartment
-from dbint.models.ActorModels import ApplyingStudent
+from dbint.models.ActorModels import ApplyingStudent, ExchangeCoordinator
 from dbint.models.SystemModels import University
 from dbint.constants import *
 
@@ -40,6 +40,8 @@ def GetStudents(request):
                                                             username=stu.lastname, password='12345',
                                                             department=TURKISH_DEPARTMENT.get(stu.department), points=stu.totalPoints,
                                                             applied_university = tempUniversity)
+                            createdApplyingStudents.stu_depc = currentDepartment.coordinator
+                            createdApplyingStudents.stu_excc = ExchangeCoordinator.objects.get(username='yelda')
                             createdApplyingStudents.save()
                             break
                         elif TURKISH_DEPARTMENT.get(stu.department) == currentDepartment.department and currentDepartment.quotaPlacement == 0:
@@ -48,9 +50,3 @@ def GetStudents(request):
                             pass
     return render(request, 'placementExample.html', {})
 
-def PlaceStudent(studentList):
-    #sorted_by_transcript = sorted(studentList, key=lambda tup: tup[5])#, reverse=True)
-    for stu in studentList:
-        print("TRANSCRIPT: ", stu.transcriptPoints, " TOTAL: ", stu.totalPoints)
-
-    return
