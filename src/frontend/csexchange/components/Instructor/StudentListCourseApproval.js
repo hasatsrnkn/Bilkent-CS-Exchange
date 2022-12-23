@@ -1,6 +1,7 @@
 import { Tab, Table } from "react-bootstrap";
 import StudentCourseApproval from "./StudentCourseApproval";
 const StudentListCourseApproval = (props) => {
+  
   return (
     <Table striped bordered hover>
       <thead>
@@ -14,15 +15,16 @@ const StudentListCourseApproval = (props) => {
         </tr>
       </thead>
       <tbody>
-        {props.students.map((student) => {
+        {props.courses.map((course) => {
           return (
             <StudentCourseApproval
-              key={student.id}
-              id = {student.id}
-              name = {student.name}
-              courseName={student.courseName}
-              yourCourse={student.yourCourse}
-              approved={student.approved}
+              key={course.id}
+              id={course.id}
+              uniName={course.uniName}
+              courseName={course.courseName}
+              courseCode= {course.courseCode}
+              bilkentCourseName={course.bilkentCourseName}
+              approved={course.approved}
             ></StudentCourseApproval>
           );
         })}

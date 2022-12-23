@@ -44,6 +44,7 @@ const CoordinatorProfilePage = (props) => {
             pictureLink: data.image,
             bilkentID: data.username,
             type: data.user_type,
+            notificationCount: data.file_upload_noti_count,
             universities: data.assigned_unis.map((uni) => ({
               name: uni.name,
             })),
@@ -77,7 +78,12 @@ const CoordinatorProfilePage = (props) => {
             ></PersonalInfo>
           </Col>
           <Col className="col-7">
-            <CoordinatorInfo universities={user.universities} userID={coordinatorId} exchangeCoordinator={false}></CoordinatorInfo>
+            <CoordinatorInfo
+              universities={user.universities}
+              userID={coordinatorId}
+              exchangeCoordinator={false}
+              notificationCount={user.notificationCount}
+            ></CoordinatorInfo>
           </Col>
           <Col className="col-3">
             <Row>

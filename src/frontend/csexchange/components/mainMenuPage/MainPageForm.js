@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Button, Form, Row, Col, Spinner } from "react-bootstrap";
+import { Button, Form, Row, Col, Spinner, Modal } from "react-bootstrap";
 import { authActions } from "../../store/auth";
 import { loadingActions } from "../../store/loading";
 import { useRouter } from "next/router";
@@ -11,6 +11,11 @@ const MainPageForm = (props) => {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const router = useRouter();
+  const [show, setShow] = useState(false);
+  const formRef = useRef(null);
+  const handleClose = () => {
+    setShow(false);
+  };
 
   const bilkentIdHandler = (event) => {
     event.preventDefault();
@@ -63,14 +68,16 @@ const MainPageForm = (props) => {
         router.push(`${profileType}/myprofile/` + data.id);
       })
       .catch((err) => {
-        alert(err.message);
+        dispatch(loadingActions.setIsNotLoading());
+        setShow(true);
+        formRef.current.reset();
       });
   };
 
   return (
     <div>
       <Row>
-        <Form>
+        <Form ref={formRef}>
           <Row>
             <Form.Group>
               <Form.Label>Bilkent ID</Form.Label>
@@ -105,6 +112,19 @@ const MainPageForm = (props) => {
           </Row>
         </Form>
       </Row>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Warning</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h5>Authentication Failed!</h5>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

@@ -1,10 +1,10 @@
-import { Fragment } from "react";
-import StudentList from "../../../components/DepartmentCoordinator/StudentList";
+import { Fragment, useState } from "react";
 import NavbarMenu from "../../../components/UI/NavbarMenu";
 import { Row } from "react-bootstrap";
-import PersonalInfo from "../../../components/Profile/PersonalInfo";
-import { API_BASE_URL } from "../../api/api";
+import { API_BASE_URL, API_STUDENT_LIST_ENDPOINT } from "../../api/api";
 import StudentApproveList from "../../../components/DepartmentCoordinator/ApproveStudentList/StudentApproveList";
+
+
 const StudentListPage = (props) => {
   return (
     <Fragment>

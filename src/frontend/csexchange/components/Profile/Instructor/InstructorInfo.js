@@ -31,16 +31,6 @@ const InstructorInfo = (props) => {
             </ListGroup>
           </Row>
         </Row>
-        <Row className="mt-5">
-          <Col className="col-12 d-flex justify-content-center align-items-center">
-            <Alert variant="danger">
-              Some students added files!
-              <Badge className="ms-5" bg="dark">
-                +5
-              </Badge>
-            </Alert>
-          </Col>
-        </Row>
         <Row>
           <Col className="mt-3 d-flex justify-content-center align-items-center">
             <Link href={link} passHref legacyBehavior>

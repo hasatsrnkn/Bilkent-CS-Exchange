@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { Fragment, useState, useEffect } from "react";
 import { API_ALL_USERS, API_PROFILE_ENDPOINT, BASE_URL } from "../api/api";
 import { useSelector } from "react-redux";
+import DownloadFiles from "../../components/Files/StudentFiles/DownloadFiles";
 
 const ProfilePage = (props) => {
   const router = useRouter();
@@ -83,6 +84,7 @@ const ProfilePage = (props) => {
             </Row>
           </Card>
         </Container>
+        
       </Fragment>
     );
   } else {

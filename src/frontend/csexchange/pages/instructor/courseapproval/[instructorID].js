@@ -1,64 +1,67 @@
-import { API_BASE_URL } from "../../api/api";
-import { Fragment } from "react";
-import { Row } from "react-bootstrap";
-import NavbarMenu from "../../../components/UI/NavbarMenu";
+import { Fragment, useState, useEffect } from "react";
 import StudentListCourseApproval from "../../../components/Instructor/StudentListCourseApproval";
+import NavbarMenu from "../../../components/UI/NavbarMenu";
+import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
+import { API_INSTRUCTOR_COURSES_ENDPOINT } from "../../api/api";
 
-const students = [
-  {
-    name: "ESIEE Paris",
-    courseName: "AEC-422",
-    yourCourse: "CS-319",
-    approved: true,
-  },
-  {
-    name: "Bamberg University",
-    courseName: "AEC-433",
-    yourCourse: "CS-319",
-    approved: true,
-  },
-  {
-    name: "Bamberg University",
-    courseName: "AEC-411",
-    yourCourse: "CS-319",
-    approved: false,
-  },
-  {
-    name: "Bamberg University",
-    courseName: "AEC-41",
-    yourCourse: "CS-319",
-    approved: true,
-  },
-];
 const CourseApprovalPage = (props) => {
-  return (
-    <Fragment>
-      <NavbarMenu></NavbarMenu>
-      <Row>
-        <StudentListCourseApproval
-          students={students}
-        ></StudentListCourseApproval>
-      </Row>
-    </Fragment>
-  );
+  const token = useSelector((state) => state.auth.token);
+  const [user, setUser] = useState(null);
+  const router = useRouter();
+  const { instructorID } = router.query;
+
+  useEffect(() => {
+    async function fetchData() {
+      fetch(API_INSTRUCTOR_COURSES_ENDPOINT, {
+        method: "GET",
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+        .then((res) => {
+          if (res.ok) {
+            return res.json();
+          } else {
+            return res.json().then((data) => {
+              let errorMessage = "Authentication failed!";
+              // if (data && data.error && data.error.message) {
+              //   errorMessage = data.error.message;
+              // }
+
+              throw new Error(errorMessage);
+            });
+          }
+        })
+        .then((data) => {
+          setUser({
+            courses: data.map((course) => ({
+                id: course.id,
+              uniName: course.foreign_course.university,
+              courseName: course.foreign_course.name,
+              courseCode: course.foreign_course.code,
+              bilkentCourseName: course.bilkent_course.name,
+              approved: course.approved_status,
+            })),
+          });
+        })
+        .catch((err) => {
+          alert(err.message);
+        });
+    }
+    fetchData();
+  }, [props, instructorID]);
+
+  if (user) {
+    return (
+      <Fragment>
+        <NavbarMenu></NavbarMenu>
+        <StudentListCourseApproval courses={user.courses}></StudentListCourseApproval>
+      </Fragment>
+    );
+  } else {
+    return <p>Loading...</p>;
+  }
 };
-
-export async function getStaticPaths() {
-  const res = await fetch(API_BASE_URL + "all-instructors/");
-  const data = await res.json();
-
-  return {
-    fallback: false,
-    paths: data.map((instructor) => ({
-      params: { instructorID: instructor.id.toString() },
-    })),
-  };
-}
-
-export async function getStaticProps() {
-  return {
-    props: {},
-  };
-}
 
 export default CourseApprovalPage;

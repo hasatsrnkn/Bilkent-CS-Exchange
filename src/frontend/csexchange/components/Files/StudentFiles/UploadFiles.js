@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Col, Form, Row, Button } from "react-bootstrap";
+import { Col, Form, Row, Button, Modal } from "react-bootstrap";
 import { API_FILES_ENDPOINT } from "../../../pages/api/api";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -9,8 +9,13 @@ const UploadFiles = (props) => {
   const [healthAndTravel, setHealthAndTravel] = useState(null);
   const [erasmusGrantAgreement, setErasmusGrantAgreement] = useState(null);
   const [learningAgreement, setLearningAgreement] = useState(null);
+  const [show, setShow] = useState(false);
   const formRef = useRef(null);
   const token = useSelector((state) => state.auth.token);
+
+  const handleClose = () => {
+    setShow(false);
+  };
 
   const acceptanceLetterHandler = (event) => {
     event.preventDefault();
@@ -47,6 +52,7 @@ const UploadFiles = (props) => {
 
       try {
         const res = await axios.post(API_FILES_ENDPOINT, body, config);
+        setShow(true);
       } catch (err) {}
       formRef.current.reset();
     }
@@ -69,6 +75,7 @@ const UploadFiles = (props) => {
 
       try {
         const res = await axios.post(API_FILES_ENDPOINT, body, config);
+        setShow(true);
       } catch (err) {}
 
       formRef.current.reset();
@@ -92,6 +99,7 @@ const UploadFiles = (props) => {
 
       try {
         const res = await axios.post(API_FILES_ENDPOINT, body, config);
+        setShow(true);
       } catch (err) {}
 
       formRef.current.reset();
@@ -115,6 +123,7 @@ const UploadFiles = (props) => {
 
       try {
         const res = await axios.post(API_FILES_ENDPOINT, body, config);
+        setShow(true);
       } catch (err) {}
       (err) => console.log(err.message);
 
@@ -183,6 +192,21 @@ const UploadFiles = (props) => {
           </Row>
         </Form>
       </Col>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Success</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h5>
+            <Row>You uploaded a file successfully!</Row>
+          </h5>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Row>
   );
 };
