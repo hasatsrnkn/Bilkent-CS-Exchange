@@ -94,7 +94,7 @@ class Reply(models.Model):
         return self.id.__str__() + " - Reply: " + self.text[:10] + "..."
 
     class Meta:
-        ordering = ['date']
+        ordering = ['-date']
         verbose_name_plural = 'Replies'
 
 
@@ -163,7 +163,6 @@ class UniversityDepartment(models.Model):
                                     on_delete=models.CASCADE, blank=False, default=None)
     # ADDED FOR PLACEMENT ALGORITHM
     quotaPlacement = models.IntegerField(default=0)
-    # TODO: Departmant choices değil period choices olcak (fall - spring gibi)
     availablePeriod = models.CharField(max_length=10, choices=PERIOD_CHOICES, default='FALL', )
     # ADDED FOR PLACEMENT ALGORITHM
 

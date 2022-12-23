@@ -32,12 +32,9 @@ class DownloadFileAPI(APIView):
 
     def get(self, request, file_name, format=None):
         document_object = request.user.docs.get(documentName=file_name)
-        if document_object.documentName == 'pre_approval':
-            file_path = MEDIA_ROOT + "/files/pre_approval_" + request.user.username + ".pdf"
-            return FileResponse(open(file_path, 'rb'), content_type='application/pdf')
-        else:
-            file_path = DocumentSerializer(document_object).data['document']
-            return FileResponse(open(MEDIA_ROOT + file_path[6:], 'rb'), content_type='application/pdf')
+
+        file_path = DocumentSerializer(document_object).data['document']
+        return FileResponse(open(MEDIA_ROOT + file_path[6:], 'rb'), content_type='application/pdf')
 
 
 class DownloadOthersFilesAPI(APIView):
@@ -49,12 +46,8 @@ class DownloadOthersFilesAPI(APIView):
             student = User.objects.get(id=id_to_search)
             document_object = student.docs.get(documentName=file_name)
 
-            if document_object.documentName == 'pre_approval':
-                file_path = MEDIA_ROOT + "/files/pre_approval_" + request.user.username + ".pdf"
-                return FileResponse(open(file_path, 'rb'), content_type='application/pdf')
-            else:
-                file_path = DocumentSerializer(document_object).data['document']
-                return FileResponse(open(MEDIA_ROOT + file_path[6:], 'rb'), content_type='application/pdf')
+            file_path = DocumentSerializer(document_object).data['document']
+            return FileResponse(open(MEDIA_ROOT + file_path[6:], 'rb'), content_type='application/pdf')
 
         return Response(status=status.HTTP_200_OK)
 
@@ -159,20 +152,23 @@ class ReadAndWritePdf(APIView):
         page.mergePage(new_pdf.getPage(0))
         output.addPage(page)
         # finally, write "output" to a real file
-        file_name = "/files/pre_approval_" + user.username + ".pdf"
-        outputStream = open(MEDIA_ROOT + file_name, "wb")
-        output.write(outputStream)
-        outputStream.close()
+        file_name = "files/pre_approval_" + user.username + ".pdf"
 
         try:
             instance = Document.objects.get(documentName='pre_approval', document_owner=request.user)
             print(MEDIA_ROOT + '/' + instance.document.__str__())
             _delete_file(MEDIA_ROOT + '/' + instance.document.__str__())
-            instance.document = MEDIA_ROOT + file_name
+            outputStream = open(MEDIA_ROOT + '/' + file_name, "wb")
+            output.write(outputStream)
+            outputStream.close()
+            instance.document = file_name
             instance.save()
 
         except Document.DoesNotExist:
-            Document.objects.create(document=MEDIA_ROOT + file_name, documentName='pre_approval',
+            outputStream = open(MEDIA_ROOT + '/' + file_name, "wb")
+            output.write(outputStream)
+            outputStream.close()
+            Document.objects.create(document=file_name, documentName='pre_approval',
                                                   extension=".pdf", document_owner=request.user, type='PDF File')
         return Response({}, status=status.HTTP_200_OK)
 
